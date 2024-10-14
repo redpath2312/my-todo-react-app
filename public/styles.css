@@ -1,0 +1,79 @@
+*{
+    box-sizing: border-box;
+}
+
+html {
+    font-family: "Work Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+header {
+    background-color: #D8C3A5;
+    padding:10px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
+}
+.header-icon {
+    width: 30px;
+}
+
+body {
+    background-color: #bdac80;
+    background-image: url("https://www.transparenttextures.com/patterns/white-brushed.png");
+/* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
+    margin: 0px;
+}
+
+#draft-card {
+width: 20%;
+}
+
+.card {
+width: 20%;
+height: 120px;
+border: 2px solid #E98074;
+/* padding: 2%; */
+margin: 1vh;
+border-radius: 10px;
+background-color: white;
+text-align: center;
+}
+
+textarea{
+    resize: none;
+    width: 95%;
+    margin: 10px;
+    border: none;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:  flex-start;
+    align-items: start;
+}
+
+p {
+   margin: 0%;
+   padding: 3px 0 0 3px;
+}
+
+h2 {
+    margin-top: -3px;
+}
+
+#checkBox {
+    float: inline-end;
+    margin-right: 5px;
+}
+
+button{
+    margin: 5px;
+}
