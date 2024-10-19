@@ -8,15 +8,20 @@ import Card from './Components/Card'
 
 function App() {
 
+  const cardHighlightStyle = {
+  background: "white",
+  };
+
   const [cards, setCards] = useState([]);
   // const [doneCardsTotal, setDoneCardsTotal] = useState(0);
   const [maxIndexKey, setMaxIndexKey] = useState(0);
   
+  // const [cardHighlightStyle, setCardHighlightStyle] = useState({background: "white"});
   const doneCardsTotal = cards.filter((card) => card.checked ==true).length;
 
 
   function handleCheckedChanged(id) {
-    setCards(cards.map((card) => {
+       setCards(cards.map((card) => {
       if (card.id === id){
         return {...card, checked: !card.checked};
       } else { 
@@ -24,14 +29,35 @@ function App() {
     }));    
   }
 
+  function handleMouseEnter (id){
+    console.log(`MouseOver on ${id}`);
 
-  // function handleCheckedChanged(id){
-  //   setCards(({cards})=> ({
+    setCards(cards.map((card) => {
+      if (card.id === id){
+        return {...card, cardHighlightStyle: {background: "yellow"}};
+      } else { 
+        return card};
+    }))
+  }
 
-  //   }))
-  
+  //   setCardHighlightStyle(prevStyle => ({
+  //     ...prevStyle, background: "Yellow"
+  //   }));
+  //   console.log(cardHighlightStyle);
   // }
- 
+
+  function handleMouseLeave (id){
+    console.log(`MouseOut from ${id}`);
+
+    setCards(cards.map((card) => {
+      if (card.id === id){
+        return {...card, cardHighlightStyle: {background: "white"}};
+      } else { 
+        return card};
+    }))
+  }
+
+
   function addCard(inputText) {
   setCards((prevCards)=> {
       return [...prevCards, {id: ((maxIndexKey)+1),
@@ -65,7 +91,6 @@ function App() {
         </div>
         <div>
         <p>You have {doneCardsTotal} tasks done so far</p>
-        <button onClick={checkDoneCards}>Check Done Cards</button>
         <DraftCard 
         onAdd = {addCard}/>
         </div>      
@@ -77,7 +102,10 @@ function App() {
           text = {card.text}
           checked = {card.checked}
           onChange = {handleCheckedChanged}
-          onDelete = {deleteCard} />          
+          onDelete = {deleteCard} 
+          onMouseEnter = {handleMouseEnter} 
+          onMouseLeave = {handleMouseLeave}
+          customHighlightStyle = {card.cardHighlightStyle} />          
         ))}
       </div>
       <div>
@@ -88,4 +116,4 @@ function App() {
   )
 };
 
-export default App
+export default App;
