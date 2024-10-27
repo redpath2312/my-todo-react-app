@@ -5,18 +5,16 @@ import DraftCard from './Components/DraftCard'
 import Card from './Components/Card'
 
 
-
 function App() {
 
-  const cardHighlightStyle = {
-  background: "white",
-  };
-
   const [cards, setCards] = useState([]);
-  // const [doneCardsTotal, setDoneCardsTotal] = useState(0);
   const [maxIndexKey, setMaxIndexKey] = useState(0);
+
+  const [selectedCardID, setSelectedCardID] = useState(0);
+
+
+
   
-  // const [cardHighlightStyle, setCardHighlightStyle] = useState({background: "white"});
   const doneCardsTotal = cards.filter((card) => card.checked ==true).length;
 
 
@@ -29,34 +27,10 @@ function App() {
     }));    
   }
 
-  function handleMouseEnter (id){
-    console.log(`MouseOver on ${id}`);
-
-    setCards(cards.map((card) => {
-      if (card.id === id){
-        return {...card, cardHighlightStyle: {background: "yellow"}};
-      } else { 
-        return card};
-    }))
+  function selectCard(id) {
+    setSelectedCardID(id);
+    console.log(id);
   }
-
-  //   setCardHighlightStyle(prevStyle => ({
-  //     ...prevStyle, background: "Yellow"
-  //   }));
-  //   console.log(cardHighlightStyle);
-  // }
-
-  function handleMouseLeave (id){
-    console.log(`MouseOut from ${id}`);
-
-    setCards(cards.map((card) => {
-      if (card.id === id){
-        return {...card, cardHighlightStyle: {background: "white"}};
-      } else { 
-        return card};
-    }))
-  }
-
 
   function addCard(inputText) {
   setCards((prevCards)=> {
@@ -69,7 +43,6 @@ function App() {
 
   function deleteCard(id) {
   const newCardsList = cards.filter((card)=> card.key !=id);
-  // console.log(newCardsList);
   setCards(newCardsList);
   }
 
@@ -78,11 +51,20 @@ function App() {
   function checkDoneCards () {
     const doneCards = cards.filter((card) => card.checked ==true);
     console.log(`You have ${doneCards.length} tasks done so far`); // Shows but dont know how to concatenate in console.log
-    // console.log(doneCards);
-    // setDoneCardsTotal(doneCards.length);
   }  
 
-
+  function updateCard (updatedText) {
+    console.log(`updated Card with ${updatedText}`);
+    console.log(`selected card whilst in update card method = ${selectedCardID}`);
+    setCards(cards.map((card) => {
+      if (card.id === selectedCardID) {
+        console.log("Found Selected ID");
+        return {...card, text: updatedText};
+      } else {
+          return card};
+        }));
+    }
+  
   return ( 
     <div>   
       
@@ -102,10 +84,10 @@ function App() {
           text = {card.text}
           checked = {card.checked}
           onChange = {handleCheckedChanged}
-          onDelete = {deleteCard} 
-          onMouseEnter = {handleMouseEnter} 
-          onMouseLeave = {handleMouseLeave}
-          customHighlightStyle = {card.cardHighlightStyle} />          
+          onDelete = {deleteCard}
+          onUpdate = {updateCard} 
+          onSelect = {selectCard}
+          />          
         ))}
       </div>
       <div>

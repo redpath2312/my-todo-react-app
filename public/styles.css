@@ -37,17 +37,19 @@ width: 20%;
 
 .card {
 width: 20%;
-height: 120px;
+height: 150px;
 border: 2px solid #E98074;
 /* padding: 2%; */
 margin: 1vh;
 border-radius: 10px;
 background-color: white;
 text-align: center;
+word-wrap: break-word;
 }
 
 textarea{
     resize: none;
+    height: 70px;
     width: 95%;
     margin: 10px;
     border: none;
@@ -76,4 +78,17 @@ h2 {
 
 button{
     margin: 5px;
+}
+
+.draft-card-bottom{
+    display: flex;
+    justify-content: end;
+}
+.cards-bottom{
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+}
+.cards-middle {
+    height: 85px;
 }
