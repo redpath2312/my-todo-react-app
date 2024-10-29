@@ -39,7 +39,7 @@ function handleTextChange(event) {
 function handleMouseEnter (id){
     console.log(`MouseOver on ${id}`);
     setHovered(true);
-    setCardHighlightStyle({background: "#dbd9d0", border: "4px solid #ffe485"});
+    setCardHighlightStyle({background: "#d0e0f7", border: "2px solid #ffe485"});
     setCardText(props.text);
   }
 
@@ -53,20 +53,21 @@ function handleMouseLeave (id){
   
 
     return (<div style = {cardHighlightStyle} onMouseEnter={()=> {handleMouseEnter(props.id)}} onMouseLeave={() => {handleMouseLeave(props.id)}} className="card">
-        <div>
-        <div><p style={{textAlign: "left"}}>id: {props.id}</p>  </div>
-      
-        <div className="cards-middle"> {isHovered ===true? <form><textarea onSelect = {() => {props.onSelect(props.id)}} maxLength = {50} value ={cardText} onChange={handleTextChange}> </textarea></form> : <h2>{props.text}</h2>}</div>
+                <div className= "cards-top">    
+                    <div><p style={{textAlign: "left"}}>id: {props.id}</p></div>
+                </div>
+                <div className="cards-middle"> {isHovered ===true? <form><textarea onSelect = {() => {props.onSelect(props.id)}} maxLength = {50} value ={cardText} onChange={handleTextChange}> </textarea></form> : <h2>{props.text}</h2>}</div>
         
-        </div>
-        <div className="cards-bottom">
-        <div><button onClick= {() => {props.onDelete(props.id)}}>Delete</button></div>
-        <div id="checkBox"><label><input type="checkbox" value = {props.checked} 
-        onChange={() => {props.onChange(props.id)}}
-        />Done</label></div>     
-       
-        </div>    
-        </div>)
-}
+                 <div className="cards-bottom">
+                    <div><button onClick= {() => {props.onDelete(props.id)}}>Delete</button></div>
+                    <div id="checkBox"><label>
+                    <input 
+                    type="checkbox" 
+                    value = {props.checked} 
+                    onChange={() => {props.onChange(props.id)}}
+                    />Done</label></div>            
+                </div>    
+            </div>);
+};
 
 export default Card;

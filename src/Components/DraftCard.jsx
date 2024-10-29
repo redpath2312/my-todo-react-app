@@ -17,7 +17,7 @@ function DraftCard(props) {
     }
 
     return (<div id = "draft-card" className="card">
-        <div><form><textarea maxLength = {50} onChange = {handleChange} name="cardtext" rows="3" cols="30" placeholder="Write text here" value={createCardText}></textarea></form></div>
+        <div><form><textarea maxLength = {50} onChange = {handleChange} name="cardtext" rows="3" cols="30" placeholder="Write new task here" value={createCardText}></textarea></form></div>
         <div className="draft-card-bottom"><button type="submit" onClick={handleSubmit}>Add</button></div>        
     </div>);
 };

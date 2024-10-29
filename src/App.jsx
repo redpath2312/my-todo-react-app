@@ -9,12 +9,8 @@ function App() {
 
   const [cards, setCards] = useState([]);
   const [maxIndexKey, setMaxIndexKey] = useState(0);
-
   const [selectedCardID, setSelectedCardID] = useState(0);
 
-
-
-  
   const doneCardsTotal = cards.filter((card) => card.checked ==true).length;
 
 
@@ -71,12 +67,12 @@ function App() {
         <div>
         <Header />
         </div>
-        <div>
+        <div className = "draft-card-container">
         <p>You have {doneCardsTotal} tasks done so far</p>
         <DraftCard 
         onAdd = {addCard}/>
         </div>      
-      <div className='container'>
+      <div className='cards-container'>
         {cards.map((card)=> (
           <Card
           key = {card.id}
