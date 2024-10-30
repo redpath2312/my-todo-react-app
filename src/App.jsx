@@ -63,17 +63,17 @@ function App() {
   
   return ( 
     <div>   
-      
+      <div className="main">
         <div>
-        <Header />
+          <Header />
         </div>
-        <div className = "draft-card-container">
-        <p>You have {doneCardsTotal} tasks done so far</p>
-        <DraftCard 
-        onAdd = {addCard}/>
-        </div>      
-      <div className='cards-container'>
-        {cards.map((card)=> (
+          <div className = "draft-card-container">
+            <p>You have {doneCardsTotal} tasks done so far</p>
+            <DraftCard 
+            onAdd = {addCard}/>
+          </div>      
+        <div className='cards-container'>
+          {cards.map((card)=> (
           <Card
           key = {card.id}
           id = {card.id}
@@ -85,7 +85,9 @@ function App() {
           onSelect = {selectCard}
           />          
         ))}
+        </div>
       </div>
+
       <div>
         <Footer />
       </div>

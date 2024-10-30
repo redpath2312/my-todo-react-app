@@ -1,62 +1,38 @@
 import React, {useState} from "react";
 
-
-
-//If not hovered show card with props text
-//If hovered show card with a text area
-//value will initially be props.text, but then if selected , don't show props but show target value.
-// call update card to update props when click off or enter.
-//enter text it needs to be event.target.value which needs to update back to the props.id
-
-//could set initial text from props, but then go off cardText once selected.
+// If not hovered show card with props text.
+// If hovered show card with a text area.
+// Initially ensure when handleMouseEnter is called that cardText isupdated with props.text. Then if selected , the textarea component shows the local state of cardText allowing user to change it in the form.
+// Call updateCard to update props when text is changed.
 
 function Card(props) {
 
 
 const [isHovered, setHovered] = useState(false);
-
-const [cardHighlightStyle, setCardHighlightStyle] = useState({background: "white"});
-
 const [cardText, setCardText] = useState("");
-
-// const [selectedCardID, setSelectedCardID] = useState();
-
-// function handleSelect(id){
-//     const newSelectedID = id;
-//     // setSelectedCardID(newSelectedID);
-//     // console.log(newSelectedID);
-//     props.onSelect(newSelectedID);
-
-// }
 
 function handleTextChange(event) {
     const newText = (event.target.value);
     setCardText(newText); 
     props.onUpdate(newText);
-    console.log(`Card Text = ${newText}`);
+    // console.log(`Card Text = ${newText}`);
 
 }
 function handleMouseEnter (id){
-    console.log(`MouseOver on ${id}`);
     setHovered(true);
-    setCardHighlightStyle({background: "#d0e0f7", border: "2px solid #ffe485"});
     setCardText(props.text);
   }
-
   
 function handleMouseLeave (id){
-    console.log(`MouseOver on ${id}`);
     setHovered(false);
-    setCardHighlightStyle({background: "white"});
   }
 
-  
 
-    return (<div style = {cardHighlightStyle} onMouseEnter={()=> {handleMouseEnter(props.id)}} onMouseLeave={() => {handleMouseLeave(props.id)}} className="card">
+    return (<div onMouseEnter={() => {handleMouseEnter(props.id)}} onMouseLeave={() => {handleMouseLeave(props.id)}} className= {`${isHovered? "card-hovered card " : "card"}`} >
                 <div className= "cards-top">    
                     <div><p style={{textAlign: "left"}}>id: {props.id}</p></div>
                 </div>
-                <div className="cards-middle"> {isHovered ===true? <form><textarea onSelect = {() => {props.onSelect(props.id)}} maxLength = {50} value ={cardText} onChange={handleTextChange}> </textarea></form> : <h2>{props.text}</h2>}</div>
+                <div className="cards-middle"> {isHovered? <form><textarea onSelect = {() => {props.onSelect(props.id)}} maxLength = {50} value ={cardText} onChange={handleTextChange}> </textarea></form> : <h2>{props.text}</h2>}</div>
         
                  <div className="cards-bottom">
                     <div><button onClick= {() => {props.onDelete(props.id)}}>Delete</button></div>

@@ -15,24 +15,28 @@ header {
 }
 
 footer {
-
     bottom: 0;
     text-align: center;
     width: 100%;
     align-items: center;
+    height: 5vh;
+    margin-top: auto;
 }
+
 .header-icon {
     width: 30px;
 }
 
+.main {
+    min-height: 95vh;
+    display: flex;
+    flex-direction: column;
+}
 body {
     background-color: #bdac80;
     background-image: url("https://www.transparenttextures.com/patterns/white-brushed.png");
 /* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
     margin: 0px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
 }
 
 #draft-card {
@@ -51,25 +55,42 @@ text-align: center;
 word-wrap: break-word;
 }
 
+
 textarea{
     resize: none;
     height: 85px;
     width: 95%;
-    margin: 5px;
+    /* margin: 5px; */
     border: none;
-    font-size: x-large;
+    font-size: xx-large;
     text-align: center;
     background:transparent;
-    outline:none
+    outline:none;
+    font-weight: bold;
+    font-family: "Work Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    padding: 0%;
 }
+
 
 .cards-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content:  start;
     align-items: start;
-    min-height: 63vh;
 }
+
+@media (min-width:1067px) {
+    .cards-container {
+        justify-content:  start;
+    }
+}
+@media (max-width:1066px){    
+    .cards-container {
+        justify-content:  center;
+    }
+}
+
 
 p {
    margin: 0%;
@@ -78,6 +99,8 @@ p {
 
 h2 {
     margin: 5px;
+    height: 85px;
+    font-size: xx-large;
 }
 
 #checkBox {
@@ -115,4 +138,9 @@ display: flex;
 flex-direction: column;
 justify-content:  center;
 align-items: center;
+}
+
+.card-hovered {
+    background-color: #d0e0f7;
+    border: 2px solid #ffe485;
 }

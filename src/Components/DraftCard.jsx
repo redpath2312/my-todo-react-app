@@ -1,15 +1,14 @@
 import React, {useState} from "react"
 
 function DraftCard(props) {
-    // Have just the one useState 
+
     const [createCardText, setCreateCardText] = useState("");
 
     function handleChange(event) {
         console.log(event.target.value);
-        setCreateCardText(event.target.value);
-        
-
+        setCreateCardText(event.target.value);      
     }
+    
     function handleSubmit(event) {       
         event.preventDefault();
         setCreateCardText("");
