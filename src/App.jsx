@@ -9,7 +9,7 @@ function App() {
 
   const [cards, setCards] = useState([]);
   const [maxIndexKey, setMaxIndexKey] = useState(0);
-  const [selectedCardID, setSelectedCardID] = useState(0);
+  const [selectedCardID, setSelectedCardID] = useState(null);
 
   const doneCardsTotal = cards.filter((card) => card.checked ==true).length;
 

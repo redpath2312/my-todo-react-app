@@ -12,7 +12,7 @@ const [isHovered, setHovered] = useState(false);
 const [cardText, setCardText] = useState("");
 
 function handleTextChange(event) {
-    const newText = (event.target.value);
+    const newText = event.target.value;
     setCardText(newText); 
     props.onUpdate(newText);
     // console.log(`Card Text = ${newText}`);
