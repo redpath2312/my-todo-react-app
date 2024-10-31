@@ -5,18 +5,17 @@ import DraftCard from './Components/DraftCard'
 import Card from './Components/Card'
 
 
-
 function App() {
 
   const [cards, setCards] = useState([]);
-  // const [doneCardsTotal, setDoneCardsTotal] = useState(0);
   const [maxIndexKey, setMaxIndexKey] = useState(0);
-  
+  const [selectedCardID, setSelectedCardID] = useState(null);
+
   const doneCardsTotal = cards.filter((card) => card.checked ==true).length;
 
 
   function handleCheckedChanged(id) {
-    setCards(cards.map((card) => {
+       setCards(cards.map((card) => {
       if (card.id === id){
         return {...card, checked: !card.checked};
       } else { 
@@ -24,14 +23,11 @@ function App() {
     }));    
   }
 
+  function selectCard(id) {
+    setSelectedCardID(id);
+    console.log(id);
+  }
 
-  // function handleCheckedChanged(id){
-  //   setCards(({cards})=> ({
-
-  //   }))
-  
-  // }
- 
   function addCard(inputText) {
   setCards((prevCards)=> {
       return [...prevCards, {id: ((maxIndexKey)+1),
@@ -43,7 +39,6 @@ function App() {
 
   function deleteCard(id) {
   const newCardsList = cards.filter((card)=> card.key !=id);
-  // console.log(newCardsList);
   setCards(newCardsList);
   }
 
@@ -52,34 +47,47 @@ function App() {
   function checkDoneCards () {
     const doneCards = cards.filter((card) => card.checked ==true);
     console.log(`You have ${doneCards.length} tasks done so far`); // Shows but dont know how to concatenate in console.log
-    // console.log(doneCards);
-    // setDoneCardsTotal(doneCards.length);
   }  
 
-
+  function updateCard (updatedText) {
+    console.log(`updated Card with ${updatedText}`);
+    console.log(`selected card whilst in update card method = ${selectedCardID}`);
+    setCards(cards.map((card) => {
+      if (card.id === selectedCardID) {
+        console.log("Found Selected ID");
+        return {...card, text: updatedText};
+      } else {
+          return card};
+        }));
+    }
+  
   return ( 
     <div>   
-      
+      <div className="main">
         <div>
-        <Header />
+          <Header />
         </div>
-        <div>
-        <p>You have {doneCardsTotal} tasks done so far</p>
-        <button onClick={checkDoneCards}>Check Done Cards</button>
-        <DraftCard 
-        onAdd = {addCard}/>
-        </div>      
-      <div className='container'>
-        {cards.map((card)=> (
+          <div className = "draft-card-container">
+            <p>You have {doneCardsTotal} tasks done so far</p>
+            <DraftCard 
+            onAdd = {addCard}/>
+          </div>      
+        <div className='cards-container'>
+          {cards.map((card)=> (
           <Card
           key = {card.id}
           id = {card.id}
           text = {card.text}
           checked = {card.checked}
           onChange = {handleCheckedChanged}
-          onDelete = {deleteCard} />          
+          onDelete = {deleteCard}
+          onUpdate = {updateCard} 
+          onSelect = {selectCard}
+          />          
         ))}
+        </div>
       </div>
+
       <div>
         <Footer />
       </div>
@@ -88,4 +96,4 @@ function App() {
   )
 };
 
-export default App
+export default App;
