@@ -41,11 +41,12 @@ body {
 
 #draft-card {
 width: 340px;
+height: 165px;
 }
 
 .card {
 width: 340px;
-height: 160px;
+height: 170px;
 border: 2px solid #E98074;
 /* padding: 2%; */
 margin: 1vh;
