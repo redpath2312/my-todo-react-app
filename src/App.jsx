@@ -7,11 +7,15 @@ import Card from './Components/Card'
 
 function App() {
 
+ // To Sort
+
+
   const [cards, setCards] = useState([]);
   const [maxIndexKey, setMaxIndexKey] = useState(0);
   const [selectedCardID, setSelectedCardID] = useState(null);
 
   const doneCardsTotal = cards.filter((card) => card.checked ==true).length;
+  const highPriorityCardsTotal = cards.filter((card) => card.highPriority ==true).length;
 
 
   function handleCheckedChanged(id) {
@@ -23,6 +27,14 @@ function App() {
     }));    
   }
 
+  function handlePriorityChanged(id) {
+    setCards(cards.map((card) => {
+      if (card.id ===id) {
+        return {...card, highPriority: !card.highPriority};
+        } else {return card};
+        }))
+ }     
+
   function selectCard(id) {
     setSelectedCardID(id);
     console.log(id);
@@ -31,7 +43,7 @@ function App() {
   function addCard(inputText) {
   setCards((prevCards)=> {
       return [...prevCards, {id: ((maxIndexKey)+1),
-      text: inputText, checked: false, key: (maxIndexKey+1)}
+      text: inputText, checked: false, key: (maxIndexKey+1), highPriority:false}
       ];
   });
   setMaxIndexKey(maxIndexKey+1);
@@ -44,10 +56,16 @@ function App() {
 
   console.log(cards);
   
+  //Function not called or needed
   function checkDoneCards () {
     const doneCards = cards.filter((card) => card.checked ==true);
     console.log(`You have ${doneCards.length} tasks done so far`); // Shows but dont know how to concatenate in console.log
   }  
+
+  // function checkHighPriorityCards () {
+  //   const highPriorityCardsTotal = cards.filter((card) => card.highPriority ==true);
+  //   console.log(`You have ${highPriorityCardsTotal.length} High Priority Tasks`); // Shows but dont know how to concatenate in console.log
+  // }  
 
   function updateCard (updatedText) {
     console.log(`updated Card with ${updatedText}`);
@@ -69,9 +87,13 @@ function App() {
         </div>
           <div className = "draft-card-container">
             <p>You have {doneCardsTotal} tasks done so far</p>
+            <p>You have {highPriorityCardsTotal} High Priority Tasks</p>
             <DraftCard 
             onAdd = {addCard}/>
-          </div>      
+          </div>
+        <div className= 'high-priority-cards-container'>
+        {/* {cards.filter((card => card.highPriority ==true))}; */}
+        </div>      
         <div className='cards-container'>
           {cards.map((card)=> (
           <Card
@@ -79,7 +101,9 @@ function App() {
           id = {card.id}
           text = {card.text}
           checked = {card.checked}
-          onChange = {handleCheckedChanged}
+          highPriority = {card.highPriority}
+          onCheckedChange = {handleCheckedChanged}
+          onPriorityChange = {handlePriorityChanged}
           onDelete = {deleteCard}
           onUpdate = {updateCard} 
           onSelect = {selectCard}
