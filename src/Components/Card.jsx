@@ -47,9 +47,9 @@ function handleMouseLeave (id){
 
     return (<div onMouseEnter={() => {handleMouseEnter(props.id)}} onMouseLeave={() => {handleMouseLeave(props.id)}} className= {`${isHovered? "card-hovered card " : "card"}`} >
                 <div className= "cards-top">    
-                    <div><p style={{textAlign: "left"}}>id: {props.id}</p></div>
+                    <div id="card-id-display" ><p style={{textAlign: "left"}}>id: {props.id}</p></div>
                 </div>
-                <div className="cards-middle"> {isHovered? <form><textarea onSelect = {() => {props.onSelect(props.id)}} maxLength = {35} value ={cardText} onChange={handleTextChange}> </textarea></form> : <h2>{props.text}</h2>}</div>
+                <div className="cards-middle"> {isHovered? <form><textarea onSelect = {() => {props.onSelect(props.id)}} maxLength = {30} value ={cardText} onChange={handleTextChange}> </textarea></form> : <h2 id= "card-text">{props.text}</h2>}</div>
         
                  <div className="cards-bottom"><ThemeProvider theme={theme}>
                     <div> 

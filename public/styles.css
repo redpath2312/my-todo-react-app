@@ -82,26 +82,39 @@ textarea{
 }
 
 @media (min-width:1067px) {
-    .cards-container {
+    .cards-container, .high-priority-cards-container, .done-cards-container {
         justify-content:  start;
     }
 }
 @media (max-width:1066px){    
-    .cards-container {
+    .cards-container, .high-priority-cards-container, .done-cards-container {
         justify-content:  center;
     }
 }
 
-
 p {
+    padding: 2px;
+    margin: 0%;
+}
+
+#card-id-display {
    margin: 0%;
    padding: 3px 0 0 3px;
 }
 
-h2 {
+#card-text {
     margin: 5px;
     height: 85px;
     font-size: xx-large;
+
+}
+
+.summary{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding-bottom: 5px;
+    background-color: #ebdfdf;
 }
 
 #checkBox {
@@ -144,4 +157,20 @@ align-items: center;
 .card-hovered {
     background-color: #d0e0f7;
     border: 2px solid #ffe485;
+}
+
+.high-priority-cards-container{  
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;    
+}
+
+.done-cards-container{  
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;    
+}
+
+h3 {
+    text-align: center;
 }

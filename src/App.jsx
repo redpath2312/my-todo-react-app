@@ -14,10 +14,14 @@ function App() {
   const [maxIndexKey, setMaxIndexKey] = useState(0);
   const [selectedCardID, setSelectedCardID] = useState(null);
 
-  const doneCardsTotal = cards.filter((card) => card.checked ==true).length;
-  const highPriorityCardsTotal = cards.filter((card) => card.highPriority ==true).length;
+  const doneCards = cards.filter((card) => card.checked ==true)
+  const doneCardsTotal = doneCards.length;
+  const highPriorityCards = cards.filter((card) => card.highPriority ==true && !card.checked);
+  const highPriorityCardsTotal = highPriorityCards.length;
+  const allOtherCards = cards.filter((card) => card.highPriority ==false && !card.checked);
 
-
+  //make swimlane hidden if no tasks
+  
   function handleCheckedChanged(id) {
        setCards(cards.map((card) => {
       if (card.id === id){
@@ -55,6 +59,7 @@ function App() {
   }
 
   console.log(cards);
+  console.log(cards.filter((card) => card.highPriority ==true));
   
   //Function not called or needed
   function checkDoneCards () {
@@ -68,8 +73,8 @@ function App() {
   // }  
 
   function updateCard (updatedText) {
-    console.log(`updated Card with ${updatedText}`);
-    console.log(`selected card whilst in update card method = ${selectedCardID}`);
+    // console.log(`updated Card with ${updatedText}`);
+    // console.log(`selected card whilst in update card method = ${selectedCardID}`);
     setCards(cards.map((card) => {
       if (card.id === selectedCardID) {
         console.log("Found Selected ID");
@@ -85,17 +90,54 @@ function App() {
         <div>
           <Header />
         </div>
+        <div className="summary">
+        <h2>Summary</h2>
+        <h3> You Have:</h3>
+        <p>{cards.length} Total Tasks</p>
+        <p>{highPriorityCardsTotal} High Priority Tasks</p>
+        <p>{doneCardsTotal} Tasks Done</p>
+        </div>
           <div className = "draft-card-container">
-            <p>You have {doneCardsTotal} tasks done so far</p>
-            <p>You have {highPriorityCardsTotal} High Priority Tasks</p>
             <DraftCard 
             onAdd = {addCard}/>
           </div>
+          <h3>High Priority</h3>
         <div className= 'high-priority-cards-container'>
-        {/* {cards.filter((card => card.highPriority ==true))}; */}
-        </div>      
+          {highPriorityCards.map((card) => (
+             <Card
+             key = {card.id}
+             id = {card.id}
+             text = {card.text}
+             checked = {card.checked}
+             highPriority = {card.highPriority}
+             onCheckedChange = {handleCheckedChanged}
+             onPriorityChange = {handlePriorityChanged}
+             onDelete = {deleteCard}
+             onUpdate = {updateCard} 
+             onSelect = {selectCard}
+             />          
+           ))}        
+        </div>
+        <h3>All Other Tasks</h3>
         <div className='cards-container'>
-          {cards.map((card)=> (
+          {allOtherCards.map((card)=> (
+          <Card
+          key = {card.id}
+          id = {card.id}
+          text = {card.text}
+          checked = {card.checked}
+          highPriority = {card.highPriority}
+          onCheckedChange = {handleCheckedChanged}
+          onPriorityChange = {handlePriorityChanged}
+          onDelete = {deleteCard}
+          onUpdate = {updateCard} 
+          onSelect = {selectCard}
+          />          
+        ))}
+        </div>
+        <h3>Tasks Done</h3>
+        <div className='done-cards-container'>          
+          {doneCards.map((card)=> (
           <Card
           key = {card.id}
           id = {card.id}
