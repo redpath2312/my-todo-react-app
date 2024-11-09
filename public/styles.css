@@ -42,12 +42,14 @@ body {
 #draft-card {
 width: 340px;
 height: 165px;
+border: 2px solid #8c48da;
 }
+
 
 .card {
 width: 340px;
 height: 170px;
-border: 2px solid #E98074;
+border: 2px solid #0d71c4;
 /* padding: 2%; */
 margin: 1vh;
 border-radius: 10px;
@@ -55,7 +57,17 @@ background-color: white;
 text-align: center;
 word-wrap: break-word;
 }
+.card-hovered {
+    background-color: #d0e0f7;
+    border: 2px solid #ffe485;
+}
+.card-high-priority {
+    border: 2px solid #df0b39;
+}
 
+.card-done {
+    border: 2px solid #0d7016;
+}
 
 textarea{
     resize: none;
@@ -117,6 +129,10 @@ p {
     background-color: #ebdfdf;
 }
 
+#summary-heading{
+    background-color: #ffffff;
+}
+
 #checkBox {
     float: inline-end;
     margin-right: 5px;
@@ -154,10 +170,7 @@ justify-content:  center;
 align-items: center;
 }
 
-.card-hovered {
-    background-color: #d0e0f7;
-    border: 2px solid #ffe485;
-}
+
 
 .high-priority-cards-container{  
     display: flex;
@@ -173,4 +186,19 @@ align-items: center;
 
 h3 {
     text-align: center;
+}
+
+.swimlane-heading {
+    background-color: white;
+    margin: 10px 0px;
+}
+
+#high-priority-heading {
+    background-color: #df0b39;
+}
+#all-other-tasks-heading {
+    background-color: #0d71c4;
+}
+#done-tasks-heading {
+    background-color: #0d7016;
 }

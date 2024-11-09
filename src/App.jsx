@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Header from "./Components/Header"
 import Footer from "./Components/Footer"
 import DraftCard from './Components/DraftCard'
@@ -7,7 +7,7 @@ import Card from './Components/Card'
 
 function App() {
 
- // To Sort
+ // Implement a button to delete/clear all
 
 
   const [cards, setCards] = useState([]);
@@ -19,16 +19,18 @@ function App() {
   const highPriorityCards = cards.filter((card) => card.highPriority ==true && !card.checked);
   const highPriorityCardsTotal = highPriorityCards.length;
   const allOtherCards = cards.filter((card) => card.highPriority ==false && !card.checked);
+  const allOtherCardsTotal = allOtherCards.length;
+  const [highPriorityHidden, setHighPriorityHidden] = useState(true);
+  const [allOtherCardsHidden, setAllOtherCardsHidden] = useState(true);
+  const [doneCardsHidden, setDoneCardsHidden] = useState(true);
 
-  //make swimlane hidden if no tasks
-  
   function handleCheckedChanged(id) {
        setCards(cards.map((card) => {
       if (card.id === id){
         return {...card, checked: !card.checked};
       } else { 
         return card};
-    }));    
+    }));
   }
 
   function handlePriorityChanged(id) {
@@ -59,22 +61,39 @@ function App() {
   }
 
   console.log(cards);
-  console.log(cards.filter((card) => card.highPriority ==true));
-  
-  //Function not called or needed
-  function checkDoneCards () {
-    const doneCards = cards.filter((card) => card.checked ==true);
-    console.log(`You have ${doneCards.length} tasks done so far`); // Shows but dont know how to concatenate in console.log
-  }  
 
-  // function checkHighPriorityCards () {
-  //   const highPriorityCardsTotal = cards.filter((card) => card.highPriority ==true);
-  //   console.log(`You have ${highPriorityCardsTotal.length} High Priority Tasks`); // Shows but dont know how to concatenate in console.log
-  // }  
 
+  useEffect(() => {
+    checkDoneCardsDisplay();
+    checkHighPriorityCardsDisplay();
+    checkAllOtherCardsDisplay() 
+  }, [cards]);
+
+   function checkDoneCardsDisplay() {
+  if (doneCardsTotal >0){
+    setDoneCardsHidden(false);
+  } else
+  {
+    setDoneCardsHidden(true);
+  }
+} 
+  function checkHighPriorityCardsDisplay() {
+    if (highPriorityCardsTotal >0){
+      setHighPriorityHidden(false);
+  } else {
+      setHighPriorityHidden(true);
+  }
+}
+
+function checkAllOtherCardsDisplay() {
+  if (allOtherCardsTotal >0){
+    setAllOtherCardsHidden(false);
+} else {
+    setAllOtherCardsHidden(true);
+}
+}
+    
   function updateCard (updatedText) {
-    // console.log(`updated Card with ${updatedText}`);
-    // console.log(`selected card whilst in update card method = ${selectedCardID}`);
     setCards(cards.map((card) => {
       if (card.id === selectedCardID) {
         console.log("Found Selected ID");
@@ -91,7 +110,7 @@ function App() {
           <Header />
         </div>
         <div className="summary">
-        <h2>Summary</h2>
+        <div id="summary-heading"><h2>Summary</h2></div>
         <h3> You Have:</h3>
         <p>{cards.length} Total Tasks</p>
         <p>{highPriorityCardsTotal} High Priority Tasks</p>
@@ -101,8 +120,11 @@ function App() {
             <DraftCard 
             onAdd = {addCard}/>
           </div>
-          <h3>High Priority</h3>
-        <div className= 'high-priority-cards-container'>
+          <div className="swimlane-heading" id="high-priority-heading">
+          {!highPriorityHidden && (
+          <h3>High Priority</h3>)}
+          </div>
+        <div className= "high-priority-cards-container">
           {highPriorityCards.map((card) => (
              <Card
              key = {card.id}
@@ -118,7 +140,10 @@ function App() {
              />          
            ))}        
         </div>
-        <h3>All Other Tasks</h3>
+        <div className="swimlane-heading" id="all-other-tasks-heading">
+        {!allOtherCardsHidden && (
+        <h3>All Other Tasks</h3>)}
+        </div>
         <div className='cards-container'>
           {allOtherCards.map((card)=> (
           <Card
@@ -135,7 +160,12 @@ function App() {
           />          
         ))}
         </div>
+        <div className="swimlane-heading" id="done-tasks-heading">
+        {!doneCardsHidden && (
         <h3>Tasks Done</h3>
+        )}
+        </div>
+
         <div className='done-cards-container'>          
           {doneCards.map((card)=> (
           <Card
