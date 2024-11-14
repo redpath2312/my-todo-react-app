@@ -3,7 +3,10 @@ import Header from "./Components/Header"
 import Footer from "./Components/Footer"
 import DraftCard from './Components/DraftCard'
 import Card from './Components/Card'
-
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 
 function App() {
 
@@ -24,13 +27,21 @@ function App() {
   const [allOtherCardsHidden, setAllOtherCardsHidden] = useState(true);
   const [doneCardsHidden, setDoneCardsHidden] = useState(true);
 
+
+  function handleDeleteAll() {
+    setCards([]);
+  }
+  function handleClearAllDoneTasks() {
+    setCards(cards.filter(card=> !card.checked));
+  }
+
   function handleCheckedChanged(id) {
        setCards(cards.map((card) => {
       if (card.id === id){
         return {...card, checked: !card.checked};
       } else { 
         return card};
-    }));
+    }));    
   }
 
   function handlePriorityChanged(id) {
@@ -60,7 +71,7 @@ function App() {
   setCards(newCardsList);
   }
 
-  console.log(cards);
+  // console.log(cards);
 
 
   useEffect(() => {
@@ -115,6 +126,20 @@ function checkAllOtherCardsDisplay() {
         <p>{cards.length} Total Tasks</p>
         <p>{highPriorityCardsTotal} High Priority Tasks</p>
         <p>{doneCardsTotal} Tasks Done</p>
+
+        <div>
+        <Tooltip title="Clear Done Tasks" placement="left">
+        <IconButton onClick={handleClearAllDoneTasks}>
+        <PublishedWithChangesIcon  fontSize="large" color="primary"/>
+        </IconButton>
+        </Tooltip>  
+
+        <Tooltip title="Delete All Tasks" placement="right">
+        <IconButton onClick={handleDeleteAll}>
+        <DeleteSweepIcon  fontSize="large" color="primary"/>
+        </IconButton>
+        </Tooltip>
+        </div>       
         </div>
           <div className = "draft-card-container">
             <DraftCard 

@@ -8,7 +8,7 @@ import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 
 // If not hovered show card with props text.
 // If hovered show card with a text area.
-// Initially ensure when handleMouseEnter is called that cardText isupdated with props.text. Then if selected , the textarea component shows the local state of cardText allowing user to change it in the form.
+// Initially ensure when handleMouseEnter is called that cardText isupdated with text (from props). Then if selected , the textarea component shows the local state of cardText allowing user to change it in the form.
 // Call updateCard to update props when text is changed.
 
 function Card({ id, text, checked, highPriority, onCheckedChange, onPriorityChange, onDelete, onUpdate, onSelect }) {
@@ -21,8 +21,6 @@ function handleTextChange(event) {
     const newText = event.target.value;
     setCardText(newText); 
     onUpdate(newText);
-    // console.log(`Card Text = ${newText}`);
-
 }
 function handleMouseEnter (){
     setHovered(true);
@@ -49,41 +47,9 @@ function handleMouseLeave (){
     if (highPriority) return "card card-high-priority";  // Red for high-priority cards
     if (isHovered) return "card card-hovered";           // Yellow for hovered cards
     return "card";                                  // Blue for other tasks
-  }
-  
-    
-  
+  }   
 
-// classes for reference from styles.css
-
-// .card-high-priority {
-//   border: 2px solid #df0b39;
-// }
-
-// .card-done {
-//   border: 2px solid #023a07;
-// }
-// .card {
-// width: 340px;
-// height: 170px;
-// border: 2px solid #773712;
-// /* padding: 2%; */
-// margin: 1vh;
-// border-radius: 10px;
-// background-color: white;
-// text-align: center;
-// word-wrap: break-word;
-// }
-// .card-hovered {
-//   background-color: #d0e0f7;
-//   border: 2px solid #ffe485;
-// }
-
-
-  // className= {()=> cardClassCheck(props)} - doesn't work
-  // className= {`${isHovered? "card-hovered card " : "card"}`} - works
-
-    return (<div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className= {cardClassCheck(checked, highPriority, isHovered)}>
+return (<div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className= {cardClassCheck(checked, highPriority, isHovered)}>
                 <div className= "cards-top">    
                     <div id="card-id-display" ><p style={{textAlign: "left"}}>id: {id}</p></div>
                 </div>

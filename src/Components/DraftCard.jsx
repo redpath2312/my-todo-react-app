@@ -10,7 +10,6 @@ function DraftCard(props) {
     const [createCardText, setCreateCardText] = useState("");
 
     function handleChange(event) {
-        console.log(event.target.value);
         setCreateCardText(event.target.value);      
     }
     
