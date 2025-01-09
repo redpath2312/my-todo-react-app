@@ -8,9 +8,7 @@ import Tooltip from "@mui/material/Tooltip";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 
-function App() {
-	// Implement a button to delete/clear all
-
+function App(props) {
 	const [cards, setCards] = useState([]);
 	const [maxIndexKey, setMaxIndexKey] = useState(0);
 	const [selectedCardID, setSelectedCardID] = useState(null);
@@ -67,7 +65,7 @@ function App() {
 
 	function addCard(inputText) {
 		setCards((prevCards) => {
-			return [
+			const newCards = [
 				...prevCards,
 				{
 					id: maxIndexKey + 1,
@@ -77,6 +75,8 @@ function App() {
 					highPriority: false,
 				},
 			];
+			props.onDBAdd(newCards);
+			return newCards;
 		});
 		setMaxIndexKey(maxIndexKey + 1);
 	}
@@ -130,6 +130,8 @@ function App() {
 			})
 		);
 	}
+
+	console.log(cards);
 
 	return (
 		<div>
