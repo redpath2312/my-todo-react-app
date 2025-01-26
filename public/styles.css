@@ -1,204 +1,206 @@
-*{
-    box-sizing: border-box;
+* {
+	box-sizing: border-box;
 }
 
 html {
-    font-family: "Work Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
+	font-family: "Work Sans", sans-serif;
+	font-optical-sizing: auto;
+	font-weight: 400;
+	font-style: normal;
 }
 
 header {
-    background-color: #D8C3A5;
-    padding:10px;
+	background-color: #d8c3a5;
+	padding: 10px;
 }
 
 footer {
-    bottom: 0;
-    text-align: center;
-    width: 100%;
-    align-items: center;
-    height: 5vh;
-    margin-top: auto;
+	bottom: 0;
+	text-align: center;
+	width: 100%;
+	align-items: center;
+	height: 5vh;
+	margin-top: auto;
 }
 
 .header-icon {
-    width: 30px;
+	width: 30px;
 }
 
 .main {
-    min-height: 95vh;
-    display: flex;
-    flex-direction: column;
+	min-height: 95vh;
+	display: flex;
+	flex-direction: column;
 }
 body {
-    background-color: #bdac80;
-    background-image: url("https://www.transparenttextures.com/patterns/white-brushed.png");
-/* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
-    margin: 0px;
+	background-color: #bdac80;
+	background-image: url("https://www.transparenttextures.com/patterns/white-brushed.png");
+	/* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
+	margin: 0px;
 }
 
 #draft-card {
-width: 340px;
-height: 165px;
-border: 2px solid #8c48da;
+	width: 340px;
+	height: 165px;
+	border: 2px solid #8c48da;
 }
-
 
 .card {
-width: 340px;
-height: 170px;
-border: 2px solid #0d71c4;
-/* padding: 2%; */
-margin: 1vh;
-border-radius: 10px;
-background-color: white;
-text-align: center;
-word-wrap: break-word;
+	width: 340px;
+	height: 170px;
+	border: 2px solid #0d71c4;
+	/* padding: 2%; */
+	margin: 1vh;
+	border-radius: 10px;
+	background-color: white;
+	text-align: center;
+	word-wrap: break-word;
 }
 .card-hovered {
-    background-color: #d0e0f7;
-    border: 2px solid #ffe485;
+	background-color: #d0e0f7;
+	border: 2px solid #ffe485;
 }
 .card-high-priority {
-    border: 2px solid #df0b39;
+	border: 2px solid #df0b39;
 }
 
 .card-done {
-    border: 2px solid #0d7016;
+	border: 2px solid #0d7016;
 }
 
-textarea{
-    resize: none;
-    height: 85px;
-    width: 95%;
-    /* margin: 5px; */
-    border: none;
-    font-size: xx-large;
-    text-align: center;
-    background:transparent;
-    outline:none;
-    font-weight: bold;
-    font-family: "Work Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-    padding: 0%;
+textarea {
+	resize: none;
+	height: 85px;
+	width: 95%;
+	/* margin: 5px; */
+	border: none;
+	font-size: xx-large;
+	text-align: center;
+	background: transparent;
+	outline: none;
+	font-weight: bold;
+	font-family: "Work Sans", sans-serif;
+	font-optical-sizing: auto;
+	font-style: normal;
+	padding: 0%;
 }
-
 
 .cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: start;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: start;
 }
 
-@media (min-width:1067px) {
-    .cards-container, .high-priority-cards-container, .done-cards-container {
-        justify-content:  start;
-    }
+@media (min-width: 1067px) {
+	.cards-container,
+	.high-priority-cards-container,
+	.done-cards-container {
+		justify-content: start;
+	}
 }
-@media (max-width:1066px){    
-    .cards-container, .high-priority-cards-container, .done-cards-container {
-        justify-content:  center;
-    }
+@media (max-width: 1066px) {
+	.cards-container,
+	.high-priority-cards-container,
+	.done-cards-container {
+		justify-content: center;
+	}
 }
 
 p {
-    padding: 2px;
-    margin: 0%;
+	padding: 2px;
+	margin: 0%;
 }
 
 #card-id-display {
-   margin: 0%;
-   padding: 3px 0 0 3px;
+	margin: 0%;
+	padding: 3px 0 0 3px;
 }
 
 #card-text {
-    margin: 5px;
-    height: 85px;
-    font-size: xx-large;
-
+	margin: 5px;
+	height: 85px;
+	font-size: xx-large;
 }
 
-.summary{
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    padding-bottom: 5px;
-    background-color: #ebdfdf;
+.summary {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	padding-bottom: 5px;
+	background-color: #ebdfdf;
 }
 
-#summary-heading{
-    background-color: #ffffff;
+#summary-heading {
+	background-color: #ffffff;
 }
 
 #checkBox {
-    float: inline-end;
-    margin-right: 5px;
+	float: inline-end;
+	margin-right: 5px;
 }
 
-button{
-    margin: 5px;
+button {
+	margin: 5px;
 }
 
-.draft-card-bottom{
-    display: flex;
-    justify-content: end;
+.draft-card-bottom {
+	display: flex;
+	justify-content: end;
 }
-.cards-bottom{
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    margin: 5px;
-    width: 95%;
+.cards-bottom {
+	display: flex;
+	justify-content: space-between;
+	align-items: end;
+	margin: 5px;
+	width: 95%;
 }
 .cards-middle {
-    height: 85px;
-    margin: 5px;
+	height: 85px;
+	margin: 5px;
 }
 
 .cards-top {
-    height: 25px;
-
+	height: 25px;
+	display: flex;
+	justify-content: space-between;
+}
+.cards-edit {
 }
 
 .draft-card-container {
-display: flex;
-flex-direction: column;
-justify-content:  center;
-align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
 
-
-
-.high-priority-cards-container{  
-    display: flex;
-    flex-wrap: wrap;
-    align-items: start;    
+.high-priority-cards-container {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: start;
 }
 
-.done-cards-container{  
-    display: flex;
-    flex-wrap: wrap;
-    align-items: start;    
+.done-cards-container {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: start;
 }
 
 h3 {
-    text-align: center;
+	text-align: center;
 }
 
 .swimlane-heading {
-    background-color: white;
-    margin: 10px 0px;
+	background-color: white;
+	margin: 10px 0px;
 }
 
 #high-priority-heading {
-    background-color: #df0b39;
+	background-color: #df0b39;
 }
 #all-other-tasks-heading {
-    background-color: #0d71c4;
+	background-color: #0d71c4;
 }
 #done-tasks-heading {
-    background-color: #0d7016;
+	background-color: #0d7016;
 }

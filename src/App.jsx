@@ -8,9 +8,18 @@ import Tooltip from "@mui/material/Tooltip";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 
-function App(props) {
-	const [cards, setCards] = useState([]);
-	const [maxIndexKey, setMaxIndexKey] = useState(0);
+function App({
+	cards,
+	addCardToDB,
+	readCardsFromDB,
+	updateCardsInDB,
+	deleteCardInDB,
+	clearDoneCardsInDB,
+	deleteAllCardsInDB,
+}) {
+	// console.log(cards);
+	// const [cards, setCards] = useState(initialCards || []);
+	// const [maxIndexKey, setMaxIndexKey] = useState(initialCards.length || 0);
 	const [selectedCardID, setSelectedCardID] = useState(null);
 	const [highPriorityHidden, setHighPriorityHidden] = useState(true);
 	const [allOtherCardsHidden, setAllOtherCardsHidden] = useState(true);
@@ -27,35 +36,46 @@ function App(props) {
 	);
 	const allOtherCardsTotal = allOtherCards.length;
 
-	function handleDeleteAll() {
-		setCards([]);
+	// Update state whenever props.cards changes
+	// useEffect(() => {
+	// 	setCards(cards || []);
+	// }, [cards]); // Runs whenever `initialCards` changes
+
+	function checkDBCards() {
+		console.log("Props are", cards);
 	}
-	function handleClearAllDoneTasks() {
-		setCards(cards.filter((card) => !card.checked));
+
+	async function handleDeleteAll() {
+		console.log("Handle Delete All Cards");
+		await deleteAllCardsInDB();
+		readCardsFromDB();
+	}
+	async function handleClearAllDoneTasks() {
+		console.log("Clear All Done");
+		const clearedDoneCards = cards.filter((card) => !card.checked);
+		console.log(clearedDoneCards);
+		await clearDoneCardsInDB(clearedDoneCards);
+		readCardsFromDB();
 	}
 
 	function handleCheckedChanged(id) {
-		setCards(
-			cards.map((card) => {
-				if (card.id === id) {
-					return { ...card, checked: !card.checked };
-				} else {
-					return card;
-				}
-			})
-		);
+		cards.map((card) => {
+			if (card.id === id) {
+				updateCardsInDB(id, { checked: !card.checked });
+			} else {
+				return card;
+			}
+		});
 	}
 
 	function handlePriorityChanged(id) {
-		setCards(
-			cards.map((card) => {
-				if (card.id === id) {
-					return { ...card, highPriority: !card.highPriority };
-				} else {
-					return card;
-				}
-			})
-		);
+		cards.map((card) => {
+			if (card.id === id) {
+				updateCardsInDB(id, { highPriority: !card.highPriority });
+			} else {
+				return card;
+			}
+		});
 	}
 
 	function selectCard(id) {
@@ -63,27 +83,16 @@ function App(props) {
 		console.log(id);
 	}
 
+	// function getCards() {
+	// 	readDBList();
+	// }
+
 	function addCard(inputText) {
-		setCards((prevCards) => {
-			const newCards = [
-				...prevCards,
-				{
-					id: maxIndexKey + 1,
-					text: inputText,
-					checked: false,
-					key: maxIndexKey + 1,
-					highPriority: false,
-				},
-			];
-			props.onDBAdd(newCards);
-			return newCards;
-		});
-		setMaxIndexKey(maxIndexKey + 1);
+		addCardToDB(inputText);
 	}
 
 	function deleteCard(id) {
-		const newCardsList = cards.filter((card) => card.key != id);
-		setCards(newCardsList);
+		deleteCardInDB(id);
 	}
 
 	// console.log(cards);
@@ -118,20 +127,20 @@ function App(props) {
 		}
 	}
 
-	function updateCard(updatedText) {
-		setCards(
-			cards.map((card) => {
-				if (card.id === selectedCardID) {
-					console.log("Found Selected ID");
-					return { ...card, text: updatedText };
-				} else {
-					return card;
-				}
-			})
-		);
+	function handleTextChange(updatedText) {
+		cards.map((card) => {
+			if (card.id === selectedCardID) {
+				console.log("Found Selected ID");
+				updateCardsInDB(selectedCardID, { text: updatedText });
+			} else {
+				return card;
+			}
+		});
 	}
 
-	console.log(cards);
+	// console.log(cards);
+
+	// checkDBCards();
 
 	return (
 		<div>
@@ -179,7 +188,7 @@ function App(props) {
 							onCheckedChange={handleCheckedChanged}
 							onPriorityChange={handlePriorityChanged}
 							onDelete={deleteCard}
-							onUpdate={updateCard}
+							onTextUpdate={handleTextChange}
 							onSelect={selectCard}
 						/>
 					))}
@@ -198,7 +207,7 @@ function App(props) {
 							onCheckedChange={handleCheckedChanged}
 							onPriorityChange={handlePriorityChanged}
 							onDelete={deleteCard}
-							onUpdate={updateCard}
+							onTextUpdate={handleTextChange}
 							onSelect={selectCard}
 						/>
 					))}
@@ -218,7 +227,7 @@ function App(props) {
 							onCheckedChange={handleCheckedChanged}
 							onPriorityChange={handlePriorityChanged}
 							onDelete={deleteCard}
-							onUpdate={updateCard}
+							onTextUpdate={handleTextChange}
 							onSelect={selectCard}
 						/>
 					))}
