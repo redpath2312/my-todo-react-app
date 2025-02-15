@@ -5,8 +5,6 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
-import SaveIcon from "@mui/icons-material/Save";
-import BackspaceIcon from "@mui/icons-material/Backspace";
 import CircularProgress from "@mui/material/CircularProgress";
 
 // Card always in text area format
@@ -57,11 +55,11 @@ function Card({
 	}
 
 	async function handleSaveCardUpdate(newText) {
-		console.log("Before Saving", isSaving);
-		setIsSaving(true);
-		console.log("After setting isSaving", isSaving);
-		// setTimeout(async () => {
-		// 	console.log("After a 2 sec delay");
+		// console.log("Before Saving", isSaving);
+		// setIsSaving(true);
+		// console.log("After setting isSaving", isSaving);
+		// // setTimeout(async () => {
+		// // 	console.log("After a 2 sec delay");
 		try {
 			await onTextUpdate(newText);
 			console.log("Saved");
@@ -139,9 +137,7 @@ function Card({
 		>
 			<div className="cards-top">
 				<div id="card-id-display">
-					<p style={{ textAlign: "left" }}>
-						id: {id}, isSaving: {isSaving ? "true" : "false"}
-					</p>
+					<p style={{ textAlign: "left" }}>id: {id}</p>
 				</div>
 			</div>
 			<div className="cards-middle">
@@ -214,28 +210,3 @@ function Card({
 }
 
 export default Card;
-
-// Save and Cancel components
-// {isEditing && (
-// 	<div>
-// 		{" "}
-// 		<Tooltip title="Save" placement="left">
-// 			<IconButton
-// 				onClick={() => {
-// 					handleSaveCardUpdate();
-// 				}}
-// 			>
-// 				<SaveIcon fontSize="small" color="primary" />
-// 			</IconButton>
-// 		</Tooltip>
-// 		<Tooltip title="Cancel" placement="right">
-// 			<IconButton
-// 				onClick={() => {
-// 					handleCancelCardUpdate();
-// 				}}
-// 			>
-// 				<BackspaceIcon fontSize="small" color="primary" />
-// 			</IconButton>
-// 		</Tooltip>
-// 	</div>
-// )}
