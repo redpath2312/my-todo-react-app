@@ -8,10 +8,10 @@ import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import CircularProgress from "@mui/material/CircularProgress";
 
 // Card always in text area format
-//Initial use state shows card text with values from props
+// Initial use state shows card text with values from props
 // When card is selected and user starts typing it will then begin editing mode.
 // Text area just displays local card text from user input
-//When user stops hovering over the card, it will save automatically putting the new values into the db.
+// When user stops hovering over the card, it will save automatically putting the new values into the db.
 
 function Card({
 	id,
@@ -31,15 +31,6 @@ function Card({
 	const [debounceTimeout, setDebounceTimeout] = useState(null);
 
 	// Sync cardText with props when props.text changes (only if not editing)
-	// useEffect(() => {
-	// 	if (!isEditing) {
-	// 		setCardText(text); // Update local state if text prop changes and not in editing mode
-	// 	}
-	// }, [text, isEditing]); // Depend on both text and isEditing
-
-	// useEffect(() => {
-	// 	console.log("isSaving changed to:", isSaving);
-	// }, [isSaving]);
 
 	function handleTextChange(event) {
 		handleEditing();
@@ -55,6 +46,7 @@ function Card({
 	}
 
 	async function handleSaveCardUpdate(newText) {
+		// Useful console logs to debug saving issues and state change by forcing a delay
 		// console.log("Before Saving", isSaving);
 		// setIsSaving(true);
 		// console.log("After setting isSaving", isSaving);

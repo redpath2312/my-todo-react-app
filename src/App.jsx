@@ -143,7 +143,7 @@ function App({
 	// checkDBCards();
 
 	return (
-		<div>
+		<div className="main-page-container">
 			<div className="main">
 				<div>
 					<Header />
