@@ -11,9 +11,15 @@ html {
 
 header {
 	background-color: #d8c3a5;
-	padding: 10px;
+	padding: 2px 10px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
+header h1 {
+	padding: 0 15px;
+}
 footer {
 	bottom: 0;
 	text-align: center;
@@ -320,6 +326,18 @@ h3 {
 	color: rgb(197, 193, 219);
 }
 
+.logout-button {
+	color: rgb(237, 235, 245);
+	background-color: rgb(92, 67, 233);
+	cursor: pointer;
+	outline: none;
+	border-radius: 0.5rem;
+	border: none;
+	height: 25px;
+	font-weight: 500;
+	font-size: 0.9rem;
+}
+
 .login-form .login-button {
 	width: 100%;
 	margin: 1.5rem 0;
@@ -334,11 +352,21 @@ h3 {
 	font-size: 1.12rem;
 	border: none;
 }
-.login-form .login-button:hover {
+.login-form .login-button,
+.logout-button:hover {
 	background-color: rgb(61, 36, 201);
 	transition: 0.1s ease;
 }
 
+.header-logo,
+.header-logout {
+	min-width: 15%;
+	display: flex;
+}
+
+.header-logout {
+	justify-content: flex-end;
+}
 .login-container a {
 	color: rgb(61, 36, 201);
 	text-decoration: none;

@@ -19,6 +19,7 @@ import {
 
 function Main(props) {
 	const [cards, setCards] = useState([]);
+	const [isAuth, setIsAuth] = useState(false);
 
 	const testDoc = doc(firestore, "testCollection/testList");
 	const metaDocRef = doc(firestore, "metaData/maxID");
@@ -151,6 +152,7 @@ function Main(props) {
 		}
 	};
 
+	console.log(`is Auth is set to ${isAuth} in main`);
 	useEffect(() => {
 		fetchCards();
 	}, []);
@@ -162,9 +164,10 @@ function Main(props) {
 				readCardsFromDB={fetchCards}
 				updateCardsInDB={handleDBUpdate}
 				deleteCardInDB={handleDBCardDelete}
-				cards={cards}
+				dbCards={cards}
 				clearDoneCardsInDB={handleDBClearDone}
 				deleteAllCardsInDB={handleDBDeleteAll}
+				isAuth={isAuth}
 			/>
 		</StrictMode>
 	);
