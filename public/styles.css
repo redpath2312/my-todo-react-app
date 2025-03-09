@@ -47,6 +47,9 @@ footer {
 body {
 	background-color: white;
 	margin: 0px;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
 }
 
 #draft-card {
@@ -197,24 +200,30 @@ h3 {
 	background-color: #0d7016;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
 	.login-page {
 		flex-direction: column;
 		align-items: center;
 	}
 }
+.login-page-full {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	justify-content: space-between;
+}
 
 .login-page {
 	display: flex;
-	min-height: 100vh;
+	/* max-height: 95vh; */
 	align-items: stretch;
 	background-color: white;
+	flex: 1;
 }
 .login-section {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 100vh;
 	min-width: 50%;
 	background-color: #7eace0;
 	position: relative;
@@ -236,24 +245,21 @@ h3 {
 	box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
 	align-items: center;
 	justify-content: center;
-	overflow: auto;
 }
 
 .image-background {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 100vh;
 	min-width: 50%;
 	background-color: #b7d2f0;
 	position: relative;
-	flex-shrink: 0;
-	overflow: hidden;
 }
 .image-hero {
 	border-radius: 1rem;
 	box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
 	width: 80%;
+	margin: 5px;
 	height: auto;
 }
 
