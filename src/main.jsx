@@ -19,7 +19,7 @@ import {
 
 function Main(props) {
 	const [cards, setCards] = useState([]);
-	const [isAuth, setIsAuth] = useState(true);
+	const [isAuth, setIsAuth] = useState(false);
 
 	const testDoc = doc(firestore, "testCollection/testList");
 	const metaDocRef = doc(firestore, "metaData/maxID");
