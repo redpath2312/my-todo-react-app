@@ -19,7 +19,7 @@ import {
 
 function Main(props) {
 	const [cards, setCards] = useState([]);
-	const [isAuth, setIsAuth] = useState(false);
+	const [isAuth, setIsAuth] = useState(true);
 
 	const testDoc = doc(firestore, "testCollection/testList");
 	const metaDocRef = doc(firestore, "metaData/maxID");
@@ -46,8 +46,9 @@ function Main(props) {
 
 			if (docSnap.exists()) {
 				// Document exists, retrieve the current cards array
+				console.log("docSnap exists");
 				const docData = docSnap.data();
-
+				console.log(docData);
 				updatedCards = [...docData.cards, newCard];
 				await updateDoc(testDoc, { cards: updatedCards });
 				await setDoc(metaDocRef, { maxID: newID }, { merge: true });

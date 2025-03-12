@@ -32,7 +32,7 @@ function App({
 	// const [maxIndexKey, setMaxIndexKey] = useState(initialCards.length || 0);
 
 	const [localCards, setLocalCards] = useState([]);
-	const [isGuest, setIsGuest] = useState(true);
+	const [isGuest, setIsGuest] = useState(false);
 	const cards = isAuth ? dbCards : localCards;
 	const [selectedCardID, setSelectedCardID] = useState(null);
 	const [highPriorityHidden, setHighPriorityHidden] = useState(true);

@@ -21,6 +21,7 @@ const Dashboard = ({
 }) => {
 	const [localCards, setLocalCards] = useState([]);
 	const cards = isAuth ? dbCards : localCards;
+	const [maxLocalIndexKey, setMaxLocalIndexKey] = useState(0);
 	const [selectedCardID, setSelectedCardID] = useState(null);
 	const [highPriorityHidden, setHighPriorityHidden] = useState(true);
 	const [allOtherCardsHidden, setAllOtherCardsHidden] = useState(true);
@@ -89,11 +90,34 @@ const Dashboard = ({
 	// }
 
 	function addCard(inputText) {
-		addCardToDB(inputText);
+		if (isAuth) {
+			addCardToDB(inputText);
+		} else {
+			console.log("Guest so not adding card to db");
+
+			setLocalCards((prevCards) => {
+				return [
+					...prevCards,
+					{
+						id: maxLocalIndexKey + 1,
+						text: inputText,
+						checked: false,
+						key: maxLocalIndexKey + 1,
+						highPriority: false,
+					},
+				];
+			});
+			setMaxLocalIndexKey(maxLocalIndexKey + 1);
+		}
 	}
 
 	function deleteCard(id) {
-		deleteCardInDB(id);
+		if (isAuth) {
+			deleteCardInDB(id);
+		} else {
+			const newLocalCardsList = localCards.filter((card) => card.key != id);
+			setLocalCards(newLocalCardsList);
+		}
 	}
 
 	// console.log(cards);
