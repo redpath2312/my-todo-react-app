@@ -1,13 +1,10 @@
 import React, { useState } from "react";
 
 function Header({ isAuth, isGuest }) {
-	// const [isAuthed, setIsAuthed] = useState(true);
-	// const [isGuest, setIsGuest] = useState(false);
-
 	const name = "Pete";
 
-	console.log(`Auth is set to ${isAuth} in Header`);
-	console.log(`Guest is set to ${isGuest} in Header`);
+	// console.log(`Auth is set to ${isAuth} in Header`);
+	// console.log(`Guest is set to ${isGuest} in Header`);
 	return (
 		<header>
 			<div className="header-logo">

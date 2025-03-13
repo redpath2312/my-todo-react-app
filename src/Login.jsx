@@ -21,7 +21,7 @@ const Login = () => {
 						<div className="no-account-section">
 							<div className="no-account-text small-text">
 								<p> Don't have an account?</p>
-								<a href="#">Try now as a guest</a>
+								<a href="guest">Try now as a guest</a>
 							</div>
 							<div className="no-account-text small-text">
 								<p> Want full features?</p>

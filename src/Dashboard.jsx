@@ -48,36 +48,63 @@ const Dashboard = ({
 	}
 
 	async function handleDeleteAll() {
-		console.log("Handle Delete All Cards");
-		await deleteAllCardsInDB();
-		readCardsFromDB();
+		if (isAuth) {
+			await deleteAllCardsInDB();
+			readCardsFromDB();
+		} else {
+			setLocalCards([]);
+		}
 	}
 	async function handleClearAllDoneTasks() {
-		console.log("Clear All Done");
 		const clearedDoneCards = cards.filter((card) => !card.checked);
-		console.log(clearedDoneCards);
-		await clearDoneCardsInDB(clearedDoneCards);
-		readCardsFromDB();
+		if (isAuth) {
+			await clearDoneCardsInDB(clearedDoneCards);
+			readCardsFromDB();
+		} else {
+			setLocalCards(clearedDoneCards);
+		}
 	}
 
 	function handleCheckedChanged(id) {
-		cards.map((card) => {
-			if (card.id === id) {
-				updateCardsInDB(id, { checked: !card.checked });
-			} else {
-				return card;
-			}
-		});
+		if (isAuth) {
+			cards.map((card) => {
+				if (card.id === id) {
+					updateCardsInDB(id, { checked: !card.checked });
+				} else {
+					return card;
+				}
+			});
+		} else {
+			const newCards = cards.map((card) => {
+				if (card.id === id) {
+					return { ...card, checked: !card.checked };
+				} else {
+					return card;
+				}
+			});
+			setLocalCards(newCards);
+		}
 	}
 
 	function handlePriorityChanged(id) {
-		cards.map((card) => {
-			if (card.id === id) {
-				updateCardsInDB(id, { highPriority: !card.highPriority });
-			} else {
-				return card;
-			}
-		});
+		if (isAuth) {
+			cards.map((card) => {
+				if (card.id === id) {
+					updateCardsInDB(id, { highPriority: !card.highPriority });
+				} else {
+					return card;
+				}
+			});
+		} else {
+			const newCards = cards.map((card) => {
+				if (card.id === id) {
+					return { ...card, highPriority: !card.highPriority };
+				} else {
+					return card;
+				}
+			});
+			setLocalCards(newCards);
+		}
 	}
 
 	function selectCard(id) {
@@ -162,8 +189,7 @@ const Dashboard = ({
 			}
 		});
 	}
-	console.log(`isAuth is set to ${isAuth} in Dashboard`);
-	console.log(`is Guest is set to ${isGuest} in Dashboard`);
+
 	return (
 		<div className="main-page-container">
 			<div className="main">
