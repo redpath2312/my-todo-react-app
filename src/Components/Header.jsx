@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 
-function Header({ isAuth, isGuest }) {
+function Header({ userState }) {
 	const name = "Pete";
 
-	// console.log(`Auth is set to ${isAuth} in Header`);
-	// console.log(`Guest is set to ${isGuest} in Header`);
 	return (
 		<header>
 			<div className="header-logo">
@@ -15,11 +13,19 @@ function Header({ isAuth, isGuest }) {
 				/>
 			</div>
 
-			<div>{isGuest ? <h1> Guest Mode </h1> : <h1>Welcome {name}</h1>}</div>
+			<div>
+				{userState === "guest" ? (
+					<h1> Guest Mode </h1>
+				) : (
+					userState === "loggedIn" && <h1>Welcome {name}</h1>
+				)}
+			</div>
 			<div className="header-logout">
 				<a href="/Login">
 					<button className="logout-button">
-						{isGuest ? "Home" : "Log Out"}
+						{userState === "guest"
+							? "Home"
+							: userState === "loggedIn" && "Log Out"}
 					</button>
 				</a>
 			</div>

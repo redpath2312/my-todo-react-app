@@ -9,8 +9,7 @@ import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 
 const Dashboard = ({
-	isAuth,
-	isGuest,
+	userState,
 	dbCards,
 	addCardToDB,
 	readCardsFromDB,
@@ -20,12 +19,14 @@ const Dashboard = ({
 	deleteAllCardsInDB,
 }) => {
 	const [localCards, setLocalCards] = useState([]);
-	const cards = isAuth ? dbCards : localCards;
+	const cards =
+		userState === "loggedIn"
+			? dbCards
+			: userState === "guest"
+			? localCards
+			: [];
 	const [maxLocalIndexKey, setMaxLocalIndexKey] = useState(0);
 	const [selectedCardID, setSelectedCardID] = useState(null);
-	const [highPriorityHidden, setHighPriorityHidden] = useState(true);
-	const [allOtherCardsHidden, setAllOtherCardsHidden] = useState(true);
-	const [doneCardsHidden, setDoneCardsHidden] = useState(true);
 
 	const doneCards = cards.filter((card) => card.checked == true);
 	const doneCardsTotal = doneCards.length;
@@ -36,19 +37,22 @@ const Dashboard = ({
 	const allOtherCards = cards.filter(
 		(card) => card.highPriority == false && !card.checked
 	);
-	const allOtherCardsTotal = allOtherCards.length;
+
+	const doneCardsHidden = doneCards.length === 0;
+	const highPriorityHidden = highPriorityCards.length === 0;
+	const allOtherCardsHidden = allOtherCards.length === 0;
 
 	// Update state whenever props.cards changes
 	// useEffect(() => {
 	// 	setCards(cards || []);
 	// }, [cards]); // Runs whenever initialCards changes
 
-	function checkDBCards() {
-		console.log("Props are", cards);
-	}
+	// function checkDBCards() {
+	// 	console.log("Props are", cards);
+	// }
 
 	async function handleDeleteAll() {
-		if (isAuth) {
+		if (userState === "loggedIn") {
 			await deleteAllCardsInDB();
 			readCardsFromDB();
 		} else {
@@ -57,7 +61,7 @@ const Dashboard = ({
 	}
 	async function handleClearAllDoneTasks() {
 		const clearedDoneCards = cards.filter((card) => !card.checked);
-		if (isAuth) {
+		if (userState === "loggedIn") {
 			await clearDoneCardsInDB(clearedDoneCards);
 			readCardsFromDB();
 		} else {
@@ -66,7 +70,7 @@ const Dashboard = ({
 	}
 
 	function handleCheckedChanged(id) {
-		if (isAuth) {
+		if (userState === "loggedIn") {
 			cards.map((card) => {
 				if (card.id === id) {
 					updateCardsInDB(id, { checked: !card.checked });
@@ -87,7 +91,7 @@ const Dashboard = ({
 	}
 
 	function handlePriorityChanged(id) {
-		if (isAuth) {
+		if (userState === "loggedIn") {
 			cards.map((card) => {
 				if (card.id === id) {
 					updateCardsInDB(id, { highPriority: !card.highPriority });
@@ -112,12 +116,8 @@ const Dashboard = ({
 		console.log(id);
 	}
 
-	// function getCards() {
-	// 	readDBList();
-	// }
-
 	function addCard(inputText) {
-		if (isAuth) {
+		if (userState === "loggedIn") {
 			addCardToDB(inputText);
 		} else {
 			console.log("Guest so not adding card to db");
@@ -139,43 +139,11 @@ const Dashboard = ({
 	}
 
 	function deleteCard(id) {
-		if (isAuth) {
+		if (userState === "loggedIn") {
 			deleteCardInDB(id);
 		} else {
 			const newLocalCardsList = localCards.filter((card) => card.key != id);
 			setLocalCards(newLocalCardsList);
-		}
-	}
-
-	// console.log(cards);
-
-	//should only use useEffect in external calls - read doc algren sent
-	useEffect(() => {
-		checkDoneCardsDisplay();
-		checkHighPriorityCardsDisplay();
-		checkAllOtherCardsDisplay();
-	}, [cards]);
-
-	function checkDoneCardsDisplay() {
-		if (doneCardsTotal > 0) {
-			setDoneCardsHidden(false);
-		} else {
-			setDoneCardsHidden(true);
-		}
-	}
-	function checkHighPriorityCardsDisplay() {
-		if (highPriorityCardsTotal > 0) {
-			setHighPriorityHidden(false);
-		} else {
-			setHighPriorityHidden(true);
-		}
-	}
-
-	function checkAllOtherCardsDisplay() {
-		if (allOtherCardsTotal > 0) {
-			setAllOtherCardsHidden(false);
-		} else {
-			setAllOtherCardsHidden(true);
 		}
 	}
 
@@ -194,7 +162,7 @@ const Dashboard = ({
 		<div className="main-page-container">
 			<div className="main">
 				<div>
-					<Header isAuth={isAuth} isGuest={isGuest} />
+					<Header userState={userState} />
 				</div>
 				<div className="summary">
 					<div id="summary-heading">

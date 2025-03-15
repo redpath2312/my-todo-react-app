@@ -18,7 +18,7 @@ import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 
 function App({
-	isAuth,
+	userState,
 	dbCards,
 	addCardToDB,
 	readCardsFromDB,
@@ -27,18 +27,15 @@ function App({
 	clearDoneCardsInDB,
 	deleteAllCardsInDB,
 }) {
-	const [isGuest, setIsGuest] = useState(true);
-
 	return (
 		<Router>
 			<Routes>
 				<Route
 					path="/"
 					element={
-						isAuth || isGuest ? (
+						userState !== "loggedOut" ? (
 							<Dashboard
-								isAuth={isAuth}
-								isGuest={isGuest}
+								userState={userState}
 								dbCards={dbCards}
 								addCardToDB={addCardToDB}
 								readCardsFromDB={readCardsFromDB}
@@ -56,10 +53,9 @@ function App({
 				<Route
 					path="/guest"
 					element={
-						!isAuth && (
+						userState === "guest" && (
 							<Dashboard
-								isAuth={isAuth}
-								isGuest={isGuest}
+								userState={userState}
 								dbCards={dbCards}
 								addCardToDB={addCardToDB}
 								readCardsFromDB={readCardsFromDB}

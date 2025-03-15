@@ -19,7 +19,11 @@ import {
 
 function Main(props) {
 	const [cards, setCards] = useState([]);
-	const [isAuth, setIsAuth] = useState(false);
+	// 3 User States defined here manually:
+	//  loggedIn -authenticated with firestore to connect to db
+	//  loggedOut - will only see log in screen
+	//  guest - will be able to see local cards but no conneciton to db
+	const [userState, setUserState] = useState("loggedIn");
 
 	const testDoc = doc(firestore, "testCollection/testList");
 	const metaDocRef = doc(firestore, "metaData/maxID");
@@ -165,7 +169,7 @@ function Main(props) {
 				dbCards={cards}
 				clearDoneCardsInDB={handleDBClearDone}
 				deleteAllCardsInDB={handleDBDeleteAll}
-				isAuth={isAuth}
+				userState={userState}
 			/>
 		</StrictMode>
 	);
