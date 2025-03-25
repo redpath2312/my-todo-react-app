@@ -2,8 +2,11 @@ import React from "react";
 import LoginForm from "./Components/LoginForm";
 import SocialLogin from "./Components/SocialLogin";
 import Footer from "./Components/Footer";
+import { useAuth } from "./AuthContext";
 
 const Login = () => {
+	const { userErrorInfo, handleEmailLogin, handleRegister, handleLogout } =
+		useAuth();
 	return (
 		<div className="login-page-full">
 			<div className="login-page">

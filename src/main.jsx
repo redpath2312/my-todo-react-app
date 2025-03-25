@@ -1,6 +1,8 @@
 import { StrictMode, useEffect, useState } from "react";
 import App from "./App.jsx";
-import { firestore } from "./firebaseconfig.js";
+// import { firestore } from "./firebaseconfig.js";
+// import { initializeApp } from "firebase/app";
+import { db, auth } from "./firebaseconfig.js";
 
 import {
 	where,
@@ -20,13 +22,13 @@ import {
 function Main(props) {
 	const [cards, setCards] = useState([]);
 	// 3 User States defined here manually:
-	//  loggedIn -authenticated with firestore to connect to db
+	//  loggedIn -authenticated with db to connect to db
 	//  loggedOut - will only see log in screen
 	//  guest - will be able to see local cards but no conneciton to db
-	const [userState, setUserState] = useState("loggedIn");
+	// const [userState, setUserState] = useState("loggedOut");
 
-	const testDoc = doc(firestore, "testCollection/testList");
-	const metaDocRef = doc(firestore, "metaData/maxID");
+	const testDoc = doc(db, "testCollection/testList");
+	const metaDocRef = doc(db, "metaData/maxID");
 
 	const fetchMaxID = async () => {
 		const docSnap = await getDoc(metaDocRef);
@@ -82,7 +84,7 @@ function Main(props) {
 					card.id === cardID ? { ...card, ...updatedFields } : card
 				);
 				await updateDoc(testDoc, { cards: updatedCards });
-				console.log(`Card ID ${cardID} successfully update in Firestore`);
+				console.log(`Card ID ${cardID} successfully updated in Firestore`);
 				setCards(updatedCards);
 			} else {
 				console.warn("Document does not exist. Cannot update Card.");
@@ -169,7 +171,7 @@ function Main(props) {
 				dbCards={cards}
 				clearDoneCardsInDB={handleDBClearDone}
 				deleteAllCardsInDB={handleDBDeleteAll}
-				userState={userState}
+				// userState={userState}
 			/>
 		</StrictMode>
 	);

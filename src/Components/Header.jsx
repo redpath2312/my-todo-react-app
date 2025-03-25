@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useAuth } from "../AuthContext";
 
-function Header({ userState }) {
+function Header() {
 	const name = "Pete";
+	const { user, userState } = useAuth();
 
 	return (
 		<header>

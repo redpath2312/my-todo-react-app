@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
 
 const firebaseConfig = {
 	apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -9,10 +10,18 @@ const firebaseConfig = {
 	messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
 	appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
-const app = initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 
-const firestore = getFirestore(app);
-connectFirestoreEmulator(firestore, "localhost", 8080);
+const db = getFirestore(firebaseApp);
+connectFirestoreEmulator(db, "localhost", 8080);
 console.log("Hi firestore");
 
-export { firestore };
+const auth = getAuth(firebaseApp);
+try {
+	connectAuthEmulator(auth, "http://localhost:9099");
+	console.log("Connected to firebase auth");
+} catch (error) {
+	console.error("Error connecting to the emulator:", error);
+}
+
+export { db, auth };

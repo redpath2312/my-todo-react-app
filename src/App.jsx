@@ -16,9 +16,10 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
+import { useAuth } from "./AuthContext";
 
 function App({
-	userState,
+	// userState,
 	dbCards,
 	addCardToDB,
 	readCardsFromDB,
@@ -27,6 +28,7 @@ function App({
 	clearDoneCardsInDB,
 	deleteAllCardsInDB,
 }) {
+	const { user, userState } = useAuth();
 	return (
 		<Router>
 			<Routes>

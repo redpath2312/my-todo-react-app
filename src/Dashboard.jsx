@@ -7,9 +7,9 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
+import { useAuth } from "./AuthContext";
 
 const Dashboard = ({
-	userState,
 	dbCards,
 	addCardToDB,
 	readCardsFromDB,
@@ -19,6 +19,8 @@ const Dashboard = ({
 	deleteAllCardsInDB,
 }) => {
 	const [localCards, setLocalCards] = useState([]);
+	const { user, userState } = useAuth();
+	
 	const cards =
 		userState === "loggedIn"
 			? dbCards
