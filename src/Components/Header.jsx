@@ -3,7 +3,17 @@ import { useAuth } from "../AuthContext";
 
 function Header() {
 	const name = "Pete";
-	const { user, userState } = useAuth();
+	const { user, userState, handleLogOut } = useAuth();
+
+	const handleLogOutSubmit = async (e) => {
+		e.preventDefault();
+		try {
+			console.log("Trying to Log Out");
+			await handleLogOut();
+		} catch (error) {
+			console.log("Error logging out...", error.message);
+		}
+	};
 
 	return (
 		<header>
@@ -24,7 +34,7 @@ function Header() {
 			</div>
 			<div className="header-logout">
 				<a href="/Login">
-					<button className="logout-button">
+					<button onClick={handleLogOutSubmit} className="logout-button">
 						{userState === "guest"
 							? "Home"
 							: userState === "loggedIn" && "Log Out"}

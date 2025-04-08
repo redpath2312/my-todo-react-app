@@ -20,9 +20,9 @@ const Dashboard = ({
 }) => {
 	const [localCards, setLocalCards] = useState([]);
 	const { user, userState } = useAuth();
-	
+
 	const cards =
-		userState === "loggedIn"
+		userState === "loggedIn" || userState === "refreshing"
 			? dbCards
 			: userState === "guest"
 			? localCards
@@ -119,6 +119,7 @@ const Dashboard = ({
 	}
 
 	function addCard(inputText) {
+		// + or userState ===refreshing
 		if (userState === "loggedIn") {
 			addCardToDB(inputText);
 		} else {
@@ -160,11 +161,13 @@ const Dashboard = ({
 		});
 	}
 
+	// console.log(cards);
+
 	return (
 		<div className="main-page-container">
 			<div className="main">
 				<div>
-					<Header userState={userState} />
+					<Header />
 				</div>
 				<div className="summary">
 					<div id="summary-heading">

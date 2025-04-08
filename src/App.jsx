@@ -1,21 +1,8 @@
-import React, { useState, useEffect } from "react";
-import {
-	BrowserRouter as Router,
-	Routes,
-	Route,
-	Navigate,
-} from "react-router-dom";
-import Main from "./main";
+import React, { useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import Login from "./Login";
-import Header from "./Components/Header";
-import Footer from "./Components/Footer";
-import DraftCard from "./Components/DraftCard";
-import Card from "./Components/Card";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
-import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
+
 import { useAuth } from "./AuthContext";
 
 function App({
@@ -29,48 +16,60 @@ function App({
 	deleteAllCardsInDB,
 }) {
 	const { user, userState } = useAuth();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (userState === "loggedIn" || userState === "refreshing") {
+			navigate("/dashboard");
+		} else if (userState === "guest") {
+			navigate("/guest");
+		} else if (userState === "loggedOut") {
+			navigate("/login");
+		}
+	}, [userState]);
 	return (
-		<Router>
-			<Routes>
-				<Route
-					path="/"
-					element={
-						userState !== "loggedOut" ? (
-							<Dashboard
-								userState={userState}
-								dbCards={dbCards}
-								addCardToDB={addCardToDB}
-								readCardsFromDB={readCardsFromDB}
-								updateCardsInDB={updateCardsInDB}
-								deleteCardInDB={deleteCardInDB}
-								clearDoneCardsInDB={clearDoneCardsInDB}
-								deleteAllCardsInDB={deleteAllCardsInDB}
-							/>
-						) : (
-							<Navigate to="/login" />
-						)
-					}
-				/>
-				<Route path="/login" element={<Login />} />
-				<Route
-					path="/guest"
-					element={
-						userState === "guest" && (
-							<Dashboard
-								userState={userState}
-								dbCards={dbCards}
-								addCardToDB={addCardToDB}
-								readCardsFromDB={readCardsFromDB}
-								updateCardsInDB={updateCardsInDB}
-								deleteCardInDB={deleteCardInDB}
-								clearDoneCardsInDB={clearDoneCardsInDB}
-								deleteAllCardsInDB={deleteAllCardsInDB}
-							/>
-						)
-					}
-				/>
-			</Routes>
-		</Router>
+		<Routes>
+			<Route
+				path="/"
+				element={
+					userState !== "loggedOut" ? (
+						<Navigate to="/dashboard" />
+					) : (
+						<Navigate to="/login" />
+					)
+				}
+			/>
+			<Route
+				path="/dashboard"
+				element={
+					<Dashboard
+						dbCards={dbCards}
+						addCardToDB={addCardToDB}
+						readCardsFromDB={readCardsFromDB}
+						updateCardsInDB={updateCardsInDB}
+						deleteCardInDB={deleteCardInDB}
+						clearDoneCardsInDB={clearDoneCardsInDB}
+						deleteAllCardsInDB={deleteAllCardsInDB}
+					/>
+				}
+			/>
+			<Route path="/login" element={<Login />} />
+			<Route
+				path="/guest"
+				element={
+					userState === "guest" && (
+						<Dashboard
+							addCardToDB={addCardToDB}
+							readCardsFromDB={readCardsFromDB}
+							updateCardsInDB={updateCardsInDB}
+							deleteCardInDB={deleteCardInDB}
+							clearDoneCardsInDB={clearDoneCardsInDB}
+							deleteAllCardsInDB={deleteAllCardsInDB}
+						/>
+					)
+				}
+			/>
+		</Routes>
 	);
 }
 

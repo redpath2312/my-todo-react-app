@@ -3,10 +3,20 @@ import LoginForm from "./Components/LoginForm";
 import SocialLogin from "./Components/SocialLogin";
 import Footer from "./Components/Footer";
 import { useAuth } from "./AuthContext";
+import { Link } from "react-router-dom";
 
 const Login = () => {
-	const { userErrorInfo, handleEmailLogin, handleRegister, handleLogout } =
-		useAuth();
+	const {
+		userErrorInfo,
+		handleEmailLogin,
+		handleRegister,
+		handleLogout,
+		handleGuestSignIn,
+	} = useAuth();
+
+	const handleGuestClick = () => {
+		handleGuestSignIn();
+	};
 	return (
 		<div className="login-page-full">
 			<div className="login-page">
@@ -24,7 +34,9 @@ const Login = () => {
 						<div className="no-account-section">
 							<div className="no-account-text small-text">
 								<p> Don't have an account?</p>
-								<a href="guest">Try now as a guest</a>
+								<Link to="/guest" onClick={handleGuestClick}>
+									Try now as a guest
+								</Link>
 							</div>
 							<div className="no-account-text small-text">
 								<p> Want full features?</p>

@@ -21,6 +21,8 @@ export const AuthProvider = ({ children }) => {
 				setUser(user);
 				setUserState("loggedIn");
 				console.log("just set user state to loggedIn via use effect");
+			} else if (localStorage.getItem("guest") === "true") {
+				setUserState("guest");
 			} else {
 				setUser(null);
 				setUserState("loggedOut");
@@ -44,7 +46,8 @@ export const AuthProvider = ({ children }) => {
 			setUserErrorInfo("");
 			setUser(userCredential.user);
 			// setUserState("loggedIn");
-			setUserState((prev) => (prev === "loggedIn" ? "refreshing" : "loggedIn"));
+			// setUserState((prev) => (prev === "loggedIn" ? "refreshing" : "loggedIn"));
+			setUserState("loggedIn");
 			console.log(userCredential.user);
 		} catch (error) {
 			console.log(error);
@@ -69,10 +72,22 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	// Logout
-	const handleLogout = async () => {
-		await signOut(auth);
+	const handleLogOut = async () => {
+		if (userState === "guest") {
+			localStorage.removeItem("guest");
+			setUserState("loggedOut");
+		} else {
+			await signOut(auth);
+			setUser(null);
+			setUserState("loggedOut");
+			console.log("Firebase has now logged you out");
+		}
+	};
+
+	const handleGuestSignIn = () => {
 		setUser(null);
-		setUserState("loggedOut");
+		localStorage.setItem("guest", true); //so client can remember it is in guest mode
+		setUserState("guest");
 	};
 
 	console.log(userState);
@@ -85,7 +100,8 @@ export const AuthProvider = ({ children }) => {
 				userErrorInfo,
 				handleEmailLogin,
 				handleRegister,
-				handleLogout,
+				handleLogOut,
+				handleGuestSignIn,
 			}}
 		>
 			{children}

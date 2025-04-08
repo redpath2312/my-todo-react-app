@@ -113,7 +113,7 @@ function Main(props) {
 			const docSnap = await getDoc(testDoc);
 			if (docSnap.exists()) {
 				const docData = docSnap.data();
-				console.log("Fetched cards", docData.cards);
+				// console.log("Fetched cards", docData.cards);
 				setCards(docData.cards || []);
 			} else {
 				console.log("No document found");
