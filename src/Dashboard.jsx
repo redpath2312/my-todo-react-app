@@ -22,7 +22,7 @@ const Dashboard = ({
 	const { user, userState } = useAuth();
 
 	const cards =
-		userState === "loggedIn" || userState === "refreshing"
+		userState === "loggedIn"
 			? dbCards
 			: userState === "guest"
 			? localCards
