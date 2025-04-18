@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useAuth } from "../AuthContext";
 
 function Header() {
-	const name = "Pete";
 	const { user, userState, handleLogOut } = useAuth();
 
+	// errors when i try user this.
+	// const name = user.email;
+	const name = user === null ? "" : user.displayName;
 	const handleLogOutSubmit = async (e) => {
 		e.preventDefault();
 		try {

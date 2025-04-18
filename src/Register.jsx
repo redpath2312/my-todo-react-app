@@ -1,46 +1,37 @@
-import React from "react";
-import LoginForm from "./Components/LoginForm";
-import SocialLogin from "./Components/SocialLogin";
 import Footer from "./Components/Footer";
 import { useAuth } from "./AuthContext";
 import { Link } from "react-router-dom";
+import SocialRegister from "./Components/SocialRegister";
+import RegisterForm from "./Components/RegisterForm";
 
-const Login = () => {
-	const {
-		// userErrorInfo,
-		// handleEmailLogin,
-		// handleRegister,
-		// handleLogout,
-		handleGuestSignIn,
-	} = useAuth();
+const Register = () => {
+	const { handleGuestSignIn } = useAuth();
 
 	const handleGuestClick = () => {
 		handleGuestSignIn();
 	};
 	return (
-		<div className="login-page-full">
-			<div className="login-page">
-				<div className="login-section">
-					<div className="login-container">
-						<h2 className="form-title">Log in with</h2>
-						<SocialLogin />
+		<div className="register-page-full">
+			<div className="register-page">
+				<div className="register-section">
+					<div className="register-container">
+						<h2 className="form-title">Register with</h2>
+						<SocialRegister />
 
 						<hr className="or-divider"></hr>
 
-						<LoginForm />
-
-						<hr className="or-divider"></hr>
+						<RegisterForm />
 
 						<div className="no-account-section">
 							<div className="no-account-text small-text">
-								<p> Don't have an account?</p>
+								<p> Changed your mind?</p>
 								<Link to="/guest" onClick={handleGuestClick}>
 									Try now as a guest
 								</Link>
 							</div>
 							<div className="no-account-text small-text">
-								<p> Want full features?</p>
-								<Link to="/register">Sign up now</Link>
+								<p> Already have account?</p>
+								<Link to="/login">Back to Login</Link>
 							</div>
 						</div>
 					</div>
@@ -57,4 +48,4 @@ const Login = () => {
 	);
 };
 
-export default Login;
+export default Register;

@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
 import Main from "./Main";
 import { AuthProvider } from "./AuthContext";
+// import Register from "./Register";
 
 const root = createRoot(document.getElementById("root"));
 //Change between Login and Main

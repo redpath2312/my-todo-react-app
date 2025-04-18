@@ -206,21 +206,24 @@ h3 {
 		align-items: center;
 	}
 }
-.login-page-full {
+.login-page-full,
+.register-page-full {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
 	justify-content: space-between;
 }
 
-.login-page {
+.login-page,
+.register-page {
 	display: flex;
 	/* max-height: 95vh; */
 	align-items: stretch;
 	background-color: white;
 	flex: 1;
 }
-.login-section {
+.login-section,
+.register-section {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -234,7 +237,8 @@ h3 {
 	margin-bottom: 30px;
 }
 
-.login-container {
+.login-container,
+.register-container {
 	margin: 2%;
 	display: flex;
 	flex-direction: column;
@@ -263,14 +267,16 @@ h3 {
 	height: auto;
 }
 
-.social-login {
+.social-login,
+.social-register {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-evenly;
 	align-items: center;
 }
 
-.social-login .social-button {
+.social-login .social-button,
+.social-register .social-button {
 	margin: 5px;
 	display: flex;
 	flex-direction: column;
@@ -286,7 +292,8 @@ h3 {
 	border-color: #ddd9e2;
 }
 
-.social-login .social-button:hover {
+.social-login .social-button:hover,
+.social-register .social-button:hover {
 	border-color: #afa3bd;
 	transition: 0.1s ease;
 	background-color: #d8d1e0;
@@ -301,19 +308,30 @@ h3 {
 	max-height: 16px;
 	max-width: 16px;
 }
-.login-form {
+.login-form,
+.register-form {
 	width: 100%;
 	height: 100%;
 }
-.login-form .input {
-	height: 40px;
-	margin: 1.5rem 0;
+.login-form .input,
+.register-form .input {
 	align-items: center;
 	display: flex;
 	position: relative;
 }
 
-.login-form .input .input-field {
+.login-form .input {
+	margin: 1.5rem 0;
+	height: 40px;
+}
+
+.register-form .input {
+	margin: 1rem 0;
+	height: 35px;
+}
+
+.login-form .input .input-field,
+.register-form .input .input-field {
 	height: 100%;
 	width: 100%;
 	outline: none;
@@ -324,11 +342,13 @@ h3 {
 	transition: 0.25s ease;
 }
 
-.login-form .input .input-field:focus {
+.login-form .input .input-field:focus,
+.register-form .input .input-field:focus {
 	border-color: rgb(75, 50, 218);
 }
 
-.login-form .input .input-field::placeholder {
+.login-form .input .input-field::placeholder,
+.register-form .input .input-field::placeholder {
 	color: rgb(197, 193, 219);
 }
 
@@ -344,7 +364,8 @@ h3 {
 	font-size: 0.9rem;
 }
 
-.login-form .login-button {
+.login-form .login-button,
+.register-form .login-button {
 	width: 100%;
 	margin: 1.5rem 0;
 	color: rgb(237, 235, 245);
@@ -359,6 +380,7 @@ h3 {
 	border: none;
 }
 .login-form .login-button,
+.register-form .register-button,
 .logout-button:hover {
 	background-color: rgb(61, 36, 201);
 	transition: 0.1s ease;
@@ -442,4 +464,7 @@ hr.or-divider:after {
 
 .material-symbols-rounded {
 	font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 20;
+}
+
+.register-form {
 }

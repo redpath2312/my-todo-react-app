@@ -5,6 +5,7 @@ import {
 	signOut,
 	onAuthStateChanged,
 	signInWithEmailAndPassword,
+	updateProfile,
 } from "firebase/auth";
 
 const AuthContext = createContext();
@@ -38,10 +39,12 @@ export const AuthProvider = ({ children }) => {
 			);
 			const loginEmail = creds.email;
 			const loginPassword = creds.password;
+			const loginDisplayName = creds.displayName;
 			const userCredential = await signInWithEmailAndPassword(
 				auth,
 				loginEmail,
-				loginPassword
+				loginPassword,
+				loginDisplayName
 			);
 			setUserErrorInfo("");
 			setUser(userCredential.user);
@@ -57,13 +60,20 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	// Register new user
-	const handleRegister = async (email, password) => {
+	const handleRegister = async (creds) => {
 		try {
+			const registerEmail = creds.email;
+			const registerPassword = creds.password;
+			const registerDisplayName = creds.displayName;
+
 			const userCredential = await createUserWithEmailAndPassword(
 				auth,
-				email,
-				password
+				registerEmail,
+				registerPassword
 			);
+			await updateProfile(userCredential.user, {
+				displayName: registerDisplayName,
+			});
 			setUser(userCredential.user);
 			setUserState("loggedIn");
 		} catch (error) {
