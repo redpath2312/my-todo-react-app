@@ -8,12 +8,14 @@ import {
 	signInWithEmailAndPassword,
 	updateProfile,
 	GoogleAuthProvider,
+	FacebookAuthProvider,
 	signInWithRedirect,
 	getRedirectResult,
 } from "firebase/auth";
 
 const AuthContext = createContext();
-const provider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
@@ -122,7 +124,20 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const handleGoogleAuth = () => {
-		console.log("Google Test");
+		handleRedirect(googleProvider);
+	};
+
+	const handleAppleAuth = () => {
+		console.log("Apple Test");
+		// signInWithRedirect(auth, provider);
+	};
+	const handleFacebookAuth = () => {
+		console.log("Facebook Test");
+		handleRedirect(facebookProvider);
+		// signInWithRedirect(auth, provider);
+	};
+
+	const handleRedirect = (provider) => {
 		signInWithRedirect(auth, provider);
 	};
 
@@ -131,13 +146,14 @@ export const AuthProvider = ({ children }) => {
 			.then((result) => {
 				if (!result) return; // Avoid errors on first load with no redirect result
 				// This gives you a Google Access Token. You can use it to access Google APIs.
-				const credential = GoogleAuthProvider.credentialFromResult(result);
-				const token = credential.accessToken;
+
+				// const credential = GoogleAuthProvider.credentialFromResult(result);
+				// const token = credential.accessToken;
 
 				// The signed-in user info.
-				const googleUser = result.user;
-				setUser(googleUser);
-				console.log("Google redirect result:", googleUser);
+				const newUser = result.user;
+				setUser(newUser);
+				console.log("Redirect result:", newUser);
 			})
 			.catch((error) => {
 				console.log("Redirect Login Error failed", error.message);
@@ -158,6 +174,8 @@ export const AuthProvider = ({ children }) => {
 				handleLogOut,
 				handleGuestSignIn,
 				handleGoogleAuth,
+				handleFacebookAuth,
+				handleAppleAuth,
 			}}
 		>
 			{children}

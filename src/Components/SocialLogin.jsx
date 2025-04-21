@@ -2,9 +2,15 @@ import React from "react";
 import { useAuth } from "../AuthContext";
 
 const SocialLogin = () => {
-	const { handleGoogleAuth } = useAuth();
+	const { handleGoogleAuth, handleFacebookAuth, handleAppleAuth } = useAuth();
 	const handleGoogleLoginClick = () => {
 		handleGoogleAuth();
+	};
+	const handleAppleLoginClick = () => {
+		handleAppleAuth();
+	};
+	const handleFacebookLoginClick = () => {
+		handleFacebookAuth();
 	};
 
 	return (
@@ -13,11 +19,11 @@ const SocialLogin = () => {
 				<img src="google.svg" alt="Google" className="social-icon" />
 				Google
 			</button>
-			<button className="social-button">
+			<button className="social-button" onClick={handleAppleLoginClick}>
 				<img src="apple.svg" alt="Apple" className="social-icon" />
 				Apple
 			</button>
-			<button className="social-button">
+			<button className="social-button" onClick={handleFacebookLoginClick}>
 				<img src="facebook.svg" alt="facebook" className="social-icon" />
 				facebook
 			</button>
