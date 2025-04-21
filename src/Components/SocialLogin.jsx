@@ -1,8 +1,15 @@
 import React from "react";
+import { useAuth } from "../AuthContext";
+
 const SocialLogin = () => {
+	const { handleGoogleAuth } = useAuth();
+	const handleGoogleLoginClick = () => {
+		handleGoogleAuth();
+	};
+
 	return (
 		<div className="social-login">
-			<button className="social-button">
+			<button className="social-button" onClick={handleGoogleLoginClick}>
 				<img src="google.svg" alt="Google" className="social-icon" />
 				Google
 			</button>

@@ -17,39 +17,9 @@ function App({
 	clearDoneCardsInDB,
 	deleteAllCardsInDB,
 }) {
-	const { user, userState } = useAuth();
+	const { user, userState, isAuthReady } = useAuth();
 	const navigate = useNavigate();
 	const location = useLocation();
-
-	// useEffect(() => {
-	// 	if (userState === "loggedIn") {
-	// 		navigate("/dashboard");
-	// 	} else if (userState === "guest") {
-	// 		navigate("/guest");
-	// 	} else if (userState === "loggedOut") {
-	// 		navigate("/login");
-	// 	}
-	// }, [userState]);
-
-	// useEffect(() => {
-	// 	if (
-	// 		!userState === "loggedIn" &&
-	// 		!["/register", "/login"].includes(location.pathname)
-	// 	) {
-	// 		navigate("/login");
-	// 	}
-	// }, [user, location]);
-
-	// useEffect(() => {
-	// 	const authPages = ["/", "/login", "/register"];
-	// 	if (authPages.includes(location.pathname)) {
-	// 		if (userState === "loggedIn") {
-	// 			navigate("/dashboard");
-	// 		} else if (userState === "guest") {
-	// 			navigate("/guest");
-	// 		}
-	// 	}
-	// }, [userState, location, navigate]);
 
 	useEffect(() => {
 		const publicPages = ["/", "/login", "/register"];
@@ -70,6 +40,9 @@ function App({
 		}
 	}, [userState, location.pathname, navigate]);
 
+	if (!isAuthReady) {
+		return <div>Loading...</div>;
+	}
 	return (
 		<Routes>
 			<Route

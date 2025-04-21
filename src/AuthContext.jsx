@@ -1,19 +1,25 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { auth } from "./firebaseconfig";
+
 import {
 	createUserWithEmailAndPassword,
 	signOut,
 	onAuthStateChanged,
 	signInWithEmailAndPassword,
 	updateProfile,
+	GoogleAuthProvider,
+	signInWithRedirect,
+	getRedirectResult,
 } from "firebase/auth";
 
 const AuthContext = createContext();
+const provider = new GoogleAuthProvider();
 
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [userState, setUserState] = useState("loggedOut");
 	const [userErrorInfo, setUserErrorInfo] = useState("");
+	const [isAuthReady, setIsAuthReady] = useState(false);
 
 	// Handle Firebase Auth state changes
 	useEffect(() => {
@@ -21,14 +27,18 @@ export const AuthProvider = ({ children }) => {
 			if (user) {
 				setUser(user);
 				setUserState("loggedIn");
-				console.log("just set user state to loggedIn via use effect");
 			} else if (localStorage.getItem("guest") === "true") {
+				setUser(null); // still clear out any lingering user
 				setUserState("guest");
 			} else {
 				setUser(null);
 				setUserState("loggedOut");
 			}
+			setIsAuthReady(true); // auth status has been determined
 		});
+
+		console.log(userState);
+
 		return () => unsubscribe();
 	}, []);
 
@@ -48,8 +58,6 @@ export const AuthProvider = ({ children }) => {
 			);
 			setUserErrorInfo("");
 			setUser(userCredential.user);
-			// setUserState("loggedIn");
-			// setUserState((prev) => (prev === "loggedIn" ? "refreshing" : "loggedIn"));
 			setUserState("loggedIn");
 			console.log(userCredential.user);
 		} catch (error) {
@@ -65,6 +73,7 @@ export const AuthProvider = ({ children }) => {
 			const registerEmail = creds.email;
 			const registerPassword = creds.password;
 			const registerDisplayName = creds.displayName;
+			console.log(registerDisplayName);
 
 			const userCredential = await createUserWithEmailAndPassword(
 				auth,
@@ -74,7 +83,19 @@ export const AuthProvider = ({ children }) => {
 			await updateProfile(userCredential.user, {
 				displayName: registerDisplayName,
 			});
-			setUser(userCredential.user);
+			// Refresh the user to get the updated displayName
+			// await userCredential.user.reload();
+			// const updatedUser = auth.currentUser;
+			// setUser(updatedUser);
+			// setUserState("loggedIn");
+
+			// await updateProfile(userCredential.user, {
+			// 	displayName: registerDisplayName,
+			// });
+			setUser({
+				...userCredential.user,
+				displayName: registerDisplayName,
+			});
 			setUserState("loggedIn");
 		} catch (error) {
 			console.error("Registration failed:", error.message);
@@ -100,6 +121,29 @@ export const AuthProvider = ({ children }) => {
 		setUserState("guest");
 	};
 
+	const handleGoogleAuth = () => {
+		console.log("Google Test");
+		signInWithRedirect(auth, provider);
+	};
+
+	useEffect(() => {
+		getRedirectResult(auth)
+			.then((result) => {
+				if (!result) return; // Avoid errors on first load with no redirect result
+				// This gives you a Google Access Token. You can use it to access Google APIs.
+				const credential = GoogleAuthProvider.credentialFromResult(result);
+				const token = credential.accessToken;
+
+				// The signed-in user info.
+				const googleUser = result.user;
+				setUser(googleUser);
+				console.log("Google redirect result:", googleUser);
+			})
+			.catch((error) => {
+				console.log("Redirect Login Error failed", error.message);
+			});
+	}, []);
+
 	console.log(userState);
 
 	return (
@@ -108,10 +152,12 @@ export const AuthProvider = ({ children }) => {
 				user,
 				userState,
 				userErrorInfo,
+				isAuthReady,
 				handleEmailLogin,
 				handleRegister,
 				handleLogOut,
 				handleGuestSignIn,
+				handleGoogleAuth,
 			}}
 		>
 			{children}
