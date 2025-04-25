@@ -123,23 +123,22 @@ export const AuthProvider = ({ children }) => {
 		setUserState("guest");
 	};
 
-	const handleGoogleAuth = () => {
-		handleRedirect(googleProvider);
-	};
-
-	const handleAppleAuth = () => {
-		console.log("Apple Test");
-		// signInWithRedirect(auth, provider);
-	};
-	const handleFacebookAuth = () => {
-		console.log("Facebook Test");
-		handleRedirect(facebookProvider);
-		// signInWithRedirect(auth, provider);
-	};
-
-	const handleRedirect = (provider) => {
+	// new redirect handler for multiple providers
+	const handleSocialAuthRedirect = (providerID) => {
+		let providerMap = {
+			google: googleProvider,
+			facebook: facebookProvider,
+		};
+		const provider = providerMap[providerID];
+		if (!provider) {
+			console.error("Invalid Provider ID: ", providerID);
+			alert("Invalid Login type");
+			return;
+		}
 		signInWithRedirect(auth, provider);
 	};
+
+	//provider specific redirects
 
 	useEffect(() => {
 		getRedirectResult(auth)
@@ -173,9 +172,7 @@ export const AuthProvider = ({ children }) => {
 				handleRegister,
 				handleLogOut,
 				handleGuestSignIn,
-				handleGoogleAuth,
-				handleFacebookAuth,
-				handleAppleAuth,
+				handleSocialAuthRedirect,
 			}}
 		>
 			{children}

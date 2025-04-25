@@ -1,17 +1,18 @@
 import React from "react";
 import { useAuth } from "../AuthContext";
 const SocialRegister = () => {
-	const { handleGoogleAuth, handleFacebookAuth } = useAuth();
-	const handleGoogleRegClick = () => {
-		handleGoogleAuth();
+	const { handleSocialAuthRedirect } = useAuth();
+
+	const handleSocialLoginClick = (providerID) => {
+		handleSocialAuthRedirect(providerID);
 	};
 
-	const handleFacebookRegClick = () => {
-		handleFacebookAuth();
-	};
 	return (
 		<div className="social-register">
-			<button className="social-button" onClick={handleGoogleRegClick}>
+			<button
+				className="social-button"
+				onClick={() => handleSocialLoginClick("google")}
+			>
 				<img src="google.svg" alt="Google" className="social-icon" />
 				Google
 			</button>
@@ -19,7 +20,10 @@ const SocialRegister = () => {
 				<img src="apple.svg" alt="Apple" className="social-icon" />
 				Apple
 			</button> */}
-			<button className="social-button" onClick={handleFacebookRegClick}>
+			<button
+				className="social-button"
+				onClick={() => handleSocialAuthRedirect("facebook")}
+			>
 				<img src="facebook.svg" alt="facebook" className="social-icon" />
 				facebook
 			</button>
