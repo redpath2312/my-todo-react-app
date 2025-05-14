@@ -26,7 +26,7 @@ function Header() {
 			<div className="header-logo">
 				<img
 					className="header-icon"
-					src="/check-list-icon_128.svg"
+					src="images/check-list-icon_128.svg"
 					alt="List Logo"
 				/>
 			</div>

@@ -47,7 +47,11 @@ const Login = () => {
 				</div>
 
 				<div className="image-background">
-					<img src="logo.JPG" alt="Dash Tasker" className="image-hero"></img>
+					<img
+						src="images/logo.JPG"
+						alt="Dash Tasker"
+						className="image-hero"
+					></img>
 				</div>
 			</div>
 			<div>

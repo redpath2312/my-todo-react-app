@@ -1,18 +1,31 @@
 {
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
-  "emulators": {
-    "firestore": {
-      "port": 8080
-    },
-    "ui": {
-      "enabled": true
-    },
-    "singleProjectMode": true,
-    "auth": {
-      "port": 9099
-    }
-  }
+	"firestore": {
+		"rules": "firestore.rules",
+		"indexes": "firestore.indexes.json"
+	},
+	"emulators": {
+		"firestore": {
+			"port": 8080
+		},
+		"ui": {
+			"enabled": true
+		},
+		"singleProjectMode": true,
+		"auth": {
+			"port": 9099,
+			"emailSignInConfig": {
+				"enableEmailLinkSignin": true
+			}
+		}
+	},
+	"hosting": {
+		"public": "public/firebase-hosting-test",
+		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+		"rewrites": [
+			{
+				"source": "**",
+				"destination": "/index_static.html"
+			}
+		]
+	}
 }

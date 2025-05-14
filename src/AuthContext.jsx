@@ -11,6 +11,7 @@ import {
 	FacebookAuthProvider,
 	signInWithRedirect,
 	getRedirectResult,
+	sendPasswordResetEmail,
 } from "firebase/auth";
 
 const AuthContext = createContext();
@@ -61,7 +62,6 @@ export const AuthProvider = ({ children }) => {
 			setUserErrorInfo("");
 			setUser(userCredential.user);
 			setUserState("loggedIn");
-			console.log(userCredential.user);
 		} catch (error) {
 			console.log(error);
 			setUserErrorInfo(error.message);
@@ -123,6 +123,22 @@ export const AuthProvider = ({ children }) => {
 		setUserState("guest");
 	};
 
+	const handleForgotPwd = async (email) => {
+		console.log("Sending reset email to: ", email);
+		await sendPasswordResetEmail(auth, email)
+			.then(() => {
+				console.log("Password reset email sent");
+				// Password reset email sent!
+				// ..
+			})
+			.catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				alert(`Error: ${errorCode} :${errorMessage}`);
+				// ..
+			});
+	};
+
 	// new redirect handler for multiple providers
 	const handleSocialAuthRedirect = (providerID) => {
 		let providerMap = {
@@ -173,6 +189,7 @@ export const AuthProvider = ({ children }) => {
 				handleLogOut,
 				handleGuestSignIn,
 				handleSocialAuthRedirect,
+				handleForgotPwd,
 			}}
 		>
 			{children}

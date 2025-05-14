@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../AuthContext";
-
+import { Link } from "react-router-dom";
 const LoginForm = () => {
 	const { handleEmailLogin } = useAuth();
 	const [isPasswordVisible, setPasswordVisible] = useState(false);
@@ -54,10 +54,13 @@ const LoginForm = () => {
 					{isPasswordVisible ? "visibility" : "visibility_off"}
 				</i>
 			</div>
+			<div className="small-text">
+				<Link to="/forgotpwd">Forgot Password?</Link>
+			</div>
 
-			<a className="small-text" href="#">
+			{/* <a className="small-text" href="#">
 				Forgot Password?
-			</a>
+			</a> */}
 
 			<button type="submit" className="login-button">
 				Log In

@@ -6,6 +6,7 @@ import Register from "./Register";
 import { useLocation } from "react-router";
 
 import { useAuth } from "./AuthContext";
+import ForgotPwd from "./ForgotPwd";
 
 function App({
 	// userState,
@@ -86,6 +87,7 @@ function App({
 				}
 			/>
 			<Route path="/register" element={<Register />} />
+			<Route path="/forgotpwd" element={<ForgotPwd />} />
 		</Routes>
 	);
 }

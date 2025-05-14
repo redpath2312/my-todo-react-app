@@ -158,7 +158,24 @@ function Main(props) {
 	};
 
 	useEffect(() => {
-		fetchCards();
+		const unsubscribe = onSnapshot(
+			testDoc,
+			(docSnap) => {
+				if (docSnap.exists()) {
+					const docData = docSnap.data();
+					setCards(docData.cards || []);
+				} else {
+					console.log("No document found in snapshot");
+					setCards([]);
+				}
+			},
+			(error) => {
+				console.error("Snapshot listener error:", error);
+			}
+		);
+
+		// Cleanup the listener on component unmount
+		return () => unsubscribe();
 	}, []);
 
 	return (
@@ -171,7 +188,6 @@ function Main(props) {
 				dbCards={cards}
 				clearDoneCardsInDB={handleDBClearDone}
 				deleteAllCardsInDB={handleDBDeleteAll}
-				// userState={userState}
 			/>
 		</StrictMode>
 	);

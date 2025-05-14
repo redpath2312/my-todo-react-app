@@ -44,14 +44,9 @@ const Dashboard = ({
 	const highPriorityHidden = highPriorityCards.length === 0;
 	const allOtherCardsHidden = allOtherCards.length === 0;
 
-	// Update state whenever props.cards changes
-	// useEffect(() => {
-	// 	setCards(cards || []);
-	// }, [cards]); // Runs whenever initialCards changes
-
-	// function checkDBCards() {
-	// 	console.log("Props are", cards);
-	// }
+	useEffect(() => {
+		console.log("dbcards have changed");
+	}, [dbCards]); // New Use Effect
 
 	async function handleDeleteAll() {
 		if (userState === "loggedIn") {
@@ -115,16 +110,12 @@ const Dashboard = ({
 
 	function selectCard(id) {
 		setSelectedCardID(id);
-		console.log(id);
 	}
 
 	function addCard(inputText) {
-		// + or userState ===refreshing
 		if (userState === "loggedIn") {
 			addCardToDB(inputText);
 		} else {
-			console.log("Guest so not adding card to db");
-
 			setLocalCards((prevCards) => {
 				return [
 					...prevCards,
@@ -153,15 +144,12 @@ const Dashboard = ({
 	function handleTextChange(updatedText) {
 		cards.map((card) => {
 			if (card.id === selectedCardID) {
-				console.log("Found Selected ID");
 				updateCardsInDB(selectedCardID, { text: updatedText });
 			} else {
 				return card;
 			}
 		});
 	}
-
-	// console.log(cards);
 
 	return (
 		<div className="main-page-container">
