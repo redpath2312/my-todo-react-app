@@ -1,5 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 * {
 	box-sizing: border-box;
+}
+
+.page-title {
+	@apply text-3xl font-semibold mb-4;
+}
+
+@layer components {
+	.social-login,
+	.social-register {
+		@apply flex flex-wrap justify-evenly items-center gap-4;
+		/* display: flex;
+		flex-wrap: wrap;
+		justify-content: space-evenly;
+		align-items: center;
+		gap: 1rem; */
+	}
+
+	.social-login .social-button,
+	.social-register .social-button {
+		@apply flex flex-col items-center justify-center w-[100px] p-3 gap-3 text-base rounded-lg cursor-pointer;
+		border: 2px solid #ddd9e2;
+		background-color: white;
+		/* margin: 5px;
+		display: flex;
+		flex-direction: column;
+		width: 100px;
+		gap: 0.8rem;
+		cursor: pointer;
+		font-size: 1rem;
+		padding: 0.75rem;
+		align-items: center;
+		justify-content: center;
+		padding: 10px;
+		border-radius: 0.5rem;
+		border-color: #ddd9e2;
+		border: 2px solid #ddd9e2;
+		background-color: white; */
+	}
+
+	.social-login .social-button:hover,
+	.social-register .social-button:hover {
+		@apply border-[#afa3bd] bg-[#d8d1e0] transition ease-in duration-100;
+		/* border-color: #afa3bd;
+		transition: 0.1s ease;
+		background-color: #d8d1e0; */
+	}
+
+	.social-icon {
+		@apply max-w-[32px] p-[5px];
+		/* max-width: 32px;
+		padding: 5px; */
+	}
 }
 
 html {
@@ -94,6 +149,7 @@ textarea {
 	font-optical-sizing: auto;
 	font-style: normal;
 	padding: 0%;
+	overflow: hidden;
 }
 
 .cards-container,
@@ -186,7 +242,8 @@ h3 {
 }
 
 .swimlane-heading {
-	background-color: white;
+	/* background-color: white; */
+	@apply text-xl font-medium p-2;
 	margin: 10px 0px;
 }
 
@@ -265,43 +322,6 @@ h3 {
 	width: 80%;
 	margin: 5px;
 	height: auto;
-}
-
-.social-login,
-.social-register {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-evenly;
-	align-items: center;
-}
-
-.social-login .social-button,
-.social-register .social-button {
-	margin: 5px;
-	display: flex;
-	flex-direction: column;
-	width: 100px;
-	gap: 0.8rem;
-	cursor: pointer;
-	font-size: 1rem;
-	padding: 0.75rem;
-	align-items: center;
-	justify-content: center;
-	padding: 10px;
-	border-radius: 0.5rem;
-	border-color: #ddd9e2;
-}
-
-.social-login .social-button:hover,
-.social-register .social-button:hover {
-	border-color: #afa3bd;
-	transition: 0.1s ease;
-	background-color: #d8d1e0;
-}
-
-.social-icon {
-	max-width: 32px;
-	padding: 5px;
 }
 
 .input-icon {

@@ -33,9 +33,11 @@ function Header() {
 
 			<div>
 				{userState === "guest" ? (
-					<h1> Guest Mode </h1>
+					<h1 className="page-title"> Guest Mode </h1>
 				) : (
-					userState === "loggedIn" && <h1>Welcome {name}</h1>
+					userState === "loggedIn" && (
+						<h1 className="page-title">Welcome {name}</h1>
+					)
 				)}
 			</div>
 			<div className="header-logout">

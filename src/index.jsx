@@ -1,7 +1,8 @@
 import React from "react";
+import "./styles.css";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
-import Main from "./Main";
+import Main from "./main";
 import { AuthProvider } from "./AuthContext";
 // import Register from "./Register";
 

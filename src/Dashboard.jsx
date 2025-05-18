@@ -159,12 +159,14 @@ const Dashboard = ({
 				</div>
 				<div className="summary">
 					<div id="summary-heading">
-						<h2>Summary</h2>
+						<h2 className="text-2xl font-semibold my-2">Summary</h2>
 					</div>
-					<h3> You Have:</h3>
-					<p>{cards.length} Total Tasks</p>
-					<p>{highPriorityCardsTotal} High Priority Tasks</p>
-					<p>{doneCardsTotal} Tasks Done</p>
+					<h3 className="text-xl font-medium my-1"> You Have:</h3>
+					<p className="text-gray-700">{cards.length} Total Tasks</p>
+					<p className="text-gray-700">
+						{highPriorityCardsTotal} High Priority Tasks
+					</p>
+					<p className="text-gray-700">{doneCardsTotal} Tasks Done</p>
 
 					<div>
 						<Tooltip title="Clear Done Tasks" placement="left">
@@ -242,6 +244,7 @@ const Dashboard = ({
 					))}
 				</div>
 			</div>
+
 			<div>
 				<Footer />
 			</div>
