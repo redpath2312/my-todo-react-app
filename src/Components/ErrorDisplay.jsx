@@ -1,18 +1,29 @@
-import { useError } from "../ErrorContext";
+import { useAlert } from "../ErrorContext";
 
 const ErrorDisplay = () => {
-	const { errors, dismissError } = useError();
+	const bgColor = {
+		error: "bg-red-500",
+		warn: "bg-yellow-500",
+		info: "bg-blue-500",
+	};
+	const context = useAlert();
+	console.log("ErrorContext:", context); // 👀 This is key
+
+	const { alerts, clearAlert } = context;
+	console.log("ErrorContext in ErrorDisplay:", context);
 
 	return (
 		<div className="fixed bottom-4 right-4 space-y-2 z-50">
-			{errors.map((err) => (
+			{alerts.map((err) => (
 				<div
 					key={err.id}
-					className="bg-red-600 text-white p-3 rounded-lg shadow-lg flex justify-between items-center min-w-[250px]"
+					className={`${
+						bgColor[err.type] || bgColor.error
+					} text-white p-3 rounded-lg shadow-lg flex justify-between items-center min-w-[250px]`}
 				>
 					<span>{err.msg}</span>
 					<button
-						onClick={() => dismissError(err.id)}
+						onClick={() => clearAlert(err.id)}
 						className="ml-3 text-white font-bold"
 					>
 						{" "}

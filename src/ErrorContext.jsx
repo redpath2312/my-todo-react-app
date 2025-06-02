@@ -3,24 +3,42 @@ import { createContext, useContext, useState } from "react";
 const ErrorContext = createContext();
 
 export const ErrorProvider = ({ children }) => {
-	const [errors, setErrors] = useState([]);
+	const [alerts, setAlerts] = useState([]);
 
-	const addError = (msg) => {
-		setErrors((prev) => {
-			const updated = [...prev, { id: Date.now(), msg }];
+	// const addAlert = (msg, type = "error", timeout = null) => {
+	// 	setAlerts((prev) => {
+	// 		const updated = [...prev, { id: Date.now(), msg, type }];
+	// 		return updated.slice(-5); //Keep last 5
+	// 	});
+	// 	if (timeout) {
+	// 		setTimeout(() => {
+	// 			clearAlert(id);
+	// 		}, timeout);
+	// 	}
+	// };
+
+	const addAlert = (msg, type = "error", timeout = null) => {
+		const id = Date.now();
+		setAlerts((prev) => {
+			const updated = [...prev, { id, msg, type }];
 			return updated.slice(-5); //Keep last 5
 		});
+		if (timeout) {
+			setTimeout(() => {
+				clearAlert(id);
+			}, timeout);
+		}
 	};
 
-	const dismissError = (id) => {
-		setErrors((prev) => prev.filter((err) => err.id !== id));
+	const clearAlert = (id) => {
+		setAlerts((prev) => prev.filter((err) => err.id !== id));
 	};
 
 	return (
-		<ErrorContext.Provider value={{ errors, addError, dismissError }}>
+		<ErrorContext.Provider value={{ alerts, addAlert, clearAlert }}>
 			{children}
 		</ErrorContext.Provider>
 	);
 };
 
-export const useError = () => useContext(ErrorContext);
+export const useAlert = () => useContext(ErrorContext);

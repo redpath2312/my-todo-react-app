@@ -3,7 +3,7 @@ import { useAuth } from "./AuthContext";
 import { Link } from "react-router-dom";
 import SocialRegister from "./Components/SocialRegister";
 import RegisterForm from "./Components/RegisterForm";
-
+import ErrorDisplay from "./Components/ErrorDisplay";
 const Register = () => {
 	const { handleGuestSignIn } = useAuth();
 
@@ -21,6 +21,8 @@ const Register = () => {
 						<hr className="or-divider"></hr>
 
 						<RegisterForm />
+
+						<hr className="or-divider"></hr>
 
 						<div className="no-account-section">
 							<div className="no-account-text small-text">
@@ -45,6 +47,7 @@ const Register = () => {
 					></img>
 				</div>
 			</div>
+			<ErrorDisplay />
 			<div>
 				<Footer />
 			</div>

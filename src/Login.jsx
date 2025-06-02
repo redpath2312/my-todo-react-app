@@ -4,6 +4,7 @@ import SocialLogin from "./Components/SocialLogin";
 import Footer from "./Components/Footer";
 import { useAuth } from "./AuthContext";
 import { Link } from "react-router-dom";
+import ErrorDisplay from "./Components/ErrorDisplay";
 
 const Login = () => {
 	const {
@@ -17,6 +18,7 @@ const Login = () => {
 	const handleGuestClick = () => {
 		handleGuestSignIn();
 	};
+
 	return (
 		<div className="login-page-full">
 			<div className="login-page">
@@ -54,6 +56,7 @@ const Login = () => {
 					></img>
 				</div>
 			</div>
+			<ErrorDisplay />
 			<div>
 				<Footer />
 			</div>

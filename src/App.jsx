@@ -18,7 +18,7 @@ function App({
 	clearDoneCardsInDB,
 	deleteAllCardsInDB,
 }) {
-	const { user, userState, isAuthReady } = useAuth();
+	const { user, userState } = useAuth();
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -41,7 +41,7 @@ function App({
 		}
 	}, [userState, location.pathname, navigate]);
 
-	if (!isAuthReady) {
+	if (userState === "checking") {
 		return <div>Loading...</div>;
 	}
 	return (

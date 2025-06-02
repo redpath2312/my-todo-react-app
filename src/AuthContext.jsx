@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { auth } from "./firebaseconfig";
+import { useAlert } from "./ErrorContext";
 
 import {
 	createUserWithEmailAndPassword,
@@ -19,14 +20,14 @@ const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 
 export const AuthProvider = ({ children }) => {
+	const { addAlert } = useAlert();
 	const [user, setUser] = useState(null);
-	const [userState, setUserState] = useState("loggedOut");
-	const [userErrorInfo, setUserErrorInfo] = useState("");
-	const [isAuthReady, setIsAuthReady] = useState(false);
+	const [userState, setUserState] = useState("checking");
 
 	// Handle Firebase Auth state changes
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			console.log("onAuthStateChanged fired. User:", user);
 			if (user) {
 				setUser(user);
 				setUserState("loggedIn");
@@ -37,7 +38,6 @@ export const AuthProvider = ({ children }) => {
 				setUser(null);
 				setUserState("loggedOut");
 			}
-			setIsAuthReady(true); // auth status has been determined
 		});
 
 		console.log(userState);
@@ -59,12 +59,11 @@ export const AuthProvider = ({ children }) => {
 				loginPassword,
 				loginDisplayName
 			);
-			setUserErrorInfo("");
 			setUser(userCredential.user);
 			setUserState("loggedIn");
 		} catch (error) {
-			console.log(error);
-			setUserErrorInfo(error.message);
+			// console.log(error);
+			addAlert(error.message);
 			throw error;
 		}
 	};
@@ -101,6 +100,7 @@ export const AuthProvider = ({ children }) => {
 			setUserState("loggedIn");
 		} catch (error) {
 			console.error("Registration failed:", error.message);
+			addAlert(error.message);
 		}
 	};
 
@@ -135,6 +135,7 @@ export const AuthProvider = ({ children }) => {
 				const errorCode = error.code;
 				const errorMessage = error.message;
 				alert(`Error: ${errorCode} :${errorMessage}`);
+				addAlert(error.message);
 				// ..
 			});
 	};
@@ -159,7 +160,12 @@ export const AuthProvider = ({ children }) => {
 	useEffect(() => {
 		getRedirectResult(auth)
 			.then((result) => {
-				if (!result) return; // Avoid errors on first load with no redirect result
+				console.log("getRedirectResult fired");
+				if (!result) {
+					console.log("No redirect result");
+					return;
+				}
+				// Avoid errors on first load with no redirect result
 				// This gives you a Google Access Token. You can use it to access Google APIs.
 
 				// const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -167,11 +173,14 @@ export const AuthProvider = ({ children }) => {
 
 				// The signed-in user info.
 				const newUser = result.user;
+				console.log("Redirect user:", newUser);
 				setUser(newUser);
+				setUserState("loggedIn");
 				console.log("Redirect result:", newUser);
 			})
 			.catch((error) => {
 				console.log("Redirect Login Error failed", error.message);
+				addAlert("Redirect Login Error failed", error.message);
 			});
 	}, []);
 
@@ -182,8 +191,6 @@ export const AuthProvider = ({ children }) => {
 			value={{
 				user,
 				userState,
-				userErrorInfo,
-				isAuthReady,
 				handleEmailLogin,
 				handleRegister,
 				handleLogOut,

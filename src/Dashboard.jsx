@@ -8,6 +8,7 @@ import Tooltip from "@mui/material/Tooltip";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import { useAuth } from "./AuthContext";
+import ErrorDisplay from "./Components/ErrorDisplay";
 
 const Dashboard = ({
 	dbCards,
@@ -45,7 +46,7 @@ const Dashboard = ({
 	const allOtherCardsHidden = allOtherCards.length === 0;
 
 	useEffect(() => {
-		console.log("dbcards have changed");
+		// console.log("dbcards have changed");
 	}, [dbCards]); // New Use Effect
 
 	async function handleDeleteAll() {
@@ -185,69 +186,85 @@ const Dashboard = ({
 				<div className="draft-card-container">
 					<DraftCard onAdd={addCard} />
 				</div>
-				<div className="swimlane-heading" id="high-priority-heading">
-					{!highPriorityHidden && <h3>High Priority</h3>}
-				</div>
-				<div className="high-priority-cards-container">
-					{highPriorityCards.map((card) => (
-						<Card
-							key={card.id}
-							id={card.id}
-							text={card.text}
-							checked={card.checked}
-							highPriority={card.highPriority}
-							onCheckedChange={handleCheckedChanged}
-							onPriorityChange={handlePriorityChanged}
-							onDelete={deleteCard}
-							onTextUpdate={handleTextChange}
-							onSelect={selectCard}
-						/>
-					))}
-				</div>
-				<div className="swimlane-heading" id="all-other-tasks-heading">
-					{!allOtherCardsHidden && <h3>All Other Tasks</h3>}
-				</div>
-				<div className="cards-container">
-					{allOtherCards.map((card) => (
-						<Card
-							key={card.id}
-							id={card.id}
-							text={card.text}
-							checked={card.checked}
-							highPriority={card.highPriority}
-							onCheckedChange={handleCheckedChanged}
-							onPriorityChange={handlePriorityChanged}
-							onDelete={deleteCard}
-							onTextUpdate={handleTextChange}
-							onSelect={selectCard}
-						/>
-					))}
-				</div>
-				<div className="swimlane-heading" id="done-tasks-heading">
-					{!doneCardsHidden && <h3>Tasks Done</h3>}
-				</div>
 
-				<div className="done-cards-container">
-					{doneCards.map((card) => (
-						<Card
-							key={card.id}
-							id={card.id}
-							text={card.text}
-							checked={card.checked}
-							highPriority={card.highPriority}
-							onCheckedChange={handleCheckedChanged}
-							onPriorityChange={handlePriorityChanged}
-							onDelete={deleteCard}
-							onTextUpdate={handleTextChange}
-							onSelect={selectCard}
-						/>
-					))}
-				</div>
+				{!highPriorityHidden && (
+					<>
+						<div className="swimlane-heading" id="high-priority-heading">
+							<h3>High Priority</h3>
+						</div>
+
+						<div className="high-priority-cards-container">
+							{highPriorityCards.map((card) => (
+								<Card
+									key={card.id}
+									id={card.id}
+									text={card.text}
+									checked={card.checked}
+									highPriority={card.highPriority}
+									onCheckedChange={handleCheckedChanged}
+									onPriorityChange={handlePriorityChanged}
+									onDelete={deleteCard}
+									onTextUpdate={handleTextChange}
+									onSelect={selectCard}
+								/>
+							))}
+						</div>
+					</>
+				)}
+
+				{!allOtherCardsHidden && (
+					<>
+						<div className="swimlane-heading" id="all-other-tasks-heading">
+							<h3>All Other Tasks</h3>
+						</div>
+						<div className="cards-container">
+							{allOtherCards.map((card) => (
+								<Card
+									key={card.id}
+									id={card.id}
+									text={card.text}
+									checked={card.checked}
+									highPriority={card.highPriority}
+									onCheckedChange={handleCheckedChanged}
+									onPriorityChange={handlePriorityChanged}
+									onDelete={deleteCard}
+									onTextUpdate={handleTextChange}
+									onSelect={selectCard}
+								/>
+							))}
+						</div>
+					</>
+				)}
+
+				{!doneCardsHidden && (
+					<>
+						<div className="swimlane-heading" id="done-tasks-heading">
+							<h3>Tasks Done</h3>
+						</div>
+						<div className="done-cards-container">
+							{doneCards.map((card) => (
+								<Card
+									key={card.id}
+									id={card.id}
+									text={card.text}
+									checked={card.checked}
+									highPriority={card.highPriority}
+									onCheckedChange={handleCheckedChanged}
+									onPriorityChange={handlePriorityChanged}
+									onDelete={deleteCard}
+									onTextUpdate={handleTextChange}
+									onSelect={selectCard}
+								/>
+							))}
+						</div>
+					</>
+				)}
 			</div>
 
 			<div>
 				<Footer />
 			</div>
+			<ErrorDisplay />
 		</div>
 	);
 };

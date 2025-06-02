@@ -3,6 +3,7 @@ import App from "./App.jsx";
 // import { firestore } from "./firebaseconfig.js";
 // import { initializeApp } from "firebase/app";
 import { db, auth } from "./firebaseconfig.js";
+import { useAlert } from "./ErrorContext.jsx";
 
 import {
 	where,
@@ -21,12 +22,7 @@ import {
 
 function Main(props) {
 	const [cards, setCards] = useState([]);
-	// 3 User States defined here manually:
-	//  loggedIn -authenticated with db to connect to db
-	//  loggedOut - will only see log in screen
-	//  guest - will be able to see local cards but no conneciton to db
-	// const [userState, setUserState] = useState("loggedOut");
-
+	const { addAlert } = useAlert();
 	const testDoc = doc(db, "testCollection/testList");
 	const metaDocRef = doc(db, "metaData/maxID");
 
@@ -63,15 +59,16 @@ function Main(props) {
 					await setDoc(testDoc, { cards: updatedCards });
 					await setDoc(metaDocRef, { maxID: newID }, { merge: true });
 				} catch (error) {
-					console.error("Error creating Initial Card: ", error);
+					addAlert("Error creating Initial Card: ", error);
 				}
 			}
 
 			// Update local state
 			setCards(updatedCards);
 			console.log("Card successfully added:", newCard);
+			addAlert("Card successfully added", "info", 3000);
 		} catch (error) {
-			console.error("Error adding another card:", error);
+			addAlert("Error adding another card:", error);
 		}
 	};
 
@@ -87,10 +84,12 @@ function Main(props) {
 				console.log(`Card ID ${cardID} successfully updated in Firestore`);
 				setCards(updatedCards);
 			} else {
-				console.warn("Document does not exist. Cannot update Card.");
+				// console.warn("Document does not exist. Cannot update Card.");
+				addAlert("Document does not exist. Cannot update Card.", "warn", 4000);
 			}
 		} catch (error) {
-			console.error("Error updating firestore: ", error);
+			// console.error("Error updating firestore: ", error);
+			addAlert("Error updating firestore: ", error);
 		}
 	};
 
@@ -101,10 +100,10 @@ function Main(props) {
 				await setDoc(testDoc, { cards: filteredCards }, { merge: true });
 				console.log("Done cards cleared in DB");
 			} else {
-				console.warn("document doesn't exist");
+				addAlert("document doesn't exist", "warn", 4000);
 			}
 		} catch (error) {
-			console.error("Error updating firestore", error);
+			addAlert("Error updating firestore", error);
 		}
 	};
 
@@ -116,10 +115,10 @@ function Main(props) {
 				// console.log("Fetched cards", docData.cards);
 				setCards(docData.cards || []);
 			} else {
-				console.log("No document found");
+				addAlert("No document found, there maybe no cards", "info", 3000);
 			}
 		} catch (error) {
-			console.log("Error fetching cards", error);
+			addAlert("Error fetching cards", error);
 		}
 	}
 
@@ -133,10 +132,10 @@ function Main(props) {
 				setCards(updatedCards);
 				console.log(`Card ID ${cardID} deleted`);
 			} else {
-				console.log("No document found");
+				addAlert("No document found to delete card", "warn", 4000);
 			}
 		} catch (error) {
-			console.log("Error deleting card from database: ", error);
+			addAlert("Error deleting card from database: ", error);
 		}
 	};
 
@@ -150,10 +149,10 @@ function Main(props) {
 				console.log(`Deleted all cards`);
 				setCards([]);
 			} else {
-				console.log("No document found to delete cards");
+				addAlert("No document found to delete cards", "warn", 4000);
 			}
 		} catch (error) {
-			console.log("Error deleting cards from database: ", error);
+			addAlert("Error deleting cards from database: ", error);
 		}
 	};
 
@@ -165,12 +164,16 @@ function Main(props) {
 					const docData = docSnap.data();
 					setCards(docData.cards || []);
 				} else {
-					console.log("No document found in snapshot");
+					addAlert(
+						"No document found in snapshot, there maybe no Cards",
+						"info",
+						3000
+					);
 					setCards([]);
 				}
 			},
 			(error) => {
-				console.error("Snapshot listener error:", error);
+				addAlert("Snapshot listener error:", error);
 			}
 		);
 
