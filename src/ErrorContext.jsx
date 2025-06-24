@@ -19,9 +19,8 @@ export const ErrorProvider = ({ children }) => {
 
 	const addAlert = (msg, type = "error", timeout = 3000) => {
 		const id = crypto.randomUUID();
-		const debugMsg = `${msg} (id: ${id})`;
 		setAlerts((prev) => {
-			const updated = [...prev, { id, msg: debugMsg, type }];
+			const updated = [...prev, { id, msg, type }];
 			return updated.slice(-5); //Keep last 5
 		});
 		if (timeout) {

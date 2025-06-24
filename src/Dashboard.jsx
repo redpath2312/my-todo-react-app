@@ -125,7 +125,7 @@ const Dashboard = ({
 						id: maxLocalIndexKey + 1,
 						text: inputText,
 						checked: false,
-						key: maxLocalIndexKey + 1,
+						renderKey: (maxLocalIndexKey + 1).toString(), //Always treat renderKey as a string, even if in guest mode it’s just the numeric id.”
 						highPriority: false,
 					},
 				];
@@ -196,7 +196,7 @@ const Dashboard = ({
 						<div className="high-priority-cards-container">
 							{highPriorityCards.map((card) => (
 								<Card
-									key={card.key}
+									key={card.renderKey}
 									id={card.id}
 									text={card.text}
 									checked={card.checked}
@@ -220,7 +220,7 @@ const Dashboard = ({
 						<div className="cards-container">
 							{allOtherCards.map((card) => (
 								<Card
-									key={card.key}
+									key={card.renderKey}
 									id={card.id}
 									text={card.text}
 									checked={card.checked}
@@ -244,7 +244,7 @@ const Dashboard = ({
 						<div className="done-cards-container">
 							{doneCards.map((card) => (
 								<Card
-									key={card.key}
+									key={card.renderKey}
 									id={card.id}
 									text={card.text}
 									checked={card.checked}

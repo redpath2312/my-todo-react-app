@@ -49,7 +49,7 @@ function Main(props) {
 				newCard = {
 					id: newID,
 					text: cardText,
-					key: crypto.randomUUID(),
+					renderKey: crypto.randomUUID(),
 					highPriority: false,
 					checked: false,
 				};
@@ -168,12 +168,13 @@ function Main(props) {
 					const docData = docSnap.data();
 					setCards(docData.cards || []);
 				} else {
-					addAlert(
-						"No document found in snapshot, there maybe no Cards",
-						"info",
-						3000
-						//this fires even on just refreshing guest mode page
-					);
+					// Removed alert as fires even in guest mode
+					// addAlert(
+					// 	"No document found in snapshot, there maybe no Cards",
+					// 	"info",
+					// 	3000
+					// 	//this fires even on just refreshing guest mode page
+					// );
 					setCards([]);
 				}
 			},
