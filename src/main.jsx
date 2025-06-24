@@ -4,6 +4,7 @@ import App from "./App.jsx";
 // import { initializeApp } from "firebase/app";
 import { db, auth } from "./firebaseconfig.js";
 import { useAlert } from "./ErrorContext.jsx";
+import { runTransaction } from "firebase/firestore";
 
 import {
 	where,
@@ -22,53 +23,56 @@ import {
 
 function Main(props) {
 	const [cards, setCards] = useState([]);
-	const { addAlert } = useAlert();
+	const [isAdding, setIsAdding] = useState(false);
+	const { addAlert, addThrottledAlert } = useAlert();
+
 	const testDoc = doc(db, "testCollection/testList");
 	const metaDocRef = doc(db, "metaData/maxID");
 
-	const fetchMaxID = async () => {
-		const docSnap = await getDoc(metaDocRef);
-		return docSnap.exists() ? docSnap.data().maxID || 0 : 0;
-	};
-
 	const handleDBAddCard = async (cardText) => {
+		//have state of isAdding and whilst is Adding pass down as prop so card knows to disable
+		//once card in db update isAdding to false
+		setIsAdding(true);
 		try {
+			//simulate delay
+			// await new Promise((resolve) => setTimeout(resolve, 5000));
+
+			let newCard = null;
+
 			// Check if the document exists
-			const docSnap = await getDoc(testDoc);
-			let updatedCards = [];
-			const newID = (await fetchMaxID()) + 1;
+			await runTransaction(db, async (transaction) => {
+				//Get maxID and increment
+				const metaSnap = await getDoc(metaDocRef);
+				const currentMaxID = metaSnap.exists() ? metaSnap.data().maxID || 0 : 0;
+				const newID = currentMaxID + 1;
 
-			const newCard = {
-				id: newID,
-				text: cardText,
-				key: newID,
-				highPriority: false,
-				checked: false,
-			};
+				newCard = {
+					id: newID,
+					text: cardText,
+					key: crypto.randomUUID(),
+					highPriority: false,
+					checked: false,
+				};
 
-			if (docSnap.exists()) {
-				// Document exists, retrieve the current cards array
-				const docData = docSnap.data();
-				updatedCards = [...docData.cards, newCard];
-				await updateDoc(testDoc, { cards: updatedCards });
-				await setDoc(metaDocRef, { maxID: newID }, { merge: true });
-			} else {
-				try {
-					// Document doesn't exist, create it with the new card
-					updatedCards = [newCard];
-					await setDoc(testDoc, { cards: updatedCards });
-					await setDoc(metaDocRef, { maxID: newID }, { merge: true });
-				} catch (error) {
-					addAlert("Error creating Initial Card: ", error);
-				}
-			}
+				//Get existing card list or start a new one
 
-			// Update local state
-			setCards(updatedCards);
-			console.log("Card successfully added:", newCard);
+				const cardSnap = await transaction.get(testDoc);
+				const existingCards = cardSnap.exists() ? cardSnap.data().cards : [];
+				const updatedCards = [...existingCards, newCard];
+
+				//Update both docs within the transaction
+				transaction.set(metaDocRef, { maxID: newID }, { merge: true });
+				transaction.set(testDoc, { cards: updatedCards }, { merge: true });
+			});
+
+			setCards((prev) => [...prev, newCard]);
+			// console.log("Card successfully added:", newCard);
 			addAlert("Card successfully added", "info", 3000);
 		} catch (error) {
-			addAlert("Error adding another card:", error);
+			addThrottledAlert("Error adding card to db", "error", 3000);
+			console.error("Transaction failed:", error);
+		} finally {
+			setIsAdding(false);
 		}
 	};
 
@@ -168,6 +172,7 @@ function Main(props) {
 						"No document found in snapshot, there maybe no Cards",
 						"info",
 						3000
+						//this fires even on just refreshing guest mode page
 					);
 					setCards([]);
 				}
@@ -191,6 +196,7 @@ function Main(props) {
 				dbCards={cards}
 				clearDoneCardsInDB={handleDBClearDone}
 				deleteAllCardsInDB={handleDBDeleteAll}
+				isAdding={isAdding}
 			/>
 		</StrictMode>
 	);

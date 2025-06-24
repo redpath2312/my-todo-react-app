@@ -17,10 +17,11 @@ export const ErrorProvider = ({ children }) => {
 	// 	}
 	// };
 
-	const addAlert = (msg, type = "error", timeout = null) => {
-		const id = Date.now();
+	const addAlert = (msg, type = "error", timeout = 3000) => {
+		const id = crypto.randomUUID();
+		const debugMsg = `${msg} (id: ${id})`;
 		setAlerts((prev) => {
-			const updated = [...prev, { id, msg, type }];
+			const updated = [...prev, { id, msg: debugMsg, type }];
 			return updated.slice(-5); //Keep last 5
 		});
 		if (timeout) {
@@ -28,6 +29,25 @@ export const ErrorProvider = ({ children }) => {
 				clearAlert(id);
 			}, timeout);
 		}
+	};
+
+	let lastAlertTime = 0;
+	let lastAlertMsg = "";
+
+	const addThrottledAlert = (
+		msg,
+		type = "error",
+		timeout = 3000,
+		throttleGap = 1000
+	) => {
+		const now = Date.now();
+
+		// Avoid firing if it's the same alert within the gap
+		if (now - lastAlertTime < throttleGap && msg === lastAlertMsg) return;
+
+		lastAlertTime = now;
+		lastAlertMsg = msg;
+		addAlert(msg, type, timeout);
 	};
 
 	const clearAlert = (id) => {

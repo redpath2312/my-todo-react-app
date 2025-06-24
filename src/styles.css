@@ -379,9 +379,12 @@ h3 {
 	outline: none;
 	border-radius: 0.5rem;
 	border: none;
-	height: 25px;
+	height: 30px;
 	font-weight: 500;
 	font-size: 0.9rem;
+	padding: 5px 10px;
+	align-items: center;
+	display: flex;
 }
 
 .login-form .login-button,
@@ -415,12 +418,14 @@ h3 {
 .header-logout {
 	justify-content: flex-end;
 }
-.login-container a {
+.login-container a,
+.register-container a {
 	color: rgb(61, 36, 201);
 	text-decoration: none;
 }
 
-.login-container a:hover {
+.login-container a:hover,
+.register-container a:hover {
 	text-decoration: underline;
 }
 

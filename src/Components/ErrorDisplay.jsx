@@ -7,10 +7,10 @@ const ErrorDisplay = () => {
 		info: "bg-blue-500",
 	};
 	const context = useAlert();
-	console.log("ErrorContext:", context); // 👀 This is key
+	// console.log("ErrorContext:", context); // 👀 This is key
 
 	const { alerts, clearAlert } = context;
-	console.log("ErrorContext in ErrorDisplay:", context);
+	// console.log("ErrorContext in ErrorDisplay:", context);
 
 	return (
 		<div className="fixed bottom-4 right-4 space-y-2 z-50">

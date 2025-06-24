@@ -17,33 +17,49 @@ function App({
 	deleteCardInDB,
 	clearDoneCardsInDB,
 	deleteAllCardsInDB,
+	isAdding,
 }) {
 	const { user, userState } = useAuth();
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	useEffect(() => {
-		const publicPages = ["/", "/login", "/register"];
-		const protectedPages = ["/dashboard", "/guest"];
+	// useEffect(() => {
+	// 	const publicPages = ["/", "/login", "/register"];
+	// 	const protectedPages = ["/dashboard", "/guest"];
 
-		if (userState === "loggedIn" && publicPages.includes(location.pathname)) {
-			navigate("/dashboard");
-		} else if (
-			userState === "guest" &&
-			publicPages.includes(location.pathname)
-		) {
-			navigate("/guest");
+	// 	if (userState === "loggedIn" && publicPages.includes(location.pathname)) {
+	// 		navigate("/dashboard");
+	// 	} else if (
+	// 		userState === "guest" &&
+	// 		publicPages.includes(location.pathname)
+	// 	) {
+	// 		navigate("/guest");
+	// 	} else if (
+	// 		userState === "loggedOut" &&
+	// 		protectedPages.includes(location.pathname)
+	// 	) {
+	// 		navigate("/login");
+	// 	}
+	// }, [userState, location.pathname, navigate]);
+
+	useEffect(() => {
+		const protectedPages = ["/dashboard", "/guest"];
+		if (userState === "loggedIn") {
+			navigate("/dashboard", { replace: true });
+		} else if (userState === "guest") {
+			navigate("/guest", { replace: true });
 		} else if (
 			userState === "loggedOut" &&
 			protectedPages.includes(location.pathname)
 		) {
-			navigate("/login");
+			navigate("/login", { replace: true });
 		}
 	}, [userState, location.pathname, navigate]);
 
 	if (userState === "checking") {
 		return <div>Loading...</div>;
 	}
+
 	return (
 		<Routes>
 			<Route
@@ -67,10 +83,16 @@ function App({
 						deleteCardInDB={deleteCardInDB}
 						clearDoneCardsInDB={clearDoneCardsInDB}
 						deleteAllCardsInDB={deleteAllCardsInDB}
+						isAdding={isAdding}
 					/>
 				}
 			/>
-			<Route path="/login" element={<Login />} />
+			<Route
+				path="/login"
+				element={
+					userState === "loggedIn" ? <Navigate to="/dashboard" /> : <Login />
+				}
+			/>
 			<Route
 				path="/guest"
 				element={
@@ -82,6 +104,7 @@ function App({
 							deleteCardInDB={deleteCardInDB}
 							clearDoneCardsInDB={clearDoneCardsInDB}
 							deleteAllCardsInDB={deleteAllCardsInDB}
+							isAdding={isAdding}
 						/>
 					)
 				}

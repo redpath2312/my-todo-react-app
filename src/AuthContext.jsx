@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 	// Handle Firebase Auth state changes
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
-			console.log("onAuthStateChanged fired. User:", user);
+			// console.log("onAuthStateChanged fired. User:", user);
 			if (user) {
 				setUser(user);
 				setUserState("loggedIn");
@@ -40,16 +40,14 @@ export const AuthProvider = ({ children }) => {
 			}
 		});
 
-		console.log(userState);
-
 		return () => unsubscribe();
 	}, []);
 
 	const handleEmailLogin = async (creds) => {
 		try {
-			console.log(
-				"trying to set up creds before calling signInWithEmailAndPassword"
-			);
+			// console.log(
+			// 	"trying to set up creds before calling signInWithEmailAndPassword"
+			// );
 			const loginEmail = creds.email;
 			const loginPassword = creds.password;
 			const loginDisplayName = creds.displayName;
@@ -113,7 +111,7 @@ export const AuthProvider = ({ children }) => {
 			await signOut(auth);
 			setUser(null);
 			setUserState("loggedOut");
-			console.log("Firebase has now logged you out");
+			// console.log("Firebase has now logged you out");
 		}
 	};
 
@@ -124,7 +122,7 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const handleForgotPwd = async (email) => {
-		console.log("Sending reset email to: ", email);
+		// console.log("Sending reset email to: ", email);
 		await sendPasswordResetEmail(auth, email)
 			.then(() => {
 				console.log("Password reset email sent");
@@ -160,7 +158,7 @@ export const AuthProvider = ({ children }) => {
 	useEffect(() => {
 		getRedirectResult(auth)
 			.then((result) => {
-				console.log("getRedirectResult fired");
+				// console.log("getRedirectResult fired");
 				if (!result) {
 					console.log("No redirect result");
 					return;
@@ -173,10 +171,10 @@ export const AuthProvider = ({ children }) => {
 
 				// The signed-in user info.
 				const newUser = result.user;
-				console.log("Redirect user:", newUser);
+				// console.log("Redirect user:", newUser);
 				setUser(newUser);
 				setUserState("loggedIn");
-				console.log("Redirect result:", newUser);
+				// console.log("Redirect result:", newUser);
 			})
 			.catch((error) => {
 				console.log("Redirect Login Error failed", error.message);
@@ -184,7 +182,7 @@ export const AuthProvider = ({ children }) => {
 			});
 	}, []);
 
-	console.log(userState);
+	console.log("User State is: ", userState);
 
 	return (
 		<AuthContext.Provider

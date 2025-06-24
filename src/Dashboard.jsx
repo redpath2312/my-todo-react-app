@@ -18,6 +18,7 @@ const Dashboard = ({
 	deleteCardInDB,
 	clearDoneCardsInDB,
 	deleteAllCardsInDB,
+	isAdding,
 }) => {
 	const [localCards, setLocalCards] = useState([]);
 	const { user, userState } = useAuth();
@@ -137,7 +138,7 @@ const Dashboard = ({
 		if (userState === "loggedIn") {
 			deleteCardInDB(id);
 		} else {
-			const newLocalCardsList = localCards.filter((card) => card.key != id);
+			const newLocalCardsList = localCards.filter((card) => card.id != id);
 			setLocalCards(newLocalCardsList);
 		}
 	}
@@ -151,7 +152,6 @@ const Dashboard = ({
 			}
 		});
 	}
-
 	return (
 		<div className="main-page-container">
 			<div className="main">
@@ -184,7 +184,7 @@ const Dashboard = ({
 					</div>
 				</div>
 				<div className="draft-card-container">
-					<DraftCard onAdd={addCard} />
+					<DraftCard onAdd={addCard} isAdding={isAdding} />
 				</div>
 
 				{!highPriorityHidden && (
@@ -196,7 +196,7 @@ const Dashboard = ({
 						<div className="high-priority-cards-container">
 							{highPriorityCards.map((card) => (
 								<Card
-									key={card.id}
+									key={card.key}
 									id={card.id}
 									text={card.text}
 									checked={card.checked}
@@ -220,7 +220,7 @@ const Dashboard = ({
 						<div className="cards-container">
 							{allOtherCards.map((card) => (
 								<Card
-									key={card.id}
+									key={card.key}
 									id={card.id}
 									text={card.text}
 									checked={card.checked}
@@ -244,7 +244,7 @@ const Dashboard = ({
 						<div className="done-cards-container">
 							{doneCards.map((card) => (
 								<Card
-									key={card.id}
+									key={card.key}
 									id={card.id}
 									text={card.text}
 									checked={card.checked}
