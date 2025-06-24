@@ -1,7 +1,6 @@
 import React from "react";
 import { useAuth } from "../AuthContext";
-
-const SocialLogin = () => {
+const SocialRegister = () => {
 	const { handleSocialAuthRedirect } = useAuth();
 
 	const handleSocialLoginClick = (providerID) => {
@@ -9,7 +8,7 @@ const SocialLogin = () => {
 	};
 
 	return (
-		<div className="social-login">
+		<div className="social-register">
 			<button
 				className="social-button"
 				onClick={() => handleSocialLoginClick("google")}
@@ -19,7 +18,7 @@ const SocialLogin = () => {
 			</button>
 			<button
 				className="social-button"
-				onClick={() => handleSocialLoginClick("facebook")}
+				onClick={() => handleSocialAuthRedirect("facebook")}
 			>
 				<img src="images/facebook.svg" alt="facebook" className="social-icon" />
 				facebook
@@ -28,4 +27,4 @@ const SocialLogin = () => {
 	);
 };
 
-export default SocialLogin;
+export default SocialRegister;

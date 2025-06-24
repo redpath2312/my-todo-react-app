@@ -3,6 +3,7 @@ import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function DraftCard(props) {
 	const [createCardText, setCreateCardText] = useState("");
@@ -11,10 +12,10 @@ function DraftCard(props) {
 		setCreateCardText(event.target.value);
 	}
 
-	function handleSubmit(event) {
+	async function handleSubmit(event) {
 		event.preventDefault();
+		await props.onAdd(createCardText);
 		setCreateCardText("");
-		props.onAdd(createCardText);
 	}
 
 	let theme = createTheme({
@@ -26,10 +27,10 @@ function DraftCard(props) {
 	});
 
 	return (
-		<div id="draft-card" className="card">
-			<div className="cards-top"></div>
-			<div>
-				<form>
+		<form onSubmit={handleSubmit}>
+			<div id="draft-card" className="card">
+				<div className="cards-top"></div>
+				<div>
 					<textarea
 						maxLength={30}
 						onChange={handleChange}
@@ -39,18 +40,23 @@ function DraftCard(props) {
 						placeholder="Write new task here"
 						value={createCardText}
 					></textarea>
-				</form>
+				</div>
+				<div className="draft-card-bottom">
+					<ThemeProvider theme={theme}>
+						<Tooltip title="Add task" placement="left">
+							{/* disabled={props.isAdding} , but pack in icon button directly below when not testing the spam add */}
+							<IconButton disabled={props.isAdding} type="submit">
+								{props.isAdding ? (
+									<CircularProgress size={24} />
+								) : (
+									<NoteAddIcon color="create" />
+								)}
+							</IconButton>
+						</Tooltip>
+					</ThemeProvider>
+				</div>
 			</div>
-			<div className="draft-card-bottom">
-				<ThemeProvider theme={theme}>
-					<Tooltip title="Add task" placement="left">
-						<IconButton type="submit" onClick={handleSubmit}>
-							<NoteAddIcon color="create" />
-						</IconButton>
-					</Tooltip>
-				</ThemeProvider>
-			</div>
-		</div>
+		</form>
 	);
 }
 

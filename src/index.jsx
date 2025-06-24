@@ -1,8 +1,20 @@
 import React from "react";
+import "./styles.css";
 import { createRoot } from "react-dom/client";
-import Main from "./Main";
-import Login from "./Login";
+import { BrowserRouter as Router } from "react-router-dom";
+import Main from "./main";
+import { AuthProvider } from "./AuthContext";
+import { ErrorProvider } from "./ErrorContext";
+// import Register from "./Register";
 
 const root = createRoot(document.getElementById("root"));
 //Change between Login and Main
-root.render(<Main />);
+root.render(
+	<Router>
+		<ErrorProvider>
+			<AuthProvider>
+				<Main />
+			</AuthProvider>
+		</ErrorProvider>
+	</Router>
+);
