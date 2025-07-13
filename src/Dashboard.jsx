@@ -141,7 +141,6 @@ const Dashboard = ({
 						isEditingLock ? "dashboard-is-locked" : ""
 					}`}
 				>
-					<button>Test</button>
 					<div className="summary">
 						<div id="summary-heading">
 							<h2 className="text-2xl font-semibold my-2">Summary</h2>

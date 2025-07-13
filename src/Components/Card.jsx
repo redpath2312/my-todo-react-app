@@ -118,7 +118,9 @@ function Card({
 		<div
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
-			className={cardClassCheck(checked, highPriority, isHovered)}
+			className={`${cardClassCheck(checked, highPriority, isHovered)} ${
+				isEditing ? "is-editing" : ""
+			}`}
 		>
 			<div className="cards-top">
 				<div id="card-id-display">
