@@ -55,6 +55,19 @@
 		/* max-width: 32px;
 		padding: 5px; */
 	}
+
+	.dashboard-is-locked button {
+		opacity: 0.5;
+		pointer-events: none;
+		cursor: not-allowed;
+	}
+
+	.dashboard-is-locked .card {
+		opacity: 0.5;
+	}
+	.dashboard-is-locked .card.is-editing {
+		opacity: 1 !important;
+	}
 }
 
 html {
@@ -228,8 +241,11 @@ p {
 	height: 25px;
 	display: flex;
 	justify-content: space-between;
+	padding-top: 2px;
 }
-
+.card-spinner-wrapper {
+	padding-right: 7px;
+}
 .draft-card-container {
 	display: flex;
 	flex-direction: column;

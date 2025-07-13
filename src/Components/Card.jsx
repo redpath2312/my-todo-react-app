@@ -6,62 +6,55 @@ import Tooltip from "@mui/material/Tooltip";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import CircularProgress from "@mui/material/CircularProgress";
-
-// Card always in text area format
-// Initial use state shows card text with values from props
-// When card is selected and user starts typing it will then begin editing mode.
-// Text area just displays local card text from user input
-// When user stops hovering over the card, it will save automatically putting the new values into the db.
+import { useUI } from "../UIContext";
 
 function Card({
 	id,
 	text,
 	checked,
 	highPriority,
-	onCheckedChange,
-	onPriorityChange,
 	onDelete,
 	onTextUpdate,
 	onSelect,
+	onFlagToggle,
 }) {
+	const { editingLockRef, setIsEditingLock } = useUI();
 	const [isHovered, setHovered] = useState(false);
 	const [cardText, setCardText] = useState(text);
 	const [isEditing, setEditing] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [debounceTimeout, setDebounceTimeout] = useState(null);
 
-	// Sync cardText with props when props.text changes (only if not editing)
+	const flagProps = { checked, highPriority };
 
 	function handleTextChange(event) {
 		handleEditing();
-		const newText = event.target.value;
-		setCardText(newText);
+		setCardText(event.target.value);
 	}
 
 	function handleEditing() {
 		if (!isEditing) {
 			setEditing(true);
+			editingLockRef.current = true;
+			setIsEditingLock(true);
 			console.log("Now editing");
 		}
 	}
 
 	async function handleSaveCardUpdate(newText) {
-		// Useful console logs to debug saving issues and state change by forcing a delay
-		// console.log("Before Saving", isSaving);
-		// setIsSaving(true);
-		// console.log("After setting isSaving", isSaving);
-		// // setTimeout(async () => {
-		// // 	console.log("After a 2 sec delay");
 		try {
-			await onTextUpdate(newText);
+			setIsSaving(true);
+			await onTextUpdate(id, newText, flagProps);
 			console.log("Saved");
 		} catch (error) {
-			console.log("error saving", error);
+			console.log("Error saving", error);
 		} finally {
+			editingLockRef.current = false;
+			setIsEditingLock(false);
 			setIsSaving(false);
 			setEditing(false);
+			console.log("Finished saving and editing");
 		}
-		// }, 500);
 	}
 
 	function handleMouseEnter() {
@@ -70,56 +63,56 @@ function Card({
 
 	function handleMouseLeave() {
 		setHovered(false);
-		// Prevent duplicate save if no actual edit was made
 		if (!isEditing || cardText === text) return;
-
-		// Clear the pending debounce function
 		if (debounceTimeout) {
 			clearTimeout(debounceTimeout);
 			setDebounceTimeout(null);
 		}
-
-		// Save immediately when leaving
 		setEditing(false);
 		handleSaveCardUpdate(cardText);
 	}
 
+	useEffect(() => {
+		if (cardText === text) return;
+		if (debounceTimeout) clearTimeout(debounceTimeout);
+
+		const timeout = setTimeout(() => {
+			handleSaveCardUpdate(cardText);
+		}, 2000);
+		setDebounceTimeout(timeout);
+
+		return () => clearTimeout(debounceTimeout);
+	}, [cardText]);
+
+	const handleFlagClick = (flagName, currentValue) => {
+		if (editingLockRef.current || isEditing) {
+			console.log("Blocked due to editing/saving lock");
+			return;
+		}
+		onFlagToggle(id, flagName, currentValue, cardText);
+	};
+
+	const handleDeleteClick = (id) => {
+		if (editingLockRef.current || isEditing) {
+			console.log("Blocked due to editing/saving lock");
+			return;
+		}
+		onDelete(id);
+	};
+
 	let theme = createTheme({
 		palette: {
-			primary: {
-				main: "#bdac80",
-			},
-			secondary: {
-				main: "#E98074",
-			},
+			primary: { main: "#bdac80" },
+			secondary: { main: "#E98074" },
 		},
 	});
 
 	function cardClassCheck(checked, highPriority, isHovered) {
-		if (isHovered) return "card card-hovered"; // Yellow for hovered cards
-		else if (checked) return "card card-done"; // Green for done cards
-		else if (highPriority)
-			return "card card-high-priority"; // Red for high-priority cards
-		else return "card"; // Blue for other tasks
+		if (isHovered) return "card card-hovered";
+		if (checked) return "card card-done";
+		if (highPriority) return "card card-high-priority";
+		return "card";
 	}
-
-	useEffect(() => {
-		if (cardText === text) return;
-
-		if (debounceTimeout) {
-			clearTimeout(debounceTimeout);
-		}
-
-		// Only debounce if user is typing (not hovering out)
-		// if (isHovered) {
-		const timeout = setTimeout(() => {
-			handleSaveCardUpdate(cardText);
-		}, 5000); // 5-second delay
-		setDebounceTimeout(timeout);
-
-		// Cleanup timeout on unmount or new input
-		return () => clearTimeout(debounceTimeout);
-	}, [cardText]); // Runs every time `cardText` changes
 
 	return (
 		<div
@@ -131,6 +124,11 @@ function Card({
 				<div id="card-id-display">
 					<p style={{ textAlign: "left" }}>id: {id}</p>
 				</div>
+				{isEditing && (
+					<div className="card-spinner-wrapper">
+						<CircularProgress size={16} />
+					</div>
+				)}
 			</div>
 			<div className="cards-middle">
 				{isSaving ? (
@@ -142,9 +140,7 @@ function Card({
 							value={cardText}
 							onInput={handleTextChange}
 							id="card-text"
-							onClick={() => {
-								onSelect(id);
-							}}
+							onClick={() => onSelect(id)}
 						/>
 					</form>
 				)}
@@ -155,42 +151,37 @@ function Card({
 					<div>
 						<Tooltip title="Delete" placement="right">
 							<IconButton
-								onClick={() => {
-									onDelete(id);
-								}}
+								disabled={editingLockRef.current}
+								onClick={() => handleDeleteClick(id)}
 							>
 								<DeleteForeverIcon fontSize="large" color="secondary" />
 							</IconButton>
 						</Tooltip>
 					</div>
 					<div>
-						{" "}
 						<Tooltip title="Toggle High Priority" placement="bottom">
 							<IconButton
-								onClick={() => {
-									onPriorityChange(id);
-								}}
+								disabled={editingLockRef.current}
+								onClick={() => handleFlagClick("highPriority", highPriority)}
 							>
 								<PriorityHighIcon
 									value={highPriority}
 									fontSize="large"
-									color={`${highPriority ? "secondary" : "disabled"}`}
+									color={highPriority ? "secondary" : "disabled"}
 								/>
 							</IconButton>
 						</Tooltip>
 					</div>
 					<div>
-						{" "}
 						<Tooltip title="Toggle Done" placement="left-start">
 							<IconButton
-								onClick={() => {
-									onCheckedChange(id);
-								}}
+								disabled={editingLockRef.current}
+								onClick={() => handleFlagClick("checked", checked)}
 							>
 								<CheckCircleIcon
 									value={checked}
-									color={`${checked ? "success" : "disabled"}`}
-									fontSize={`${checked ? "large" : "medium"}`}
+									color={checked ? "success" : "disabled"}
+									fontSize={checked ? "large" : "medium"}
 								/>
 							</IconButton>
 						</Tooltip>

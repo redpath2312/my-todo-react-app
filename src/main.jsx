@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useState } from "react";
+import { StrictMode, useEffect, useState, useRef } from "react";
 import App from "./App.jsx";
 // import { firestore } from "./firebaseconfig.js";
 // import { initializeApp } from "firebase/app";
@@ -22,6 +22,7 @@ import {
 // import { textFieldClasses } from "@mui/material";
 
 function Main(props) {
+	console.log("Main.jsx rendered");
 	const [cards, setCards] = useState([]);
 	const [isAdding, setIsAdding] = useState(false);
 	const { addAlert, addThrottledAlert } = useAlert();
@@ -187,19 +188,22 @@ function Main(props) {
 		return () => unsubscribe();
 	}, []);
 
+	let mainRenderCount = 0;
+	mainRenderCount++;
+	console.log("🔥 Main render count:", mainRenderCount);
+
 	return (
-		<StrictMode>
-			<App
-				addCardToDB={handleDBAddCard}
-				readCardsFromDB={fetchCards}
-				updateCardsInDB={handleDBUpdate}
-				deleteCardInDB={handleDBCardDelete}
-				dbCards={cards}
-				clearDoneCardsInDB={handleDBClearDone}
-				deleteAllCardsInDB={handleDBDeleteAll}
-				isAdding={isAdding}
-			/>
-		</StrictMode>
+		// <StrictMode>
+		<App
+			addCardToDB={handleDBAddCard}
+			readCardsFromDB={fetchCards}
+			updateCardsInDB={handleDBUpdate}
+			deleteCardInDB={handleDBCardDelete}
+			dbCards={cards}
+			clearDoneCardsInDB={handleDBClearDone}
+			deleteAllCardsInDB={handleDBDeleteAll}
+			isAdding={isAdding}
+		/>
 	);
 }
 export default Main;

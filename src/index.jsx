@@ -5,16 +5,19 @@ import { BrowserRouter as Router } from "react-router-dom";
 import Main from "./main";
 import { AuthProvider } from "./AuthContext";
 import { ErrorProvider } from "./ErrorContext";
+import { UIProvider } from "./UIContext";
 // import Register from "./Register";
 
 const root = createRoot(document.getElementById("root"));
 //Change between Login and Main
 root.render(
-	<Router>
-		<ErrorProvider>
-			<AuthProvider>
-				<Main />
-			</AuthProvider>
-		</ErrorProvider>
-	</Router>
+	<UIProvider>
+		<Router>
+			<ErrorProvider>
+				<AuthProvider>
+					<Main />
+				</AuthProvider>
+			</ErrorProvider>
+		</Router>
+	</UIProvider>
 );

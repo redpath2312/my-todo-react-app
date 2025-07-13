@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useUI } from "../UIContext";
 
 function DraftCard(props) {
 	const [createCardText, setCreateCardText] = useState("");
+	const { isInteractionLocked, setIsInteractionLocked } = useUI();
+	useEffect(() => {
+		console.log("DraftCard re-rendered with lock:", isInteractionLocked);
+	}, [isInteractionLocked]);
 
 	function handleChange(event) {
 		setCreateCardText(event.target.value);
@@ -45,8 +50,11 @@ function DraftCard(props) {
 					<ThemeProvider theme={theme}>
 						<Tooltip title="Add task" placement="left">
 							{/* disabled={props.isAdding} , but pack in icon button directly below when not testing the spam add */}
-							<IconButton disabled={props.isAdding} type="submit">
-								{props.isAdding ? (
+							<IconButton
+								disabled={props.isAdding || isInteractionLocked}
+								type="submit"
+							>
+								{props.isAdding || isInteractionLocked ? (
 									<CircularProgress size={24} />
 								) : (
 									<NoteAddIcon color="create" />
