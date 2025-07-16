@@ -34,14 +34,14 @@ const Dashboard = ({
 	const [maxLocalIndexKey, setMaxLocalIndexKey] = useState(0);
 	const [selectedCardID, setSelectedCardID] = useState(null);
 
-	const doneCards = cards.filter((card) => card.checked == true);
+	const doneCards = cards.filter((card) => card.done == true);
 	const doneCardsTotal = doneCards.length;
 	const highPriorityCards = cards.filter(
-		(card) => card.highPriority == true && !card.checked
+		(card) => card.highPriority == true && !card.done
 	);
 	const highPriorityCardsTotal = highPriorityCards.length;
 	const allOtherCards = cards.filter(
-		(card) => card.highPriority == false && !card.checked
+		(card) => card.highPriority == false && !card.done
 	);
 
 	const doneCardsHidden = doneCards.length === 0;
@@ -63,7 +63,7 @@ const Dashboard = ({
 	}
 	async function handleClearAllDoneTasks() {
 		if (editingLockRef === true) return;
-		const clearedDoneCards = cards.filter((card) => !card.checked);
+		const clearedDoneCards = cards.filter((card) => !card.done);
 		if (userState === "loggedIn") {
 			await clearDoneCardsInDB(clearedDoneCards);
 			readCardsFromDB();
@@ -86,7 +86,7 @@ const Dashboard = ({
 					{
 						id: maxLocalIndexKey + 1,
 						text: inputText,
-						checked: false,
+						done: false,
 						renderKey: (maxLocalIndexKey + 1).toString(), //Always treat renderKey as a string, even if in guest mode it’s just the numeric id.”
 						highPriority: false,
 					},
@@ -192,7 +192,7 @@ const Dashboard = ({
 										key={card.renderKey}
 										id={card.id}
 										text={card.text}
-										checked={card.checked}
+										done={card.done}
 										highPriority={card.highPriority}
 										onDelete={deleteCard}
 										onTextUpdate={handleTextChange}
@@ -215,7 +215,7 @@ const Dashboard = ({
 										key={card.renderKey}
 										id={card.id}
 										text={card.text}
-										checked={card.checked}
+										done={card.done}
 										highPriority={card.highPriority}
 										onDelete={deleteCard}
 										onTextUpdate={handleTextChange}
@@ -238,7 +238,7 @@ const Dashboard = ({
 										key={card.renderKey}
 										id={card.id}
 										text={card.text}
-										checked={card.checked}
+										done={card.done}
 										highPriority={card.highPriority}
 										onDelete={deleteCard}
 										onTextUpdate={handleTextChange}

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { auth } from "./firebaseconfig";
 import { useAlert } from "./ErrorContext";
+import { createUserDoc } from "./FirestoreService";
 
 import {
 	createUserWithEmailAndPassword,
@@ -57,6 +58,7 @@ export const AuthProvider = ({ children }) => {
 				loginPassword,
 				loginDisplayName
 			);
+			console.log(userCredential.user);
 			setUser(userCredential.user);
 			setUserState("loggedIn");
 		} catch (error) {
@@ -96,6 +98,7 @@ export const AuthProvider = ({ children }) => {
 				displayName: registerDisplayName,
 			});
 			setUserState("loggedIn");
+			await handlePostLoginSetup(userCredential.user);
 		} catch (error) {
 			console.error("Registration failed:", error.message);
 			addAlert(error.message);
@@ -155,19 +158,27 @@ export const AuthProvider = ({ children }) => {
 
 	//provider specific redirects
 
+	const handlePostLoginSetup = async (user) => {
+		try {
+			await createUserDoc(user);
+		} catch (error) {
+			console.log(
+				"Error ensuring user doc exists after login: ",
+				error.message
+			);
+		}
+	};
+
 	useEffect(() => {
-		getRedirectResult(auth)
-			.then((result) => {
+		const handleRedirectResult = async () => {
+			try {
+				const result = await getRedirectResult(auth);
 				// console.log("getRedirectResult fired");
 				if (!result) {
 					console.log("No redirect result");
 					return;
 				}
 				// Avoid errors on first load with no redirect result
-				// This gives you a Google Access Token. You can use it to access Google APIs.
-
-				// const credential = GoogleAuthProvider.credentialFromResult(result);
-				// const token = credential.accessToken;
 
 				// The signed-in user info.
 				const newUser = result.user;
@@ -175,11 +186,13 @@ export const AuthProvider = ({ children }) => {
 				setUser(newUser);
 				setUserState("loggedIn");
 				// console.log("Redirect result:", newUser);
-			})
-			.catch((error) => {
+				await handlePostLoginSetup(newUser);
+			} catch (error) {
 				console.log("Redirect Login Error failed", error.message);
 				addAlert("Redirect Login Error failed", error.message);
-			});
+			}
+		};
+		handleRedirectResult();
 	}, []);
 
 	console.log("User State is: ", userState);

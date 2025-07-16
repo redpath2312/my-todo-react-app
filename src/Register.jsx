@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import SocialRegister from "./Components/SocialRegister";
 import RegisterForm from "./Components/RegisterForm";
 import ErrorDisplay from "./Components/ErrorDisplay";
+
 const Register = () => {
 	const { handleGuestSignIn } = useAuth();
 

@@ -2,9 +2,11 @@ import { StrictMode, useEffect, useState, useRef } from "react";
 import App from "./App.jsx";
 // import { firestore } from "./firebaseconfig.js";
 // import { initializeApp } from "firebase/app";
+import { useAuth } from "./AuthContext";
 import { db, auth } from "./firebaseconfig.js";
 import { useAlert } from "./ErrorContext.jsx";
 import { runTransaction } from "firebase/firestore";
+import { addCard } from "./FirestoreService.js";
 
 import {
 	where,
@@ -26,6 +28,7 @@ function Main(props) {
 	const [cards, setCards] = useState([]);
 	const [isAdding, setIsAdding] = useState(false);
 	const { addAlert, addThrottledAlert } = useAlert();
+	const { user, userState } = useAuth();
 
 	const testDoc = doc(db, "testCollection/testList");
 	const metaDocRef = doc(db, "metaData/maxID");
@@ -35,43 +38,12 @@ function Main(props) {
 		//once card in db update isAdding to false
 		setIsAdding(true);
 		try {
-			//simulate delay
-			// await new Promise((resolve) => setTimeout(resolve, 5000));
-
-			let newCard = null;
-
-			// Check if the document exists
-			await runTransaction(db, async (transaction) => {
-				//Get maxID and increment
-				const metaSnap = await getDoc(metaDocRef);
-				const currentMaxID = metaSnap.exists() ? metaSnap.data().maxID || 0 : 0;
-				const newID = currentMaxID + 1;
-
-				newCard = {
-					id: newID,
-					text: cardText,
-					renderKey: crypto.randomUUID(),
-					highPriority: false,
-					checked: false,
-				};
-
-				//Get existing card list or start a new one
-
-				const cardSnap = await transaction.get(testDoc);
-				const existingCards = cardSnap.exists() ? cardSnap.data().cards : [];
-				const updatedCards = [...existingCards, newCard];
-
-				//Update both docs within the transaction
-				transaction.set(metaDocRef, { maxID: newID }, { merge: true });
-				transaction.set(testDoc, { cards: updatedCards }, { merge: true });
-			});
-
-			setCards((prev) => [...prev, newCard]);
-			// console.log("Card successfully added:", newCard);
+			const newCard = await addCard(user, cardText);
 			addAlert("Card successfully added", "info", 3000);
+			setCards((prevCards) => [...prevCards, newCard]);
 		} catch (error) {
-			addThrottledAlert("Error adding card to db", "error", 3000);
 			console.error("Transaction failed:", error);
+			addThrottledAlert("Error adding card to db", "error", 3000);
 		} finally {
 			setIsAdding(false);
 		}
@@ -169,13 +141,6 @@ function Main(props) {
 					const docData = docSnap.data();
 					setCards(docData.cards || []);
 				} else {
-					// Removed alert as fires even in guest mode
-					// addAlert(
-					// 	"No document found in snapshot, there maybe no Cards",
-					// 	"info",
-					// 	3000
-					// 	//this fires even on just refreshing guest mode page
-					// );
 					setCards([]);
 				}
 			},

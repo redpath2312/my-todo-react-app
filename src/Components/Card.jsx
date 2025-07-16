@@ -11,7 +11,7 @@ import { useUI } from "../UIContext";
 function Card({
 	id,
 	text,
-	checked,
+	done,
 	highPriority,
 	onDelete,
 	onTextUpdate,
@@ -25,7 +25,7 @@ function Card({
 	const [isSaving, setIsSaving] = useState(false);
 	const [debounceTimeout, setDebounceTimeout] = useState(null);
 
-	const flagProps = { checked, highPriority };
+	const flagProps = { done, highPriority };
 
 	function handleTextChange(event) {
 		handleEditing();
@@ -107,9 +107,9 @@ function Card({
 		},
 	});
 
-	function cardClassCheck(checked, highPriority, isHovered) {
+	function cardClassCheck(done, highPriority, isHovered) {
 		if (isHovered) return "card card-hovered";
-		if (checked) return "card card-done";
+		if (done) return "card card-done";
 		if (highPriority) return "card card-high-priority";
 		return "card";
 	}
@@ -118,7 +118,7 @@ function Card({
 		<div
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
-			className={`${cardClassCheck(checked, highPriority, isHovered)} ${
+			className={`${cardClassCheck(done, highPriority, isHovered)} ${
 				isEditing ? "is-editing" : ""
 			}`}
 		>
@@ -178,12 +178,12 @@ function Card({
 						<Tooltip title="Toggle Done" placement="left-start">
 							<IconButton
 								disabled={editingLockRef.current}
-								onClick={() => handleFlagClick("checked", checked)}
+								onClick={() => handleFlagClick("done", done)}
 							>
 								<CheckCircleIcon
-									value={checked}
-									color={checked ? "success" : "disabled"}
-									fontSize={checked ? "large" : "medium"}
+									value={done}
+									color={done ? "success" : "disabled"}
+									fontSize={done ? "large" : "medium"}
 								/>
 							</IconButton>
 						</Tooltip>
