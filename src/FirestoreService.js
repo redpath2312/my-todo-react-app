@@ -57,3 +57,57 @@ export async function addCard(user, cardText) {
 		return newCard;
 	}
 }
+
+export async function updateCard(user, cardID, updatedFields) {
+	const userRef = doc(db, "users", user.uid);
+	const userSnap = await getDoc(userRef);
+	if (!userSnap.exists()) {
+		throw new Error("No user on db");
+	} else {
+		const userData = userSnap.data();
+		const currentCards = userData.cards || [];
+		console.log(currentCards);
+		console.log(updatedFields);
+		const updatedCards = currentCards.map((card) =>
+			card.id === cardID
+				? {
+						...card,
+						...updatedFields,
+				  }
+				: card
+		);
+		await updateDoc(userRef, { cards: updatedCards });
+		console.log(`Card ID ${cardID} successfully updated in Firestore`);
+		return updatedCards;
+	}
+}
+export async function clearDoneCards(user, filteredCards) {
+	const userRef = doc(db, "users", user.uid);
+	const userSnap = await getDoc(userRef);
+	if (userSnap.exists()) {
+		await updateDoc(userRef, { cards: filteredCards });
+		console.log("'Done' Cards successfully cleared in firestore");
+	} else throw new Error("No user on db");
+}
+export async function deleteCard(user, cardID) {
+	const userRef = doc(db, "users", user.uid);
+	const userSnap = await getDoc(userRef);
+	if (!userSnap.exists()) {
+		throw new Error("No user on db");
+	} else {
+		const currentCards = userSnap.data().cards;
+		const filteredCards = currentCards.filter((card) => card.id != cardID);
+		await updateDoc(userRef, { cards: filteredCards });
+		console.log("Deleted card from firestore");
+	}
+}
+
+export async function deleteAllCards(user) {
+	const userRef = doc(db, "users", user.uid);
+	const userSnap = await getDoc(userRef);
+	if (!userSnap.exists()) {
+		throw new Error("No user on db");
+	} else {
+		await updateDoc(userRef, { cards: [] });
+	}
+}

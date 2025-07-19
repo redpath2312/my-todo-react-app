@@ -14,7 +14,6 @@ import { useUI } from "./UIContext";
 const Dashboard = ({
 	dbCards,
 	addCardToDB,
-	readCardsFromDB,
 	updateCardsInDB,
 	deleteCardInDB,
 	clearDoneCardsInDB,
@@ -34,14 +33,15 @@ const Dashboard = ({
 	const [maxLocalIndexKey, setMaxLocalIndexKey] = useState(0);
 	const [selectedCardID, setSelectedCardID] = useState(null);
 
-	const doneCards = cards.filter((card) => card.done == true);
-	const doneCardsTotal = doneCards.length;
-	const highPriorityCards = cards.filter(
-		(card) => card.highPriority == true && !card.done
+	const cardsTotal = (cards || []).length;
+	const doneCards = (cards || []).filter((card) => card.done === true);
+	const doneCardsTotal = (doneCards || []).length;
+	const highPriorityCards = (cards || []).filter(
+		(card) => card.highPriority === true && !card.done
 	);
-	const highPriorityCardsTotal = highPriorityCards.length;
-	const allOtherCards = cards.filter(
-		(card) => card.highPriority == false && !card.done
+	const highPriorityCardsTotal = highPriorityCards.length || 0;
+	const allOtherCards = (cards || []).filter(
+		(card) => card.highPriority === false && !card.done
 	);
 
 	const doneCardsHidden = doneCards.length === 0;
@@ -56,7 +56,6 @@ const Dashboard = ({
 		if (editingLockRef === true) return;
 		if (userState === "loggedIn") {
 			await deleteAllCardsInDB();
-			readCardsFromDB();
 		} else {
 			setLocalCards([]);
 		}
@@ -66,7 +65,6 @@ const Dashboard = ({
 		const clearedDoneCards = cards.filter((card) => !card.done);
 		if (userState === "loggedIn") {
 			await clearDoneCardsInDB(clearedDoneCards);
-			readCardsFromDB();
 		} else {
 			setLocalCards(clearedDoneCards);
 		}
@@ -146,7 +144,7 @@ const Dashboard = ({
 							<h2 className="text-2xl font-semibold my-2">Summary</h2>
 						</div>
 						<h3 className="text-xl font-medium my-1"> You Have:</h3>
-						<p className="text-gray-700">{cards.length} Total Tasks</p>
+						<p className="text-gray-700">{cardsTotal} Total Tasks</p>
 						<p className="text-gray-700">
 							{highPriorityCardsTotal} High Priority Tasks
 						</p>

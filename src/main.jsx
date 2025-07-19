@@ -1,46 +1,33 @@
-import { StrictMode, useEffect, useState, useRef } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import App from "./App.jsx";
-// import { firestore } from "./firebaseconfig.js";
-// import { initializeApp } from "firebase/app";
 import { useAuth } from "./AuthContext";
 import { db, auth } from "./firebaseconfig.js";
 import { useAlert } from "./ErrorContext.jsx";
-import { runTransaction } from "firebase/firestore";
-import { addCard } from "./FirestoreService.js";
-
 import {
-	where,
-	query,
-	doc,
-	getDoc,
-	getDocs,
-	setDoc,
-	updateDoc,
-	addDoc,
-	collection,
-	onSnapshot,
-	deleteDoc,
-} from "firebase/firestore";
+	addCard,
+	clearDoneCards,
+	updateCard,
+	deleteCard,
+	deleteAllCards,
+} from "./FirestoreService.js";
+
+import { doc, onSnapshot } from "firebase/firestore";
 // import { textFieldClasses } from "@mui/material";
 
 function Main(props) {
-	console.log("Main.jsx rendered");
+	// console.log("Main.jsx rendered");
 	const [cards, setCards] = useState([]);
 	const [isAdding, setIsAdding] = useState(false);
 	const { addAlert, addThrottledAlert } = useAlert();
 	const { user, userState } = useAuth();
-
-	const testDoc = doc(db, "testCollection/testList");
-	const metaDocRef = doc(db, "metaData/maxID");
 
 	const handleDBAddCard = async (cardText) => {
 		//have state of isAdding and whilst is Adding pass down as prop so card knows to disable
 		//once card in db update isAdding to false
 		setIsAdding(true);
 		try {
-			const newCard = await addCard(user, cardText);
+			await addCard(user, cardText);
 			addAlert("Card successfully added", "info", 3000);
-			setCards((prevCards) => [...prevCards, newCard]);
 		} catch (error) {
 			console.error("Transaction failed:", error);
 			addThrottledAlert("Error adding card to db", "error", 3000);
@@ -51,66 +38,28 @@ function Main(props) {
 
 	const handleDBUpdate = async (cardID, updatedFields) => {
 		try {
-			const docSnap = await getDoc(testDoc);
-			if (docSnap.exists()) {
-				const docData = docSnap.data();
-				const updatedCards = docData.cards.map((card) =>
-					card.id === cardID ? { ...card, ...updatedFields } : card
-				);
-				await updateDoc(testDoc, { cards: updatedCards });
-				console.log(`Card ID ${cardID} successfully updated in Firestore`);
-				setCards(updatedCards);
-			} else {
-				// console.warn("Document does not exist. Cannot update Card.");
-				addAlert("Document does not exist. Cannot update Card.", "warn", 4000);
-			}
+			await updateCard(user, cardID, updatedFields);
+			addAlert(`Card with id="${cardID}" updated`, "info", 3000);
 		} catch (error) {
-			// console.error("Error updating firestore: ", error);
 			addAlert("Error updating firestore: ", error);
 		}
 	};
 
 	const handleDBClearDone = async (filteredCards) => {
 		try {
-			const docSnap = await getDoc(testDoc);
-			if (docSnap.exists()) {
-				await setDoc(testDoc, { cards: filteredCards }, { merge: true });
-				console.log("Done cards cleared in DB");
-			} else {
-				addAlert("document doesn't exist", "warn", 4000);
-			}
+			console.log("filtered Cards to be passed", filteredCards);
+			console.log("About to clear done cards");
+			await clearDoneCards(user, filteredCards);
+			addAlert("Cleared all done cards from db", "info", 3000);
 		} catch (error) {
 			addAlert("Error updating firestore", error);
 		}
 	};
 
-	async function fetchCards() {
-		try {
-			const docSnap = await getDoc(testDoc);
-			if (docSnap.exists()) {
-				const docData = docSnap.data();
-				// console.log("Fetched cards", docData.cards);
-				setCards(docData.cards || []);
-			} else {
-				addAlert("No document found, there maybe no cards", "info", 3000);
-			}
-		} catch (error) {
-			addAlert("Error fetching cards", error);
-		}
-	}
-
 	const handleDBCardDelete = async (cardID) => {
 		try {
-			const docSnap = await getDoc(testDoc);
-			if (docSnap.exists()) {
-				const docData = docSnap.data();
-				const updatedCards = docData.cards.filter((card) => card.id != cardID);
-				await updateDoc(testDoc, { cards: updatedCards });
-				setCards(updatedCards);
-				console.log(`Card ID ${cardID} deleted`);
-			} else {
-				addAlert("No document found to delete card", "warn", 4000);
-			}
+			await deleteCard(user, cardID);
+			addAlert(`Deleted Card with id="${cardID}" from database`, "info", 3000);
 		} catch (error) {
 			addAlert("Error deleting card from database: ", error);
 		}
@@ -118,28 +67,23 @@ function Main(props) {
 
 	const handleDBDeleteAll = async () => {
 		try {
-			const docSnap = await getDoc(testDoc);
-			const metaDocSnap = await getDoc(metaDocRef);
-			if (docSnap.exists() && metaDocSnap.exists()) {
-				await deleteDoc(testDoc);
-				await deleteDoc(metaDocRef);
-				console.log(`Deleted all cards`);
-				setCards([]);
-			} else {
-				addAlert("No document found to delete cards", "warn", 4000);
-			}
+			await deleteAllCards(user);
+			addAlert("Deleted cards from database successfully", "info", 3000);
 		} catch (error) {
 			addAlert("Error deleting cards from database: ", error);
 		}
 	};
 
 	useEffect(() => {
+		if (!user) return;
+		const userRef = doc(db, "users", user.uid);
 		const unsubscribe = onSnapshot(
-			testDoc,
-			(docSnap) => {
-				if (docSnap.exists()) {
-					const docData = docSnap.data();
-					setCards(docData.cards || []);
+			userRef,
+			(userSnap) => {
+				if (userSnap.exists()) {
+					const userData = userSnap.data();
+					console.log("Snapshot fired, cards:", userData.cards);
+					setCards(userData.cards || []);
 				} else {
 					setCards([]);
 				}
@@ -151,17 +95,12 @@ function Main(props) {
 
 		// Cleanup the listener on component unmount
 		return () => unsubscribe();
-	}, []);
-
-	let mainRenderCount = 0;
-	mainRenderCount++;
-	console.log("🔥 Main render count:", mainRenderCount);
+	}, [user]);
 
 	return (
 		// <StrictMode>
 		<App
 			addCardToDB={handleDBAddCard}
-			readCardsFromDB={fetchCards}
 			updateCardsInDB={handleDBUpdate}
 			deleteCardInDB={handleDBCardDelete}
 			dbCards={cards}

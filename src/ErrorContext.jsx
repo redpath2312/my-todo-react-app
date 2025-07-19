@@ -54,7 +54,9 @@ export const ErrorProvider = ({ children }) => {
 	};
 
 	return (
-		<ErrorContext.Provider value={{ alerts, addAlert, clearAlert }}>
+		<ErrorContext.Provider
+			value={{ alerts, addAlert, addThrottledAlert, clearAlert }}
+		>
 			{children}
 		</ErrorContext.Provider>
 	);
