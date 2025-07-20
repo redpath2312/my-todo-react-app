@@ -26,6 +26,7 @@ const Swimlane = ({
 						text={card.text}
 						done={card.done}
 						highPriority={card.highPriority}
+						dashTask={card.dashTask}
 						onDelete={onDelete}
 						onTextUpdate={onTextUpdate}
 						onSelect={onSelect}

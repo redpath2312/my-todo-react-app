@@ -32,7 +32,12 @@ export async function createUserDoc(user) {
 }
 
 //Adds the new card to firestore, and returns it back to main for local updating.
-export async function addCard(user, cardText) {
+export async function addCard(
+	user,
+	cardText,
+	highPriorityDraft,
+	dashTaskDraft
+) {
 	const userRef = doc(db, "users", user.uid);
 	const userSnap = await getDoc(userRef);
 	if (!userSnap.exists()) {
@@ -45,8 +50,9 @@ export async function addCard(user, cardText) {
 			id: newID,
 			text: cardText,
 			renderKey: crypto.randomUUID(),
-			highPriority: false,
+			highPriority: highPriorityDraft,
 			done: false,
+			dashTask: dashTaskDraft,
 			createdAt: new Date(),
 		};
 		const updatedCards = [...currentCards, newCard];

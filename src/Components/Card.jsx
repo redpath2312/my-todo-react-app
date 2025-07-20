@@ -6,6 +6,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import CircularProgress from "@mui/material/CircularProgress";
+import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import { useUI } from "../UIContext";
 
 function Card({
@@ -13,6 +14,7 @@ function Card({
 	text,
 	done,
 	highPriority,
+	dashTask,
 	onDelete,
 	onTextUpdate,
 	onSelect,
@@ -151,7 +153,7 @@ function Card({
 			<div className="cards-bottom">
 				<ThemeProvider theme={theme}>
 					<div>
-						<Tooltip title="Delete" placement="right">
+						<Tooltip title="Delete" placement="bottom">
 							<IconButton
 								disabled={editingLockRef.current}
 								onClick={() => handleDeleteClick(id)}
@@ -174,8 +176,24 @@ function Card({
 							</IconButton>
 						</Tooltip>
 					</div>
+
 					<div>
-						<Tooltip title="Toggle Done" placement="left-start">
+						<Tooltip title="Toggle Dash Task" placement="bottom">
+							<IconButton
+								disabled={editingLockRef.current}
+								onClick={() => handleFlagClick("dashTask", dashTask)}
+							>
+								<ElectricBoltIcon
+									value={dashTask}
+									fontSize="large"
+									color={dashTask ? "secondary" : "disabled"}
+								/>
+							</IconButton>
+						</Tooltip>
+					</div>
+
+					<div>
+						<Tooltip title="Toggle Done" placement="bottom">
 							<IconButton
 								disabled={editingLockRef.current}
 								onClick={() => handleFlagClick("done", done)}

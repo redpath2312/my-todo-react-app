@@ -21,12 +21,16 @@ function Main(props) {
 	const { addAlert, addThrottledAlert } = useAlert();
 	const { user, userState } = useAuth();
 
-	const handleDBAddCard = async (cardText) => {
+	const handleDBAddCard = async (
+		cardText,
+		highPriorityDraft,
+		dashTaskDraft
+	) => {
 		//have state of isAdding and whilst is Adding pass down as prop so card knows to disable
 		//once card in db update isAdding to false
 		setIsAdding(true);
 		try {
-			await addCard(user, cardText);
+			await addCard(user, cardText, highPriorityDraft, dashTaskDraft);
 			addAlert("Card successfully added", "info", 3000);
 		} catch (error) {
 			console.error("Transaction failed:", error);

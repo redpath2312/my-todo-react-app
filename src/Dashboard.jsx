@@ -38,11 +38,14 @@ const Dashboard = ({
 		cardsTotal,
 		doneCards,
 		doneCardsTotal,
+		dashTaskCards,
+		dashTaskCardsTotal,
 		highPriorityCards,
 		highPriorityCardsTotal,
 		allOtherCards,
 		doneCardsHidden,
 		highPriorityHidden,
+		dashTasksHidden,
 		allOtherCardsHidden,
 	} = getCardFilters(cards);
 
@@ -51,8 +54,13 @@ const Dashboard = ({
 		const highPriorityCards = (cards || []).filter(
 			(card) => card.highPriority === true && !card.done
 		);
+		const dashTaskCards = (cards || []).filter(
+			(card) =>
+				card.dashTask === true && !card.highPriority === true && !card.done
+		);
 		const allOtherCards = (cards || []).filter(
-			(card) => card.highPriority === false && !card.done
+			(card) =>
+				card.highPriority === false && card.dashTask === false && !card.done
 		);
 		return {
 			cardsTotal: (cards || []).length,
@@ -60,9 +68,12 @@ const Dashboard = ({
 			doneCardsTotal: (doneCards || []).length,
 			highPriorityCards,
 			highPriorityCardsTotal: highPriorityCards.length || 0,
+			dashTaskCards,
+			dashTaskCardsTotal: dashTaskCards.length || 0,
 			allOtherCards,
 			doneCardsHidden: doneCards.length === 0,
 			highPriorityHidden: highPriorityCards.length === 0,
+			dashTasksHidden: dashTaskCards.length === 0,
 			allOtherCardsHidden: allOtherCards.length === 0,
 		};
 	}
@@ -93,9 +104,9 @@ const Dashboard = ({
 		setSelectedCardID(id);
 	}
 
-	function addCard(inputText) {
+	function addCard(inputText, highPriorityDraft, dashTaskDraft) {
 		if (userState === "loggedIn") {
-			addCardToDB(inputText);
+			addCardToDB(inputText, highPriorityDraft, dashTaskDraft);
 		} else {
 			setLocalCards((prevCards) => {
 				return [
@@ -105,7 +116,8 @@ const Dashboard = ({
 						text: inputText,
 						done: false,
 						renderKey: (maxLocalIndexKey + 1).toString(), //Always treat renderKey as a string, even if in guest mode it’s just the numeric id.”
-						highPriority: false,
+						highPriority: highPriorityDraft,
+						dashTask: dashTaskDraft,
 					},
 				];
 			});
@@ -153,6 +165,8 @@ const Dashboard = ({
 		onFlagToggle: handleFlagToggleChange,
 	};
 
+	console.log("Dash Cards: ", dashTaskCards);
+
 	return (
 		<div className="main-page-container">
 			<div className="main">
@@ -173,6 +187,7 @@ const Dashboard = ({
 						<p className="text-gray-700">
 							{highPriorityCardsTotal} High Priority Tasks
 						</p>
+						<p className="text-gray-700">{dashTaskCardsTotal} Dash Tasks</p>
 						<p className="text-gray-700">{doneCardsTotal} Tasks Done</p>
 
 						<div>
@@ -211,6 +226,15 @@ const Dashboard = ({
 						hidden={highPriorityHidden}
 						containerClass="high-priority-cards-container"
 						headingID="high-priority-heading"
+						{...commonSwimlaneProps}
+					/>
+
+					<Swimlane
+						title="Dash Tasks"
+						cards={dashTaskCards}
+						hidden={dashTasksHidden}
+						containerClass="dash-tasks-cards-container"
+						headingID="dash-tasks-heading"
 						{...commonSwimlaneProps}
 					/>
 

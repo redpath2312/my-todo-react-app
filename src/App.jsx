@@ -12,7 +12,6 @@ function App({
 	// userState,
 	dbCards,
 	addCardToDB,
-	readCardsFromDB,
 	updateCardsInDB,
 	deleteCardInDB,
 	clearDoneCardsInDB,
@@ -22,25 +21,6 @@ function App({
 	const { user, userState } = useAuth();
 	const navigate = useNavigate();
 	const location = useLocation();
-
-	// useEffect(() => {
-	// 	const publicPages = ["/", "/login", "/register"];
-	// 	const protectedPages = ["/dashboard", "/guest"];
-
-	// 	if (userState === "loggedIn" && publicPages.includes(location.pathname)) {
-	// 		navigate("/dashboard");
-	// 	} else if (
-	// 		userState === "guest" &&
-	// 		publicPages.includes(location.pathname)
-	// 	) {
-	// 		navigate("/guest");
-	// 	} else if (
-	// 		userState === "loggedOut" &&
-	// 		protectedPages.includes(location.pathname)
-	// 	) {
-	// 		navigate("/login");
-	// 	}
-	// }, [userState, location.pathname, navigate]);
 
 	useEffect(() => {
 		const protectedPages = ["/dashboard", "/guest"];
@@ -78,7 +58,6 @@ function App({
 					<Dashboard
 						dbCards={dbCards}
 						addCardToDB={addCardToDB}
-						readCardsFromDB={readCardsFromDB}
 						updateCardsInDB={updateCardsInDB}
 						deleteCardInDB={deleteCardInDB}
 						clearDoneCardsInDB={clearDoneCardsInDB}
@@ -99,7 +78,6 @@ function App({
 					userState === "guest" && (
 						<Dashboard
 							addCardToDB={addCardToDB}
-							readCardsFromDB={readCardsFromDB}
 							updateCardsInDB={updateCardsInDB}
 							deleteCardInDB={deleteCardInDB}
 							clearDoneCardsInDB={clearDoneCardsInDB}

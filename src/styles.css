@@ -154,6 +154,7 @@ textarea {
 
 .all-other-cards-container,
 .high-priority-cards-container,
+.dash-tasks-cards-container,
 .done-cards-container {
 	display: flex;
 	flex-wrap: wrap;
@@ -163,6 +164,7 @@ textarea {
 @media (min-width: 1067px) {
 	.all-other-cards-container,
 	.high-priority-cards-container,
+	.dash-tasks-cards-container,
 	.done-cards-container {
 		justify-content: start;
 	}
@@ -170,6 +172,7 @@ textarea {
 @media (max-width: 1066px) {
 	.all-other-cards-container,
 	.high-priority-cards-container,
+	.dash-tasks-cards-container,
 	.done-cards-container {
 		justify-content: center;
 	}
@@ -259,7 +262,9 @@ h3 {
 #done-tasks-heading {
 	background-color: #0d7016;
 }
-
+#dash-tasks-heading {
+	background-color: darkgoldenrod;
+}
 @media (max-width: 900px) {
 	.login-page {
 		flex-direction: column;
