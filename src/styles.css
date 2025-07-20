@@ -152,7 +152,7 @@ textarea {
 	overflow: hidden;
 }
 
-.cards-container,
+.all-other-cards-container,
 .high-priority-cards-container,
 .done-cards-container {
 	display: flex;
@@ -161,14 +161,14 @@ textarea {
 }
 
 @media (min-width: 1067px) {
-	.cards-container,
+	.all-other-cards-container,
 	.high-priority-cards-container,
 	.done-cards-container {
 		justify-content: start;
 	}
 }
 @media (max-width: 1066px) {
-	.cards-container,
+	.all-other-cards-container,
 	.high-priority-cards-container,
 	.done-cards-container {
 		justify-content: center;
@@ -511,6 +511,11 @@ hr.or-divider:after {
 	pointer-events: auto;
 	cursor: text;
 }
-
+.button-disabled {
+	opacity: 0.5;
+	pointer-events: none;
+	cursor: not-allowed;
+	transition: opacity 0.3s ease;
+}
 .register-form {
 }

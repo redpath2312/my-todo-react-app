@@ -39,7 +39,7 @@ function Main(props) {
 	const handleDBUpdate = async (cardID, updatedFields) => {
 		try {
 			await updateCard(user, cardID, updatedFields);
-			addAlert(`Card with id="${cardID}" updated`, "info", 3000);
+			addAlert(`Card ${cardID} updated`, "info", 3000);
 		} catch (error) {
 			addAlert("Error updating firestore: ", error);
 		}
@@ -59,7 +59,7 @@ function Main(props) {
 	const handleDBCardDelete = async (cardID) => {
 		try {
 			await deleteCard(user, cardID);
-			addAlert(`Deleted Card with id="${cardID}" from database`, "info", 3000);
+			addAlert(`Deleted Card ${cardID} from database`, "info", 3000);
 		} catch (error) {
 			addAlert("Error deleting card from database: ", error);
 		}

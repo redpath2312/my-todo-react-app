@@ -10,6 +10,7 @@ import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import { useAuth } from "./AuthContext";
 import ErrorDisplay from "./Components/ErrorDisplay";
 import { useUI } from "./UIContext";
+import Swimlane from "./Components/Swimlane";
 
 const Dashboard = ({
 	dbCards,
@@ -33,20 +34,38 @@ const Dashboard = ({
 	const [maxLocalIndexKey, setMaxLocalIndexKey] = useState(0);
 	const [selectedCardID, setSelectedCardID] = useState(null);
 
-	const cardsTotal = (cards || []).length;
-	const doneCards = (cards || []).filter((card) => card.done === true);
-	const doneCardsTotal = (doneCards || []).length;
-	const highPriorityCards = (cards || []).filter(
-		(card) => card.highPriority === true && !card.done
-	);
-	const highPriorityCardsTotal = highPriorityCards.length || 0;
-	const allOtherCards = (cards || []).filter(
-		(card) => card.highPriority === false && !card.done
-	);
+	const {
+		cardsTotal,
+		doneCards,
+		doneCardsTotal,
+		highPriorityCards,
+		highPriorityCardsTotal,
+		allOtherCards,
+		doneCardsHidden,
+		highPriorityHidden,
+		allOtherCardsHidden,
+	} = getCardFilters(cards);
 
-	const doneCardsHidden = doneCards.length === 0;
-	const highPriorityHidden = highPriorityCards.length === 0;
-	const allOtherCardsHidden = allOtherCards.length === 0;
+	function getCardFilters(cards) {
+		const doneCards = (cards || []).filter((card) => card.done === true);
+		const highPriorityCards = (cards || []).filter(
+			(card) => card.highPriority === true && !card.done
+		);
+		const allOtherCards = (cards || []).filter(
+			(card) => card.highPriority === false && !card.done
+		);
+		return {
+			cardsTotal: (cards || []).length,
+			doneCards,
+			doneCardsTotal: (doneCards || []).length,
+			highPriorityCards,
+			highPriorityCardsTotal: highPriorityCards.length || 0,
+			allOtherCards,
+			doneCardsHidden: doneCards.length === 0,
+			highPriorityHidden: highPriorityCards.length === 0,
+			allOtherCardsHidden: allOtherCards.length === 0,
+		};
+	}
 
 	useEffect(() => {
 		// console.log("dbcards have changed");
@@ -127,6 +146,12 @@ const Dashboard = ({
 	function handleFlagToggleChange(id, flagName, currentFlagValue, currentText) {
 		updateCardById(id, { [flagName]: !currentFlagValue, text: currentText });
 	}
+	const commonSwimlaneProps = {
+		onDelete: deleteCard,
+		onTextUpdate: handleTextChange,
+		onSelect: selectCard,
+		onFlagToggle: handleFlagToggleChange,
+	};
 
 	return (
 		<div className="main-page-container">
@@ -153,7 +178,8 @@ const Dashboard = ({
 						<div>
 							<Tooltip title="Clear Done Tasks" placement="left">
 								<IconButton
-									disabled={editingLockRef.current}
+									className={doneCardsTotal === 0 ? "button-disabled" : ""}
+									disabled={doneCardsTotal === 0 || editingLockRef.current}
 									onClick={handleClearAllDoneTasks}
 								>
 									<PublishedWithChangesIcon fontSize="large" color="primary" />
@@ -162,7 +188,8 @@ const Dashboard = ({
 
 							<Tooltip title="Delete All Tasks" placement="right">
 								<IconButton
-									disabled={editingLockRef.current}
+									className={cardsTotal === 0 ? "button-disabled" : ""}
+									disabled={cardsTotal === 0 || editingLockRef.current}
 									onClick={handleDeleteAll}
 								>
 									<DeleteSweepIcon fontSize="large" color="primary" />
@@ -178,75 +205,32 @@ const Dashboard = ({
 						/>
 					</div>
 
-					{!highPriorityHidden && (
-						<>
-							<div className="swimlane-heading" id="high-priority-heading">
-								<h3>High Priority</h3>
-							</div>
+					<Swimlane
+						title="High Priority Tasks"
+						cards={highPriorityCards}
+						hidden={highPriorityHidden}
+						containerClass="high-priority-cards-container"
+						headingID="high-priority-heading"
+						{...commonSwimlaneProps}
+					/>
 
-							<div className="high-priority-cards-container">
-								{highPriorityCards.map((card) => (
-									<Card
-										key={card.renderKey}
-										id={card.id}
-										text={card.text}
-										done={card.done}
-										highPriority={card.highPriority}
-										onDelete={deleteCard}
-										onTextUpdate={handleTextChange}
-										onSelect={selectCard}
-										onFlagToggle={handleFlagToggleChange}
-									/>
-								))}
-							</div>
-						</>
-					)}
+					<Swimlane
+						title="All Other Tasks"
+						cards={allOtherCards}
+						hidden={allOtherCardsHidden}
+						containerClass="all-other-cards-container"
+						headingID="all-other-tasks-heading"
+						{...commonSwimlaneProps}
+					/>
 
-					{!allOtherCardsHidden && (
-						<>
-							<div className="swimlane-heading" id="all-other-tasks-heading">
-								<h3>All Other Tasks</h3>
-							</div>
-							<div className="cards-container">
-								{allOtherCards.map((card) => (
-									<Card
-										key={card.renderKey}
-										id={card.id}
-										text={card.text}
-										done={card.done}
-										highPriority={card.highPriority}
-										onDelete={deleteCard}
-										onTextUpdate={handleTextChange}
-										onSelect={selectCard}
-										onFlagToggle={handleFlagToggleChange}
-									/>
-								))}
-							</div>
-						</>
-					)}
-
-					{!doneCardsHidden && (
-						<>
-							<div className="swimlane-heading" id="done-tasks-heading">
-								<h3>Tasks Done</h3>
-							</div>
-							<div className="done-cards-container">
-								{doneCards.map((card) => (
-									<Card
-										key={card.renderKey}
-										id={card.id}
-										text={card.text}
-										done={card.done}
-										highPriority={card.highPriority}
-										onDelete={deleteCard}
-										onTextUpdate={handleTextChange}
-										onSelect={selectCard}
-										onFlagToggle={handleFlagToggleChange}
-									/>
-								))}
-							</div>
-						</>
-					)}
+					<Swimlane
+						title="Done Tasks"
+						cards={doneCards}
+						hidden={doneCardsHidden}
+						containerClass="done-cards-container"
+						headingID="done-tasks-heading"
+						{...commonSwimlaneProps}
+					/>
 				</div>
 			</div>
 
