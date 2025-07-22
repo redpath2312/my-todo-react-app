@@ -3,7 +3,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+// import { createTheme, ThemeProvider } from "@mui/material/styles";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import CircularProgress from "@mui/material/CircularProgress";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
@@ -102,12 +102,12 @@ function Card({
 		onDelete(id);
 	};
 
-	let theme = createTheme({
-		palette: {
-			primary: { main: "#bdac80" },
-			secondary: { main: "#E98074" },
-		},
-	});
+	// let theme = createTheme({
+	// 	palette: {
+	// 		primary: { main: "#bdac80" },
+	// 		secondary: { main: "#E98074" },
+	// 	},
+	// });
 
 	function cardClassCheck(done, highPriority, isHovered) {
 		if (isHovered) return "card card-hovered";
@@ -140,7 +140,7 @@ function Card({
 				) : (
 					<form>
 						<textarea
-							maxLength={30}
+							maxLength={40}
 							value={cardText}
 							onInput={handleTextChange}
 							id="card-text"
@@ -151,62 +151,59 @@ function Card({
 			</div>
 
 			<div className="cards-bottom">
-				<ThemeProvider theme={theme}>
-					<div>
-						<Tooltip title="Delete" placement="bottom">
-							<IconButton
-								disabled={editingLockRef.current}
-								onClick={() => handleDeleteClick(id)}
-							>
-								<DeleteForeverIcon fontSize="large" color="secondary" />
-							</IconButton>
-						</Tooltip>
-					</div>
-					<div>
-						<Tooltip title="Toggle High Priority" placement="bottom">
-							<IconButton
-								disabled={editingLockRef.current}
-								onClick={() => handleFlagClick("highPriority", highPriority)}
-							>
-								<PriorityHighIcon
-									value={highPriority}
-									fontSize="large"
-									color={highPriority ? "secondary" : "disabled"}
-								/>
-							</IconButton>
-						</Tooltip>
-					</div>
+				{/* <ThemeProvider theme={theme}> */}
+				<div>
+					<Tooltip title="Delete" placement="bottom">
+						<IconButton
+							disabled={editingLockRef.current}
+							onClick={() => handleDeleteClick(id)}
+						>
+							<DeleteForeverIcon color="delete" />
+						</IconButton>
+					</Tooltip>
+				</div>
+				<div>
+					<Tooltip title="Toggle High Priority" placement="bottom">
+						<IconButton
+							disabled={editingLockRef.current}
+							onClick={() => handleFlagClick("highPriority", highPriority)}
+						>
+							<PriorityHighIcon
+								value={highPriority}
+								color={highPriority ? "urgent" : "disabled"}
+							/>
+						</IconButton>
+					</Tooltip>
+				</div>
 
-					<div>
-						<Tooltip title="Toggle Dash Task" placement="bottom">
-							<IconButton
-								disabled={editingLockRef.current}
-								onClick={() => handleFlagClick("dashTask", dashTask)}
-							>
-								<ElectricBoltIcon
-									value={dashTask}
-									fontSize="large"
-									color={dashTask ? "secondary" : "disabled"}
-								/>
-							</IconButton>
-						</Tooltip>
-					</div>
+				<div>
+					<Tooltip title="Toggle Dash Task" placement="bottom">
+						<IconButton
+							disabled={editingLockRef.current}
+							onClick={() => handleFlagClick("dashTask", dashTask)}
+						>
+							<ElectricBoltIcon
+								value={dashTask}
+								color={dashTask ? "dash" : "disabled"}
+							/>
+						</IconButton>
+					</Tooltip>
+				</div>
 
-					<div>
-						<Tooltip title="Toggle Done" placement="bottom">
-							<IconButton
-								disabled={editingLockRef.current}
-								onClick={() => handleFlagClick("done", done)}
-							>
-								<CheckCircleIcon
-									value={done}
-									color={done ? "success" : "disabled"}
-									fontSize={done ? "large" : "medium"}
-								/>
-							</IconButton>
-						</Tooltip>
-					</div>
-				</ThemeProvider>
+				<div>
+					<Tooltip title="Toggle Done" placement="bottom">
+						<IconButton
+							disabled={editingLockRef.current}
+							onClick={() => handleFlagClick("done", done)}
+						>
+							<CheckCircleIcon
+								value={done}
+								color={done ? "success" : "disabled"}
+							/>
+						</IconButton>
+					</Tooltip>
+				</div>
+				{/* </ThemeProvider> */}
 			</div>
 		</div>
 	);

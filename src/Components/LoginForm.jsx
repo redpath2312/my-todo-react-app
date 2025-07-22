@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useAuth } from "../AuthContext";
 import { Link } from "react-router-dom";
+import { Button } from "@mui/material";
+import PrimaryButton from "./Buttons/PrimaryButton";
 const LoginForm = () => {
 	const { handleEmailLogin } = useAuth();
 	const [isPasswordVisible, setPasswordVisible] = useState(false);
@@ -61,10 +63,7 @@ const LoginForm = () => {
 			{/* <a className="small-text" href="#">
 				Forgot Password?
 			</a> */}
-
-			<button type="submit" className="login-button">
-				Log In
-			</button>
+			<PrimaryButton type="submit">Log In</PrimaryButton>
 		</form>
 	);
 };

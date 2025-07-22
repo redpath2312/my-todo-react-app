@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../AuthContext";
 import { useAlert } from "../ErrorContext";
 import ErrorDisplay from "./ErrorDisplay";
+import PrimaryButton from "./Buttons/PrimaryButton";
 
 const RegisterForm = () => {
 	const { handleRegister } = useAuth();
@@ -75,10 +76,7 @@ const RegisterForm = () => {
 					required
 				/>
 			</div>
-
-			<button type="submit" className="login-button">
-				Register
-			</button>
+			<PrimaryButton type="submit">Register</PrimaryButton>
 			<ErrorDisplay />
 		</form>
 	);

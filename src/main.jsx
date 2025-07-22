@@ -12,6 +12,9 @@ import {
 } from "./FirestoreService.js";
 
 import { doc, onSnapshot } from "firebase/firestore";
+import { ThemeProvider } from "@mui/material/styles";
+import { createAppTheme } from "./theme";
+const theme = createAppTheme("light");
 // import { textFieldClasses } from "@mui/material";
 
 function Main(props) {
@@ -103,15 +106,17 @@ function Main(props) {
 
 	return (
 		// <StrictMode>
-		<App
-			addCardToDB={handleDBAddCard}
-			updateCardsInDB={handleDBUpdate}
-			deleteCardInDB={handleDBCardDelete}
-			dbCards={cards}
-			clearDoneCardsInDB={handleDBClearDone}
-			deleteAllCardsInDB={handleDBDeleteAll}
-			isAdding={isAdding}
-		/>
+		<ThemeProvider theme={theme}>
+			<App
+				addCardToDB={handleDBAddCard}
+				updateCardsInDB={handleDBUpdate}
+				deleteCardInDB={handleDBCardDelete}
+				dbCards={cards}
+				clearDoneCardsInDB={handleDBClearDone}
+				deleteAllCardsInDB={handleDBDeleteAll}
+				isAdding={isAdding}
+			/>
+		</ThemeProvider>
 	);
 }
 export default Main;

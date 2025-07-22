@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
-
+import HeaderButton from "./Buttons/HeaderButton";
 function Header() {
 	const { user, userState, handleLogOut } = useAuth();
 	const navigate = useNavigate();
@@ -41,11 +41,11 @@ function Header() {
 				)}
 			</div>
 			<div className="header-logout">
-				<button onClick={handleLogOutSubmit} className="logout-button">
+				<HeaderButton onClick={handleLogOutSubmit} className="logout-button">
 					{userState === "guest"
 						? "Home"
 						: userState === "loggedIn" && "Log Out"}
-				</button>
+				</HeaderButton>
 			</div>
 		</header>
 	);

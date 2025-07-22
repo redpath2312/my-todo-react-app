@@ -11,6 +11,7 @@ import { useAuth } from "./AuthContext";
 import ErrorDisplay from "./Components/ErrorDisplay";
 import { useUI } from "./UIContext";
 import Swimlane from "./Components/Swimlane";
+import Typography from "@mui/material/Typography";
 
 const Dashboard = ({
 	dbCards,
@@ -182,13 +183,34 @@ const Dashboard = ({
 						<div id="summary-heading">
 							<h2 className="text-2xl font-semibold my-2">Summary</h2>
 						</div>
-						<h3 className="text-xl font-medium my-1"> You Have:</h3>
-						<p className="text-gray-700">{cardsTotal} Total Tasks</p>
-						<p className="text-gray-700">
-							{highPriorityCardsTotal} High Priority Tasks
-						</p>
-						<p className="text-gray-700">{dashTaskCardsTotal} Dash Tasks</p>
-						<p className="text-gray-700">{doneCardsTotal} Tasks Done</p>
+						<h3 className="text-xl font-medium my-1">
+							{" "}
+							You have{" "}
+							<Typography component="span" color="secondary" fontWeight={700}>
+								{cardsTotal}
+							</Typography>{" "}
+							total tasks
+						</h3>
+						<div>
+							<p className="text-gray-700">
+								<Typography component="span" color="urgent" fontWeight={700}>
+									{highPriorityCardsTotal}
+								</Typography>{" "}
+								High Priority Tasks (Including Dash Tasks)
+							</p>
+							<p className="text-gray-700">
+								<Typography component="span" color="dash" fontWeight={700}>
+									{dashTaskCardsTotal}
+								</Typography>{" "}
+								Other Dash Tasks
+							</p>
+							<p className="text-gray-700">
+								<Typography component="span" color="success" fontWeight={700}>
+									{doneCardsTotal}
+								</Typography>{" "}
+								Tasks Done
+							</p>
+						</div>
 
 						<div>
 							<Tooltip title="Clear Done Tasks" placement="left">
@@ -197,7 +219,10 @@ const Dashboard = ({
 									disabled={doneCardsTotal === 0 || editingLockRef.current}
 									onClick={handleClearAllDoneTasks}
 								>
-									<PublishedWithChangesIcon fontSize="large" color="primary" />
+									<PublishedWithChangesIcon
+										fontSize="large"
+										color="secondary"
+									/>
 								</IconButton>
 							</Tooltip>
 
@@ -207,7 +232,7 @@ const Dashboard = ({
 									disabled={cardsTotal === 0 || editingLockRef.current}
 									onClick={handleDeleteAll}
 								>
-									<DeleteSweepIcon fontSize="large" color="primary" />
+									<DeleteSweepIcon fontSize="large" color="secondary" />
 								</IconButton>
 							</Tooltip>
 						</div>

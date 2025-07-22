@@ -140,11 +140,11 @@ textarea {
 	height: 85px;
 	width: 95%;
 	border: none;
-	font-size: xx-large;
+	font-size: x-large;
 	text-align: center;
 	background: transparent;
 	outline: none;
-	font-weight: bold;
+	font-weight: 500;
 	font-family: "Work Sans", sans-serif;
 	font-optical-sizing: auto;
 	font-style: normal;
@@ -191,7 +191,8 @@ p {
 #card-text {
 	margin: 5px;
 	height: 85px;
-	font-size: xx-large;
+	font-size: x-large;
+	font-weight: 500;
 }
 
 .summary {
@@ -254,16 +255,16 @@ h3 {
 }
 
 #high-priority-heading {
-	background-color: #df0b39;
+	background-color: #e98074;
 }
 #all-other-tasks-heading {
-	background-color: #0d71c4;
+	background-color: #1976d2;
 }
 #done-tasks-heading {
 	background-color: #0d7016;
 }
 #dash-tasks-heading {
-	background-color: darkgoldenrod;
+	background-color: #f9c74f;
 }
 @media (max-width: 900px) {
 	.login-page {
@@ -380,43 +381,6 @@ h3 {
 	color: rgb(197, 193, 219);
 }
 
-.logout-button {
-	color: rgb(237, 235, 245);
-	background-color: rgb(92, 67, 233);
-	cursor: pointer;
-	outline: none;
-	border-radius: 0.5rem;
-	border: none;
-	height: 30px;
-	font-weight: 500;
-	font-size: 0.9rem;
-	padding: 5px 10px;
-	align-items: center;
-	display: flex;
-}
-
-.login-form .login-button,
-.register-form .login-button {
-	width: 100%;
-	margin: 1.5rem 0;
-	color: rgb(237, 235, 245);
-	background-color: rgb(92, 67, 233);
-	height: 50px;
-	margin: none;
-	cursor: pointer;
-	outline: none;
-	font-weight: 500;
-	border-radius: 0.5rem;
-	font-size: 1.12rem;
-	border: none;
-}
-.login-form .login-button,
-.register-form .register-button,
-.logout-button:hover {
-	background-color: rgb(61, 36, 201);
-	transition: 0.1s ease;
-}
-
 .header-logo,
 .header-logout {
 	min-width: 15%;
@@ -522,5 +486,14 @@ hr.or-divider:after {
 	cursor: not-allowed;
 	transition: opacity 0.3s ease;
 }
+.card {
+	cursor: default;
+	user-select: none;
+}
+.card textarea {
+	cursor: text;
+	user-select: text;
+}
+
 .register-form {
 }
