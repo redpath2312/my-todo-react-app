@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../AuthContext";
 import { Link } from "react-router-dom";
-import { Button } from "@mui/material";
 import PrimaryButton from "./Buttons/PrimaryButton";
 const LoginForm = () => {
 	const { handleEmailLogin } = useAuth();

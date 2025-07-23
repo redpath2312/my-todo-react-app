@@ -12,7 +12,7 @@ import ErrorDisplay from "./Components/ErrorDisplay";
 import { useUI } from "./UIContext";
 import Swimlane from "./Components/Swimlane";
 import Typography from "@mui/material/Typography";
-
+import SummaryStats from "./Components/SummaryStats";
 const Dashboard = ({
 	dbCards,
 	addCardToDB,
@@ -183,6 +183,14 @@ const Dashboard = ({
 						<div id="summary-heading">
 							<h2 className="text-2xl font-semibold my-2">Summary</h2>
 						</div>
+						<SummaryStats
+							cardsTotal={cardsTotal}
+							highPriorityCardsTotal={highPriorityCardsTotal}
+							dashTaskCardsTotal={dashTaskCardsTotal}
+							doneCardsTotal={doneCardsTotal}
+						/>
+
+						{/* 
 						<h3 className="text-xl font-medium my-1">
 							{" "}
 							You have{" "}
@@ -210,7 +218,7 @@ const Dashboard = ({
 								</Typography>{" "}
 								Tasks Done
 							</p>
-						</div>
+						</div> */}
 
 						<div>
 							<Tooltip title="Clear Done Tasks" placement="left">

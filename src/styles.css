@@ -494,6 +494,67 @@ hr.or-divider:after {
 	cursor: text;
 	user-select: text;
 }
+/* .summary-stats-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	width: fit-content;
+	margin: 1rem auto;
+}
+
+.summary-row {
+	display: flex;
+	justify-content: space-between;
+	width: 300px; /* Or any fixed width you prefer for clean alignment */
+/* } */
+/* 
+.summary-number {
+	text-align: left;
+	flex: 0 0 2.5rem;
+	padding-right: 1rem;
+	display: flex;
+	align-items: baseline;
+}
+
+.summary-number span {
+	line-height: 1;
+}
+.summary-description {
+	text-align: left;
+	flex: 0.9;
+} */
+.summary-stats-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	width: fit-content;
+	margin: 1rem auto;
+}
+
+.summary-row {
+	display: flex;
+	width: 300px; /* This defines the total row width */
+	justify-content: center; /* center the content */
+}
+
+.summary-number {
+	text-align: right;
+	width: 2rem; /* Fixed width for alignment */
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.summary-number span {
+	line-height: 1;
+	margin-top: 1px;
+}
+
+.summary-description {
+	text-align: left;
+	width: 10rem; /* Match total width – number width + description width = .summary-row width */
+	padding-left: 0.5rem; /* Controlled gap */
+}
 
 .register-form {
 }
