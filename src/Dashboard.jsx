@@ -11,8 +11,9 @@ import { useAuth } from "./AuthContext";
 import ErrorDisplay from "./Components/ErrorDisplay";
 import { useUI } from "./UIContext";
 import Swimlane from "./Components/Swimlane";
-import Typography from "@mui/material/Typography";
+import Summary from "./Components/Summary";
 import SummaryStats from "./Components/SummaryStats";
+import Tips from "./Components/Tips";
 const Dashboard = ({
 	dbCards,
 	addCardToDB,
@@ -179,73 +180,43 @@ const Dashboard = ({
 						isEditingLock ? "dashboard-is-locked" : ""
 					}`}
 				>
-					<div className="summary">
-						<div id="summary-heading">
-							<h2 className="text-2xl font-semibold my-2">Summary</h2>
-						</div>
-						<SummaryStats
+					<div className="dashboard-top">
+						<Tips />
+						<Summary
 							cardsTotal={cardsTotal}
 							highPriorityCardsTotal={highPriorityCardsTotal}
 							dashTaskCardsTotal={dashTaskCardsTotal}
 							doneCardsTotal={doneCardsTotal}
 						/>
 
-						{/* 
-						<h3 className="text-xl font-medium my-1">
-							{" "}
-							You have{" "}
-							<Typography component="span" color="secondary" fontWeight={700}>
-								{cardsTotal}
-							</Typography>{" "}
-							total tasks
-						</h3>
-						<div>
-							<p className="text-gray-700">
-								<Typography component="span" color="urgent" fontWeight={700}>
-									{highPriorityCardsTotal}
-								</Typography>{" "}
-								High Priority Tasks (Including Dash Tasks)
-							</p>
-							<p className="text-gray-700">
-								<Typography component="span" color="dash" fontWeight={700}>
-									{dashTaskCardsTotal}
-								</Typography>{" "}
-								Other Dash Tasks
-							</p>
-							<p className="text-gray-700">
-								<Typography component="span" color="success" fontWeight={700}>
-									{doneCardsTotal}
-								</Typography>{" "}
-								Tasks Done
-							</p>
-						</div> */}
+						<div className="card-actions widget">
+							<div className="card-actions-buttons">
+								<h2 className="h2-heading">Actions</h2>
+								<Tooltip title="Clear Done Tasks" placement="left">
+									<IconButton
+										className={doneCardsTotal === 0 ? "button-disabled" : ""}
+										disabled={doneCardsTotal === 0 || editingLockRef.current}
+										onClick={handleClearAllDoneTasks}
+									>
+										<PublishedWithChangesIcon
+											fontSize="large"
+											color="secondary"
+										/>
+									</IconButton>
+								</Tooltip>
 
-						<div>
-							<Tooltip title="Clear Done Tasks" placement="left">
-								<IconButton
-									className={doneCardsTotal === 0 ? "button-disabled" : ""}
-									disabled={doneCardsTotal === 0 || editingLockRef.current}
-									onClick={handleClearAllDoneTasks}
-								>
-									<PublishedWithChangesIcon
-										fontSize="large"
-										color="secondary"
-									/>
-								</IconButton>
-							</Tooltip>
-
-							<Tooltip title="Delete All Tasks" placement="right">
-								<IconButton
-									className={cardsTotal === 0 ? "button-disabled" : ""}
-									disabled={cardsTotal === 0 || editingLockRef.current}
-									onClick={handleDeleteAll}
-								>
-									<DeleteSweepIcon fontSize="large" color="secondary" />
-								</IconButton>
-							</Tooltip>
+								<Tooltip title="Delete All Tasks" placement="right">
+									<IconButton
+										className={cardsTotal === 0 ? "button-disabled" : ""}
+										disabled={cardsTotal === 0 || editingLockRef.current}
+										onClick={handleDeleteAll}
+									>
+										<DeleteSweepIcon fontSize="large" color="secondary" />
+									</IconButton>
+								</Tooltip>
+							</div>
 						</div>
-					</div>
-					<div className="draft-card-container">
+
 						<DraftCard
 							onAdd={addCard}
 							isAdding={isAdding}
@@ -253,41 +224,43 @@ const Dashboard = ({
 						/>
 					</div>
 
-					<Swimlane
-						title="High Priority Tasks"
-						cards={highPriorityCards}
-						hidden={highPriorityHidden}
-						containerClass="high-priority-cards-container"
-						headingID="high-priority-heading"
-						{...commonSwimlaneProps}
-					/>
+					<div>
+						<Swimlane
+							title="High Priority Tasks"
+							cards={highPriorityCards}
+							hidden={highPriorityHidden}
+							containerClass="high-priority-cards-container"
+							headingID="high-priority-section"
+							{...commonSwimlaneProps}
+						/>
 
-					<Swimlane
-						title="Dash Tasks"
-						cards={dashTaskCards}
-						hidden={dashTasksHidden}
-						containerClass="dash-tasks-cards-container"
-						headingID="dash-tasks-heading"
-						{...commonSwimlaneProps}
-					/>
+						<Swimlane
+							title="Dash Tasks"
+							cards={dashTaskCards}
+							hidden={dashTasksHidden}
+							containerClass="dash-tasks-cards-container"
+							headingID="dash-tasks-section"
+							{...commonSwimlaneProps}
+						/>
 
-					<Swimlane
-						title="All Other Tasks"
-						cards={allOtherCards}
-						hidden={allOtherCardsHidden}
-						containerClass="all-other-cards-container"
-						headingID="all-other-tasks-heading"
-						{...commonSwimlaneProps}
-					/>
+						<Swimlane
+							title="All Other Tasks"
+							cards={allOtherCards}
+							hidden={allOtherCardsHidden}
+							containerClass="all-other-cards-container"
+							headingID="all-other-tasks-section"
+							{...commonSwimlaneProps}
+						/>
 
-					<Swimlane
-						title="Done Tasks"
-						cards={doneCards}
-						hidden={doneCardsHidden}
-						containerClass="done-cards-container"
-						headingID="done-tasks-heading"
-						{...commonSwimlaneProps}
-					/>
+						<Swimlane
+							title="Done Tasks"
+							cards={doneCards}
+							hidden={doneCardsHidden}
+							containerClass="done-cards-container"
+							headingID="done-tasks-section"
+							{...commonSwimlaneProps}
+						/>
+					</div>
 				</div>
 			</div>
 

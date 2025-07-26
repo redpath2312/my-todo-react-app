@@ -13,11 +13,6 @@
 	.social-login,
 	.social-register {
 		@apply flex flex-wrap justify-evenly items-center gap-4;
-		/* display: flex;
-		flex-wrap: wrap;
-		justify-content: space-evenly;
-		align-items: center;
-		gap: 1rem; */
 	}
 
 	.social-login .social-button,
@@ -25,35 +20,15 @@
 		@apply flex flex-col items-center justify-center w-[100px] p-3 gap-3 text-base rounded-lg cursor-pointer;
 		border: 2px solid #ddd9e2;
 		background-color: white;
-		/* margin: 5px;
-		display: flex;
-		flex-direction: column;
-		width: 100px;
-		gap: 0.8rem;
-		cursor: pointer;
-		font-size: 1rem;
-		padding: 0.75rem;
-		align-items: center;
-		justify-content: center;
-		padding: 10px;
-		border-radius: 0.5rem;
-		border-color: #ddd9e2;
-		border: 2px solid #ddd9e2;
-		background-color: white; */
 	}
 
 	.social-login .social-button:hover,
 	.social-register .social-button:hover {
 		@apply border-[#afa3bd] bg-[#d8d1e0] transition ease-in duration-100;
-		/* border-color: #afa3bd;
-		transition: 0.1s ease;
-		background-color: #d8d1e0; */
 	}
 
 	.social-icon {
 		@apply max-w-[32px] p-[5px];
-		/* max-width: 32px;
-		padding: 5px; */
 	}
 }
 
@@ -65,7 +40,7 @@ html {
 }
 
 header {
-	background-color: #d8c3a5;
+	background-color: rgb(255, 255, 255);
 	padding: 2px 10px;
 	display: flex;
 	align-items: center;
@@ -89,7 +64,7 @@ footer {
 }
 
 .main-page-container {
-	background-color: #bdac80;
+	background-color: rgb(244, 245, 247);
 	background-image: url("https://www.transparenttextures.com/patterns/white-brushed.png");
 	/* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 }
@@ -100,7 +75,7 @@ footer {
 }
 
 body {
-	background-color: white;
+	background-color: rgb(218, 213, 213);
 	margin: 0px;
 	overflow-y: auto;
 	display: flex;
@@ -159,6 +134,11 @@ textarea {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: start;
+	padding: 10px; /* Padding inside container */
+	justify-content: flex-start; /* Default alignment: left */
+	border-radius: 10px; /* Optional widget look */
+	/* background-color: #ece5e4; */
+	width: fit-content;
 }
 
 @media (min-width: 1067px) {
@@ -177,6 +157,31 @@ textarea {
 		justify-content: center;
 	}
 }
+
+/* For narrow screens (mobile), center the whole section */
+@media (max-width: 1066px) {
+	#high-priority-section,
+	#dash-tasks-section,
+	#all-other-tasks-section,
+	#done-tasks-section {
+		margin: 15px auto;
+	}
+}
+
+/* .high-priority-cards-container {
+    background-color: #e98074;
+}
+
+.dash-tasks-cards-container {
+    background-color: #f9c74f;
+}
+
+.all-other-cards-container {
+    background-color: #1976d2;
+}
+.done-cards-container {
+    background-color: #0d7016;
+} */
 
 p {
 	padding: 2px;
@@ -199,12 +204,22 @@ p {
 	display: flex;
 	flex-direction: column;
 	text-align: center;
-	padding-bottom: 5px;
-	background-color: #ebdfdf;
+	padding: 25px;
+	width: 352px;
+}
+.card-actions {
+	display: flex;
+	flex-direction: row;
+	padding: 25px;
+	width: 352px;
+	justify-content: center;
+}
+.tips {
+	padding: 25px;
 }
 
-#summary-heading {
-	background-color: #ffffff;
+.h2-heading {
+	@apply text-2xl font-semibold my-2;
 }
 
 #checkBox {
@@ -237,33 +252,57 @@ p {
 .card-spinner-wrapper {
 	padding-right: 7px;
 }
+.widget {
+	box-shadow: 3px 5px 10px 2px #768291;
+	margin: 10px;
+	background-color: rgb(235, 238, 247);
+	border-radius: 10px;
+}
 .draft-card-container {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-}
+	max-width: fit-content;
 
-h3 {
+	padding: 10px;
+	width: 375px;
 	text-align: center;
 }
 
+/* h3 {
+    text-align: center;
+} */
+
 .swimlane-heading {
 	/* background-color: white; */
-	@apply text-xl font-medium p-2;
-	margin: 10px 0px;
+	@apply text-xl font-medium p-2 text-left;
+	/* margin: 10px 0px; */
 }
 
-#high-priority-heading {
+#high-priority-section,
+#dash-tasks-section,
+#all-other-tasks-section,
+#done-tasks-section {
+	display: flex;
+	flex-direction: column;
+	width: fit-content;
+	border-radius: 10px;
+	margin: 15px 5px;
+	/* max-width: 900px; */
+	padding: 10px;
+}
+
+#high-priority-section {
 	background-color: #e98074;
 }
-#all-other-tasks-heading {
+#all-other-tasks-section {
 	background-color: #1976d2;
 }
-#done-tasks-heading {
+#done-tasks-section {
 	background-color: #0d7016;
 }
-#dash-tasks-heading {
+#dash-tasks-section {
 	background-color: #f9c74f;
 }
 @media (max-width: 900px) {
@@ -463,6 +502,13 @@ hr.or-divider:after {
 	font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 20;
 }
 
+.dashboard-top {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+	margin: 10px;
+}
+
 .dashboard-is-locked button {
 	opacity: 0.5;
 	pointer-events: none;
@@ -494,41 +540,16 @@ hr.or-divider:after {
 	cursor: text;
 	user-select: text;
 }
-/* .summary-stats-rows {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-	width: fit-content;
-	margin: 1rem auto;
-}
 
-.summary-row {
-	display: flex;
-	justify-content: space-between;
-	width: 300px; /* Or any fixed width you prefer for clean alignment */
-/* } */
-/* 
-.summary-number {
-	text-align: left;
-	flex: 0 0 2.5rem;
-	padding-right: 1rem;
-	display: flex;
-	align-items: baseline;
-}
-
-.summary-number span {
-	line-height: 1;
-}
-.summary-description {
-	text-align: left;
-	flex: 0.9;
-} */
 .summary-stats-rows {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
 	width: fit-content;
 	margin: 1rem auto;
+	background-color: white;
+	border-radius: 10px;
+	padding: 1px;
 }
 
 .summary-row {
@@ -555,6 +576,19 @@ hr.or-divider:after {
 	width: 10rem; /* Match total width – number width + description width = .summary-row width */
 	padding-left: 0.5rem; /* Controlled gap */
 }
+#tips-panel-small {
+	background-color: white;
+	margin: 10px;
+	border-radius: 10px;
+	padding: 10px;
+}
+ul {
+	list-style: disc !important;
+	padding-left: 15px;
+}
 
+.h3-heading {
+	@apply text-xl font-medium my-1;
+}
 .register-form {
 }

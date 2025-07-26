@@ -7,7 +7,7 @@ const SummaryStats = ({
 }) => {
 	return (
 		<div>
-			<h3 className="text-xl font-medium my-1">
+			<h3 className="h3-heading">
 				You have{" "}
 				<Typography component="span" color="secondary" fontWeight={700}>
 					{cardsTotal}
