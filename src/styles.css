@@ -109,6 +109,9 @@ body {
 .card-done {
 	border: 2px solid #0d7016;
 }
+.card-dash {
+	border: 2px solid #f9c74f;
+}
 
 textarea {
 	resize: none;
@@ -134,11 +137,12 @@ textarea {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: start;
-	padding: 10px; /* Padding inside container */
+	padding: 15px; /* Padding inside container */
 	justify-content: flex-start; /* Default alignment: left */
 	border-radius: 10px; /* Optional widget look */
 	/* background-color: #ece5e4; */
 	width: fit-content;
+	margin: 15px;
 }
 
 @media (min-width: 1067px) {
@@ -168,20 +172,20 @@ textarea {
 	}
 }
 
-/* .high-priority-cards-container {
-    background-color: #e98074;
+.high-priority-cards-container {
+	background-color: rgb(235, 238, 247);
 }
 
 .dash-tasks-cards-container {
-    background-color: #f9c74f;
+	background-color: rgb(235, 238, 247);
 }
 
 .all-other-cards-container {
-    background-color: #1976d2;
+	background-color: rgb(235, 238, 247);
 }
 .done-cards-container {
-    background-color: #0d7016;
-} */
+	background-color: rgb(235, 238, 247);
+}
 
 p {
 	padding: 2px;
@@ -213,9 +217,15 @@ p {
 	padding: 25px;
 	width: 352px;
 	justify-content: center;
+	text-align: center;
 }
 .tips {
 	padding: 25px;
+	background-color: #f5ebc1 !important;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 95%;
 }
 
 .h2-heading {
@@ -254,7 +264,7 @@ p {
 }
 .widget {
 	box-shadow: 3px 5px 10px 2px #768291;
-	margin: 10px;
+	margin: 10px 0px;
 	background-color: rgb(235, 238, 247);
 	border-radius: 10px;
 }
@@ -422,7 +432,8 @@ p {
 
 .header-logo,
 .header-logout {
-	min-width: 15%;
+	width: 100px;
+	/* min-width: 15%; */
 	display: flex;
 }
 
@@ -532,6 +543,10 @@ hr.or-divider:after {
 	cursor: not-allowed;
 	transition: opacity 0.3s ease;
 }
+.button-toggle-off {
+	opacity: 0.5;
+	transition: opacity 0.3s ease;
+}
 .card {
 	cursor: default;
 	user-select: none;
@@ -584,11 +599,27 @@ hr.or-divider:after {
 }
 ul {
 	list-style: disc !important;
-	padding-left: 15px;
+	padding: 15px;
 }
 
 .h3-heading {
 	@apply text-xl font-medium my-1;
 }
+.tips-panels {
+	display: flex;
+	flex-wrap: wrap;
+}
 .register-form {
+}
+.dashboard-widgets {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+	width: 95%;
+}
+.dashboard-swimlanes {
+	display: flex;
+	flex-direction: column;
+	min-width: 95%;
+	margin: 0px 10px;
 }

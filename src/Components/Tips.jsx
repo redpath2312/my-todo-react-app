@@ -10,32 +10,33 @@ const Tips = () => {
 	return (
 		<div className="tips widget">
 			<h2 className="h2-heading">Getting Started Tips</h2>
-			<div>
+			<div className="tips-panels">
 				<div id="tips-panel-small">
 					<h3 className="h3-heading">1. Create</h3>
 					<ul>
 						<li>Type task in "Create" box</li>
 						<li>
-							Mark task if High Priority <PriorityHighIcon color="urgent" /> or
-							quick Dash Task <ElectricBoltIcon color="dash" />
+							Mark <PriorityHighIcon color="urgent" /> if High Priority
+						</li>
+						<li>
+							Mark <ElectricBoltIcon color="dash" /> if quick Dash Task
 						</li>
 						<li>
 							Click add button <NoteAddIcon color="secondary" />
 						</li>
-						<li>Card will be added to the corresponding section</li>
+						<li>Card is added to corresponding section</li>
 					</ul>
 				</div>
 				<div id="tips-panel-small">
 					<h3 className="h3-heading">2. Edit</h3>
 					<ul>
-						<li>Click on the card if need to update the text</li>
+						<li>Click on the card to update text</li>
 						<li>
-							Cards can later be marked High Priority{" "}
-							<PriorityHighIcon color="urgent" /> or a Dash task{" "}
-							<ElectricBoltIcon color="dash" />
+							Update Priority <PriorityHighIcon color="urgent" /> or Dash{" "}
+							<ElectricBoltIcon color="dash" /> if needed.
 						</li>
 						<li>
-							If made a mistake, card can be deleted <DeleteForeverIcon />
+							Click <DeleteForeverIcon /> to delete card
 						</li>
 					</ul>
 				</div>
@@ -43,25 +44,25 @@ const Tips = () => {
 					<h3 className="h3-heading">3. Do</h3>
 					<ul>
 						<li>
-							Click the done icon <CheckCircleIcon color="success" /> to move it
-							to the done section
+							If done click <CheckCircleIcon color="success" /> - it will move
+							to done section
 						</li>
 						<li>
 							{" "}
 							To clear all done cards click{" "}
-							<PublishedWithChangesIcon color="secondary" /> in "Actions" Panel.
+							<PublishedWithChangesIcon color="secondary" /> in "Actions" Panel
 						</li>
 						<li>
-							To wipe and start fresh board, click Delete All button.{" "}
+							To start fresh board, click Delete All button in "Actions Panel"
 							<DeleteSweepIcon color="secondary" />
 						</li>
 					</ul>
 				</div>
-				<h3 className="h3-heading">
-					Note - Guest Mode doesn't save your cards, login first if want to save
-					tasks.{" "}
-				</h3>
 			</div>
+			<h3 className="h3-heading">
+				Note - Guest Mode doesn't save your cards, login first if want to save
+				tasks.{" "}
+			</h3>
 		</div>
 	);
 };

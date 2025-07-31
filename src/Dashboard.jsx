@@ -3,10 +3,7 @@ import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import DraftCard from "./Components/DraftCard";
 import Card from "./Components/Card";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
-import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
+
 import { useAuth } from "./AuthContext";
 import ErrorDisplay from "./Components/ErrorDisplay";
 import { useUI } from "./UIContext";
@@ -14,6 +11,7 @@ import Swimlane from "./Components/Swimlane";
 import Summary from "./Components/Summary";
 import SummaryStats from "./Components/SummaryStats";
 import Tips from "./Components/Tips";
+import Actions from "./Components/Actions";
 const Dashboard = ({
 	dbCards,
 	addCardToDB,
@@ -26,6 +24,7 @@ const Dashboard = ({
 	const [localCards, setLocalCards] = useState([]);
 	const { user, userState } = useAuth();
 	const { isEditingLock, editingLockRef } = useUI();
+	const [isTipsHidden, setTipsHidden] = useState(false);
 
 	const cards =
 		userState === "loggedIn"
@@ -160,6 +159,11 @@ const Dashboard = ({
 	function handleFlagToggleChange(id, flagName, currentFlagValue, currentText) {
 		updateCardById(id, { [flagName]: !currentFlagValue, text: currentText });
 	}
+
+	function handleTipsHidden() {
+		console.log("Tips toggle fired");
+		setTipsHidden(!isTipsHidden);
+	}
 	const commonSwimlaneProps = {
 		onDelete: deleteCard,
 		onTextUpdate: handleTextChange,
@@ -181,50 +185,35 @@ const Dashboard = ({
 					}`}
 				>
 					<div className="dashboard-top">
-						<Tips />
-						<Summary
-							cardsTotal={cardsTotal}
-							highPriorityCardsTotal={highPriorityCardsTotal}
-							dashTaskCardsTotal={dashTaskCardsTotal}
-							doneCardsTotal={doneCardsTotal}
-						/>
+						{!isTipsHidden && <Tips />}
 
-						<div className="card-actions widget">
-							<div className="card-actions-buttons">
-								<h2 className="h2-heading">Actions</h2>
-								<Tooltip title="Clear Done Tasks" placement="left">
-									<IconButton
-										className={doneCardsTotal === 0 ? "button-disabled" : ""}
-										disabled={doneCardsTotal === 0 || editingLockRef.current}
-										onClick={handleClearAllDoneTasks}
-									>
-										<PublishedWithChangesIcon
-											fontSize="large"
-											color="secondary"
-										/>
-									</IconButton>
-								</Tooltip>
+						<div className="dashboard-widgets">
+							<Summary
+								cardsTotal={cardsTotal}
+								highPriorityCardsTotal={highPriorityCardsTotal}
+								dashTaskCardsTotal={dashTaskCardsTotal}
+								doneCardsTotal={doneCardsTotal}
+							/>
 
-								<Tooltip title="Delete All Tasks" placement="right">
-									<IconButton
-										className={cardsTotal === 0 ? "button-disabled" : ""}
-										disabled={cardsTotal === 0 || editingLockRef.current}
-										onClick={handleDeleteAll}
-									>
-										<DeleteSweepIcon fontSize="large" color="secondary" />
-									</IconButton>
-								</Tooltip>
-							</div>
+							<Actions
+								isTipsHidden={isTipsHidden}
+								handleTipsHidden={handleTipsHidden}
+								handleClearAllDoneTasks={handleClearAllDoneTasks}
+								handleDeleteAll={handleDeleteAll}
+								editingLockRefCurrent={editingLockRef.current}
+								doneCardsTotal={doneCardsTotal}
+								cardsTotal={cardsTotal}
+							/>
+
+							<DraftCard
+								onAdd={addCard}
+								isAdding={isAdding}
+								disabled={editingLockRef.current}
+							/>
 						</div>
-
-						<DraftCard
-							onAdd={addCard}
-							isAdding={isAdding}
-							disabled={editingLockRef.current}
-						/>
 					</div>
 
-					<div>
+					<div className="dashboard-swimlanes">
 						<Swimlane
 							title="High Priority Tasks"
 							cards={highPriorityCards}
