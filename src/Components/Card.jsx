@@ -8,6 +8,7 @@ import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import CircularProgress from "@mui/material/CircularProgress";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import { useUI } from "../UIContext";
+import { formatAgeSince, toJSDate } from "../utils/timeElapsed";
 
 function Card({
 	id,
@@ -19,6 +20,7 @@ function Card({
 	onTextUpdate,
 	onSelect,
 	onFlagToggle,
+	createdAt,
 }) {
 	const { editingLockRef, setIsEditingLock } = useUI();
 	const [isHovered, setHovered] = useState(false);
@@ -28,6 +30,9 @@ function Card({
 	const [debounceTimeout, setDebounceTimeout] = useState(null);
 
 	const flagProps = { done, highPriority };
+
+	const createdDate = toJSDate(createdAt); // Optional if you want the tooltip date
+	const ageLabel = createdDate ? formatAgeSince(createdDate) : ""; // This will re-render on an interval
 
 	function handleTextChange(event) {
 		handleEditing();
@@ -126,14 +131,16 @@ function Card({
 			}`}
 		>
 			<div className="cards-top">
-				<div id="card-id-display">
-					<p style={{ textAlign: "left" }}>id: {id}</p>
-				</div>
+				<span>id: {id}</span>
+
 				{isEditing && (
 					<div className="card-spinner-wrapper">
 						<CircularProgress size={16} />
 					</div>
 				)}
+				<span title={createdDate ? createdDate.toLocaleString() : ""}>
+					{ageLabel}
+				</span>
 			</div>
 			<div className="cards-middle">
 				{isSaving ? (

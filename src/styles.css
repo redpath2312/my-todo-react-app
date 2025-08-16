@@ -254,13 +254,23 @@ p {
 }
 
 .cards-top {
+	position: relative; /* enables absolute spinner center */
 	height: 25px;
 	display: flex;
-	justify-content: space-between;
-	padding-top: 2px;
+	justify-content: space-between; /* left: id, right: age */
+	padding: 2px 6px;
+	font-size: 0.8rem; /* smaller text for both id & age */
+	color: #6b7280; /* muted gray (Tailwind gray-500-ish) */
+	align-items: center;
 }
+
 .card-spinner-wrapper {
-	padding-right: 7px;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	top: 2px; /* adjust if you want it lower/higher */
+	pointer-events: none; /* clicks go through */
+	z-index: 1;
 }
 .widget {
 	box-shadow: 3px 5px 10px 2px #768291;

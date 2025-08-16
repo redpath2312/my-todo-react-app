@@ -30,6 +30,7 @@ const Swimlane = ({
 							onTextUpdate={onTextUpdate}
 							onSelect={onSelect}
 							onFlagToggle={onFlagToggle}
+							createdAt={card.createdAt}
 						/>
 					))}
 				</div>

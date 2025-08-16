@@ -24,43 +24,44 @@ const Tips = () => {
 						<li>
 							Click add button <NoteAddIcon color="secondary" />
 						</li>
-						<li>Card is added to corresponding section</li>
+						<li>Task is added to corresponding section</li>
 					</ul>
 				</div>
 				<div id="tips-panel-small">
 					<h3 className="h3-heading">2. Edit</h3>
 					<ul>
-						<li>Click on the card to update text</li>
+						<li>Click on the task to update text</li>
 						<li>
 							Update Priority <PriorityHighIcon color="urgent" /> or Dash{" "}
-							<ElectricBoltIcon color="dash" /> if needed.
+							<ElectricBoltIcon color="dash" /> if needed
 						</li>
 						<li>
-							Click <DeleteForeverIcon /> to delete card
+							Click <DeleteForeverIcon /> to delete task
 						</li>
 					</ul>
 				</div>
 				<div id="tips-panel-small">
 					<h3 className="h3-heading">3. Do</h3>
 					<ul>
+						<li>The age of the task will be displayed on the top right</li>
 						<li>
 							If done click <CheckCircleIcon color="success" /> - it will move
 							to done section
 						</li>
 						<li>
 							{" "}
-							To clear all done cards click{" "}
-							<PublishedWithChangesIcon color="secondary" /> in "Actions" Panel
+							To clear all done tasks click{" "}
+							<PublishedWithChangesIcon color="success" /> in "Actions" Panel
 						</li>
 						<li>
-							To start fresh board, click Delete All button in "Actions Panel"
-							<DeleteSweepIcon color="secondary" />
+							To start fresh board, click <DeleteSweepIcon color="delete" /> in
+							"Actions" Panel
 						</li>
 					</ul>
 				</div>
 			</div>
 			<h3 className="h3-heading">
-				Note - Guest Mode doesn't save your cards, login first if want to save
+				Note - Guest Mode doesn't save your tasks, login first if want to save
 				tasks.{" "}
 			</h3>
 		</div>

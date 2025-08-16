@@ -119,6 +119,7 @@ const Dashboard = ({
 						renderKey: (maxLocalIndexKey + 1).toString(), //Always treat renderKey as a string, even if in guest mode it’s just the numeric id.”
 						highPriority: highPriorityDraft,
 						dashTask: dashTaskDraft,
+						createdAt: new Date(),
 					},
 				];
 			});
