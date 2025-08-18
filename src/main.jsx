@@ -12,8 +12,8 @@ import {
 } from "./FirestoreService.js";
 
 import { doc, onSnapshot } from "firebase/firestore";
-import { ThemeProvider } from "@mui/material/styles";
-import { createAppTheme } from "./theme";
+import { ThemeModeProvider } from "./theme/ThemeModeContext.jsx";
+import { createAppTheme } from "./theme/theme.js";
 const theme = createAppTheme("light");
 // import { textFieldClasses } from "@mui/material";
 
@@ -106,7 +106,7 @@ function Main(props) {
 
 	return (
 		// <StrictMode>
-		<ThemeProvider theme={theme}>
+		<ThemeModeProvider>
 			<App
 				addCardToDB={handleDBAddCard}
 				updateCardsInDB={handleDBUpdate}
@@ -116,7 +116,7 @@ function Main(props) {
 				deleteAllCardsInDB={handleDBDeleteAll}
 				isAdding={isAdding}
 			/>
-		</ThemeProvider>
+		</ThemeModeProvider>
 	);
 }
 export default Main;

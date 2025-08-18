@@ -3,6 +3,7 @@ import Tooltip from "@mui/material/Tooltip";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
+import ThemeModeToggle from "./Buttons/ThemeModeToggle";
 
 const Actions = ({
 	isTipsHidden,
@@ -18,10 +19,7 @@ const Actions = ({
 			<div className="card-actions-buttons">
 				<h2 className="h2-heading">Actions</h2>
 				<Tooltip title="Toggle Getting Started Tips" placement="bottom">
-					<IconButton
-						onClick={handleTipsHidden}
-						className={isTipsHidden ? "button-toggle-off" : ""}
-					>
+					<IconButton className={isTipsHidden ? "button-toggle-off" : ""}>
 						<TipsAndUpdatesIcon fontSize="large" color="dash" />
 					</IconButton>
 				</Tooltip>

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import HeaderButton from "./Buttons/HeaderButton";
+import ThemeModeToggle from "./Buttons/ThemeModeToggle";
+
 function Header() {
 	const { user, userState, handleLogOut } = useAuth();
 	const navigate = useNavigate();
@@ -22,30 +24,36 @@ function Header() {
 	};
 
 	return (
-		<header>
-			<div className="header-logo">
+		<header className="header section">
+			<div className="container header-grid">
+				<div className="header-left">
+					{/* 
 				<img
 					className="header-icon"
 					src="images/check-list-icon_128.svg"
 					alt="List Logo"
 				/>
-			</div>
+			 */}
+					<ThemeModeToggle />
+				</div>
 
-			<div>
-				{userState === "guest" ? (
-					<h1 className="page-title"> Guest Mode </h1>
-				) : (
-					userState === "loggedIn" && (
-						<h1 className="page-title">Welcome {name}</h1>
-					)
-				)}
-			</div>
-			<div className="header-logout">
-				<HeaderButton onClick={handleLogOutSubmit} className="logout-button">
-					{userState === "guest"
-						? "Home"
-						: userState === "loggedIn" && "Log Out"}
-				</HeaderButton>
+				<div className="header-title">
+					{userState === "guest" ? (
+						<h1 className="page-title"> Guest Mode </h1>
+					) : (
+						userState === "loggedIn" && (
+							<h1 className="page-title">Welcome {name}</h1>
+						)
+					)}
+				</div>
+
+				<div className="header-right">
+					<HeaderButton onClick={handleLogOutSubmit} className="logout-button">
+						{userState === "guest"
+							? "Home"
+							: userState === "loggedIn" && "Log Out"}
+					</HeaderButton>
+				</div>
 			</div>
 		</header>
 	);

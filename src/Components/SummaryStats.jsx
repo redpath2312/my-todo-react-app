@@ -6,7 +6,7 @@ const SummaryStats = ({
 	doneCardsTotal,
 }) => {
 	return (
-		<div>
+		<div className="summary-inner">
 			<h3 className="h3-heading">
 				You have{" "}
 				<Typography component="span" color="secondary" fontWeight={700}>

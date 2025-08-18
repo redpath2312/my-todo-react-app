@@ -5,6 +5,7 @@ import Footer from "./Components/Footer";
 import { useAuth } from "./AuthContext";
 import { Link } from "react-router-dom";
 import ErrorDisplay from "./Components/ErrorDisplay";
+import ThemeModeToggle from "./Components/Buttons/ThemeModeToggle";
 
 const Login = () => {
 	const {
@@ -24,6 +25,9 @@ const Login = () => {
 			<div className="login-page">
 				<div className="login-section">
 					<div className="login-container">
+						<div className="panel-toggle">
+							<ThemeModeToggle />
+						</div>
 						<h2 className="form-title">Log in with</h2>
 						<SocialLogin />
 

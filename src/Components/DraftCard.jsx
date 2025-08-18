@@ -13,12 +13,22 @@ function DraftCard(props) {
 	const [highPriorityDraft, setHighPriorityDraft] = useState(false);
 	const [dashTaskDraft, setdashTaskDraft] = useState(false);
 	const { isInteractionLocked, setIsInteractionLocked } = useUI();
+
+	const [isHovered, setHovered] = useState(false);
 	useEffect(() => {
 		console.log("DraftCard re-rendered with lock:", isInteractionLocked);
 	}, [isInteractionLocked]);
 
 	function handleChange(event) {
 		setCreateCardText(event.target.value);
+	}
+
+	function handleMouseEnter() {
+		setHovered(true);
+	}
+
+	function handleMouseLeave() {
+		setHovered(false);
 	}
 
 	function handleFlagClick(flag) {
@@ -46,10 +56,17 @@ function DraftCard(props) {
 	// });
 
 	return (
-		<div className="draft-card-container widget">
+		<div
+			className="draft-card-container widget"
+			onMouseEnter={handleMouseEnter}
+			onMouseLeave={handleMouseLeave}
+		>
 			<h2 className="h2-heading">Create</h2>
 			<form onSubmit={handleSubmit}>
-				<div id="draft-card" className="card">
+				<div
+					id="draft-card"
+					className={isHovered ? "card card-hovered" : "card"}
+				>
 					<div className="cards-top"></div>
 					<div>
 						<textarea

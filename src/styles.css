@@ -39,18 +39,29 @@ html {
 	font-style: normal;
 }
 
+.section {
+	background-color: var(
+		--bg-section
+	); /* or --bg-paper depending on what you want */
+	color: var(--text-secondary); /* or --text-primary if you want it the same */
+	padding: 8px 12px;
+	border-radius: 4px;
+}
 header {
-	background-color: rgb(255, 255, 255);
-	padding: 2px 10px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+	background-color: var(--bg-paper);
+	color: var(--text-primary);
+	padding: 0;
+}
+
+.header.section .container {
+	padding-inline: 0;
 }
 
 header h1 {
 	padding: 0 15px;
 }
 footer {
+	color: var(--text-secondary);
 	bottom: 0;
 	text-align: center;
 	width: 100%;
@@ -59,14 +70,13 @@ footer {
 	margin-top: auto;
 }
 
-.header-icon {
-	width: 30px;
-}
-
 .main-page-container {
-	background-color: rgb(244, 245, 247);
+	background-color: var(--bg-default);
+	/* keep the texture only in light mode so dark stays clean */
+	background-image: none;
+}
+[data-theme="light"] .main-page-container {
 	background-image: url("https://www.transparenttextures.com/patterns/white-brushed.png");
-	/* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
 }
 .main {
 	min-height: 95vh;
@@ -75,7 +85,7 @@ footer {
 }
 
 body {
-	background-color: rgb(218, 213, 213);
+	/* background-color: rgb(218, 213, 213); now applied by Cssbaseline */
 	margin: 0px;
 	overflow-y: auto;
 	display: flex;
@@ -91,16 +101,19 @@ body {
 .card {
 	width: 340px;
 	height: 170px;
-	border: 2px solid #0d71c4;
+	border: 2px solid var(--secondary-main);
+	/* border: 2px solid #0d71c4; */
 	margin: 1vh;
 	border-radius: 10px;
-	background-color: white;
+	background-color: var(--bg-paper);
 	text-align: center;
 	word-wrap: break-word;
 }
 .card-hovered {
-	background-color: #d0e0f7;
-	border: 2px solid #ffe485;
+	background-color: var(--bg-hovered);
+	/* background-color: #d0e0f7; */
+	border: 2px solid white;
+	/* old #ffe485; */
 }
 .card-high-priority {
 	border: 2px solid #df0b39;
@@ -181,7 +194,7 @@ textarea {
 }
 
 .all-other-cards-container {
-	background-color: rgb(235, 238, 247);
+	background-color: rgb(47, 131, 103);
 }
 .done-cards-container {
 	background-color: rgb(235, 238, 247);
@@ -221,7 +234,8 @@ p {
 }
 .tips {
 	padding: 25px;
-	background-color: #f5ebc1 !important;
+	background-color: var(--bg-beige) !important; /* your light beige */
+	/* background-color: #f5ebc1 !important; */
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -275,7 +289,7 @@ p {
 .widget {
 	box-shadow: 3px 5px 10px 2px #768291;
 	margin: 10px 0px;
-	background-color: rgb(235, 238, 247);
+	/* background-color: rgb(235, 238, 247); */
 	border-radius: 10px;
 }
 .draft-card-container {
@@ -337,6 +351,7 @@ p {
 	flex-direction: column;
 	min-height: 100vh;
 	justify-content: space-between;
+	background-color: var(--bg-default);
 }
 
 .login-page,
@@ -344,7 +359,7 @@ p {
 	display: flex;
 	/* max-height: 95vh; */
 	align-items: stretch;
-	background-color: white;
+	background-color: var(--bg-default);
 	flex: 1;
 }
 .login-section,
@@ -353,7 +368,7 @@ p {
 	align-items: center;
 	justify-content: center;
 	min-width: 50%;
-	background-color: #7eace0;
+	/* background-color: #7eace0; */
 	position: relative;
 }
 
@@ -368,12 +383,27 @@ p {
 	display: flex;
 	flex-direction: column;
 	border-radius: 0.5rem;
-	background: white;
 	padding: 5rem 3rem;
 	max-width: 98%;
 	box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
 	align-items: center;
 	justify-content: center;
+	position: relative;
+}
+
+.panel-toggle {
+	position: absolute;
+	z-index: 10;
+	inset: 10px auto auto 10px; /* top-left */
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 9999px;
+	background: var(--bg-paper); /* matches theme */
+	color: var(--text-primary);
+	border: 1px solid var(--surface-border);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .image-background {
@@ -440,15 +470,58 @@ p {
 	color: rgb(197, 193, 219);
 }
 
-.header-logo,
-.header-logout {
-	width: 100px;
-	/* min-width: 15%; */
-	display: flex;
+.header.section {
+	background: var(--bg-section);
+	border-bottom: 1px solid var(--surface-border);
+	position: sticky;
+	top: 0;
+	z-index: 100;
 }
 
-.header-logout {
-	justify-content: flex-end;
+.header-grid {
+	display: grid;
+	grid-template-columns: auto 1fr auto; /* left | center | right */
+	align-items: center;
+	gap: 8px;
+	padding-inline: var(--gutter, 12px);
+	min-height: 48px; /* comfortable hit area */
+}
+
+.header-left,
+.header-right {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.header-left {
+	justify-self: start;
+}
+.header-right {
+	justify-self: end;
+}
+
+.header-title {
+	margin: 0;
+	text-align: center;
+	justify-self: center; /* forces true centering */
+	font-weight: 600;
+	color: var(--text-primary);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.panel-toggle:hover {
+	background: var(--bg-hovered);
+}
+
+.logout-btn {
+	background: var(--bg-paper);
+	color: var(--text-primary);
+	border: 1px solid var(--surface-border);
+	border-radius: 8px;
+	padding: 6px 10px;
 }
 .login-container a,
 .register-container a {
@@ -496,7 +569,7 @@ hr.or-divider:after {
 	padding: 0 16px;
 	position: relative;
 	top: -10px;
-	background: #ffffff;
+	background: var(--bg-container);
 	font-weight: 500;
 }
 
@@ -572,7 +645,7 @@ hr.or-divider:after {
 	gap: 0.5rem;
 	width: fit-content;
 	margin: 1rem auto;
-	background-color: white;
+	/* background-color: white; */
 	border-radius: 10px;
 	padding: 1px;
 }
@@ -602,7 +675,7 @@ hr.or-divider:after {
 	padding-left: 0.5rem; /* Controlled gap */
 }
 #tips-panel-small {
-	background-color: white;
+	/* background-color: white; */
 	margin: 10px;
 	border-radius: 10px;
 	padding: 10px;
@@ -632,4 +705,63 @@ ul {
 	flex-direction: column;
 	min-width: 95%;
 	margin: 0px 10px;
+}
+
+/* 2) Section bands (header/footer/top/swimlanes band) */
+header,
+footer,
+.dashboard-top,
+.dashboard-swimlanes {
+	background: var(--bg-section);
+	color: var(--text-primary);
+}
+
+/* some don't even have background colours set */
+.widget,
+.summary,
+.card-actions,
+.login-container,
+.register-container {
+	background-color: var(--bg-container);
+	color: var(--text-primary);
+}
+#tips-panel-small,
+.high-priority-cards-container,
+.dash-tasks-cards-container,
+.all-other-cards-container,
+.done-cards-container {
+	background-color: var(--bg-inner);
+}
+
+/* these lose colour in dark mode based on swimlane */
+#high-priority-section {
+	background-color: var(--lane-hp-bg);
+	/* color: var(--lane-on); */
+}
+#dash-tasks-section {
+	background-color: var(--lane-dash-bg);
+	/* color: var(--lane-on); */
+}
+#all-other-tasks-section {
+	background-color: var(--lane-all-bg);
+	/* color: var(--lane-on); */
+}
+#done-tasks-section {
+	background-color: var(--lane-done-bg);
+	/* color: var(--lane-on); */
+}
+
+#high-priority-section .swimlane-heading,
+#dash-tasks-section .swimlane-heading,
+#all-other-tasks-section .swimlane-heading,
+#done-tasks-section .swimlane-heading {
+	color: var(--lane-on); /* white in light, normal in dark */
+}
+
+#high-priority-section,
+#dash-tasks-section,
+#all-other-tasks-section,
+#done-tasks-section {
+	/* color: inherit; don’t set color here */
+	color: inherit;
 }
