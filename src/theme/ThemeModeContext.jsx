@@ -108,6 +108,28 @@ export function ThemeModeProvider({ children }) {
 									: t.palette.success.main,
 							"--lane-on":
 								t.palette.mode === "dark" ? t.palette.text.primary : "#ffffff",
+
+							//Borders, Dividers, Links, Hovers
+							"--surface-border":
+								t.palette.divider ??
+								(t.palette.mode === "dark"
+									? "rgba(255,255,255,0.14)"
+									: "rgba(0,0,0,0.08)"),
+							"--ink-on-light": "#111111", // dark text for white surfaces
+							"--link":
+								t.palette.mode === "dark"
+									? t.palette.primary.light
+									: t.palette.primary.main,
+							"--link-hover":
+								t.palette.mode === "dark"
+									? t.palette.primary.main
+									: t.palette.primary.dark,
+							"--card-ring-hover":
+								t.palette.mode === "dark"
+									? "rgba(255,255,255,0.85)" // soft white in dark
+									: "rgba(0,0,0,0.35)", // soft gray in light
+							"--card-border-width": "3px",
+							"--card-ring-w": "2px",
 						},
 					})}
 				/>

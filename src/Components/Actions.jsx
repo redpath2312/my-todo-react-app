@@ -19,7 +19,10 @@ const Actions = ({
 			<div className="card-actions-buttons">
 				<h2 className="h2-heading">Actions</h2>
 				<Tooltip title="Toggle Getting Started Tips" placement="bottom">
-					<IconButton className={isTipsHidden ? "button-toggle-off" : ""}>
+					<IconButton
+						className={isTipsHidden ? "button-toggle-off" : ""}
+						onClick={handleTipsHidden}
+					>
 						<TipsAndUpdatesIcon fontSize="large" color="dash" />
 					</IconButton>
 				</Tooltip>

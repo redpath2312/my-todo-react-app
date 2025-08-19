@@ -115,11 +115,12 @@ function Card({
 	// });
 
 	function cardClassCheck(done, highPriority, isHovered, dashTask) {
-		if (isHovered) return "card card-hovered";
-		if (done) return "card card-done";
-		if (highPriority) return "card card-high-priority";
-		if (dashTask) return "card card-dash";
-		return "card";
+		const classes = ["card"];
+		if (done) classes.push("card-done");
+		else if (highPriority) classes.push("card-high-priority");
+		else if (dashTask) classes.push("card-dash");
+		if (isHovered) classes.push("card-hovered");
+		return classes.join(" ");
 	}
 
 	return (

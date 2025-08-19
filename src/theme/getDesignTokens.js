@@ -31,7 +31,7 @@ export const getDesignTokens = (mode) => ({
 						paper: "#f7f2e4", // 5 cards/surfaces
 						hovered: "#FFFFFF", // 6 hover highlight (lightest)
 					},
-					text: { primary: "#333333", secondary: "#666666" },
+					text: { primary: "#333333", secondary: "#999999" },
 					delete: {
 						main: "#4B4B4B", // Dark Grey for Delete
 					},

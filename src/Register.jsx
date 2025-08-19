@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import SocialRegister from "./Components/SocialRegister";
 import RegisterForm from "./Components/RegisterForm";
 import ErrorDisplay from "./Components/ErrorDisplay";
+import ThemeModeToggle from "./Components/Buttons/ThemeModeToggle";
 
 const Register = () => {
 	const { handleGuestSignIn } = useAuth();
@@ -16,6 +17,9 @@ const Register = () => {
 			<div className="register-page">
 				<div className="register-section">
 					<div className="register-container">
+						<div className="panel-toggle">
+							<ThemeModeToggle />
+						</div>
 						<h2 className="form-title">Register with</h2>
 						<SocialRegister />
 

@@ -18,13 +18,47 @@
 	.social-login .social-button,
 	.social-register .social-button {
 		@apply flex flex-col items-center justify-center w-[100px] p-3 gap-3 text-base rounded-lg cursor-pointer;
-		border: 2px solid #ddd9e2;
-		background-color: white;
+		/* border: 2px solid #ddd9e2; */
+		border: 2px solid var(--surface-border);
+		transition: background-color 0.12s ease, border-color 0.12s ease,
+			transform 0.03s ease;
+		background-color: var(--bg-paper);
+		color: var(--text-primary);
+		transition: background-color 0.12s ease, border-color 0.12s ease,
+			transform 0.12s ease, box-shadow 0.12s ease;
+		will-change: transform;
 	}
 
 	.social-login .social-button:hover,
 	.social-register .social-button:hover {
-		@apply border-[#afa3bd] bg-[#d8d1e0] transition ease-in duration-100;
+		/* @apply border-[#afa3bd] transition ease-in duration-100; */
+		background-color: var(--bg-hovered);
+		border-color: var(--primary-main);
+		/* Subtle accent border on hover: */
+		border-color: color-mix(
+			in srgb,
+			var(--surface-border) 40%,
+			var(--primary-main) 60%
+		);
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+		transform: translateY(-1px); /* lift on hover */
+	}
+
+	/* focus ring for keyboard users */
+	.social-login .social-button:focus-visible,
+	.social-register .social-button:focus-visible {
+		outline: 2px solid var(--primary-main);
+		outline-offset: 2px;
+	}
+
+	/* accessibility: respect reduced motion */
+	@media (prefers-reduced-motion: reduce) {
+		.social-login .social-button,
+		.social-register .social-button {
+			transition: none;
+			transform: none;
+			box-shadow: none;
+		}
 	}
 
 	.social-icon {
@@ -43,7 +77,7 @@ html {
 	background-color: var(
 		--bg-section
 	); /* or --bg-paper depending on what you want */
-	color: var(--text-secondary); /* or --text-primary if you want it the same */
+	color: var(--text-primary); /* or --text-primary if you want it the same */
 	padding: 8px 12px;
 	border-radius: 4px;
 }
@@ -95,37 +129,46 @@ body {
 #draft-card {
 	width: 340px;
 	height: 165px;
-	border: 2px solid #8c48da;
+	border: 2px solid var(--primary-main);
 }
 
 .card {
 	width: 340px;
 	height: 170px;
-	border: 2px solid var(--secondary-main);
-	/* border: 2px solid #0d71c4; */
+	/* border: 2px solid var(--secondary-main); */
+	border: var(--card-border-width) solid var(--secondary-main);
 	margin: 1vh;
 	border-radius: 10px;
 	background-color: var(--bg-paper);
 	text-align: center;
 	word-wrap: break-word;
+	transition: background-color 0.12s ease, transform 0.12s ease,
+		box-shadow 0.12s ease;
 }
 .card-hovered {
 	background-color: var(--bg-hovered);
 	/* background-color: #d0e0f7; */
-	border: 2px solid white;
-	/* old #ffe485; */
+	/* border: 2px solid var(--card-ring-hover); */
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+	outline: var(--card-ring-w) solid var(--card-ring-hover); /* the “bridging” ring */
+	outline-offset: calc(-1 * var(--card-border-width)); /* tuck under border */
 }
 .card-high-priority {
-	border: 2px solid #df0b39;
+	border-color: var(--urgent-main);
 }
 
 .card-done {
-	border: 2px solid #0d7016;
+	border-color: var(--success-main);
 }
 .card-dash {
-	border: 2px solid #f9c74f;
+	border-color: var(--dash-main);
 }
 
+.card:focus-visible {
+	outline: var(--card-ring-w) solid var(--card-ring-hover);
+	outline-offset: calc(-1 * var(--card-border-width));
+}
 textarea {
 	resize: none;
 	height: 85px;
@@ -395,6 +438,8 @@ p {
 	position: absolute;
 	z-index: 10;
 	inset: 10px auto auto 10px; /* top-left */
+}
+.panel-toggle :where(.MuiIconButton-root) {
 	display: grid;
 	place-items: center;
 	width: 40px;
@@ -404,8 +449,12 @@ p {
 	color: var(--text-primary);
 	border: 1px solid var(--surface-border);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+	padding: 0;
 }
 
+.panel-toggle :where(.MuiTouchRipple-root) {
+	display: none;
+}
 .image-background {
 	display: flex;
 	align-items: center;
@@ -455,9 +504,11 @@ p {
 	outline: none;
 	font-size: 1.1rem;
 	border-radius: 0.3rem;
-	border: 1px solid #ddd9e2;
+	border: 1px solid var(--surface-border);
 	padding: 0 1.25rem 0 3rem;
 	transition: 0.25s ease;
+	color: var(--text-primary);
+	background: var(--bg-paper);
 }
 
 .login-form .input .input-field:focus,
@@ -467,7 +518,7 @@ p {
 
 .login-form .input .input-field::placeholder,
 .register-form .input .input-field::placeholder {
-	color: rgb(197, 193, 219);
+	color: var(--text-secondary);
 }
 
 .header.section {
@@ -485,6 +536,7 @@ p {
 	gap: 8px;
 	padding-inline: var(--gutter, 12px);
 	min-height: 48px; /* comfortable hit area */
+	min-width: 100%;
 }
 
 .header-left,
@@ -512,10 +564,6 @@ p {
 	text-overflow: ellipsis;
 }
 
-.panel-toggle:hover {
-	background: var(--bg-hovered);
-}
-
 .logout-btn {
 	background: var(--bg-paper);
 	color: var(--text-primary);
@@ -523,19 +571,20 @@ p {
 	border-radius: 8px;
 	padding: 6px 10px;
 }
-.login-container a,
-.register-container a {
-	color: rgb(61, 36, 201);
+
+a,
+a:visited {
+	color: var(--link);
 	text-decoration: none;
 }
-
-.login-container a:hover,
-.register-container a:hover {
+a:hover,
+a:focus-visible {
+	color: var(--link-hover);
 	text-decoration: underline;
 }
 
 .login-form .input i {
-	color: #ddd9e2;
+	color: var(--text-secondary);
 	position: absolute;
 }
 
@@ -673,6 +722,7 @@ hr.or-divider:after {
 	text-align: left;
 	width: 10rem; /* Match total width – number width + description width = .summary-row width */
 	padding-left: 0.5rem; /* Controlled gap */
+	color: var(--text-secondary);
 }
 #tips-panel-small {
 	/* background-color: white; */
@@ -764,4 +814,7 @@ footer,
 #done-tasks-section {
 	/* color: inherit; don’t set color here */
 	color: inherit;
+}
+.muted {
+	color: var(--text-secondary);
 }
