@@ -84,7 +84,9 @@ html {
 header {
 	background-color: var(--bg-paper);
 	color: var(--text-primary);
-	padding: 0;
+	margin-inline: calc(var(--gutter-x) * -1);
+	padding-inline: var(--gutter-x); /* keep content aligned */
+	padding-block: var(--sp-2);
 }
 
 .header.section .container {
@@ -108,6 +110,7 @@ footer {
 	background-color: var(--bg-default);
 	/* keep the texture only in light mode so dark stays clean */
 	background-image: none;
+	padding: var(--gutter-y) var(--gutter-x);
 }
 [data-theme="light"] .main-page-container {
 	background-image: url("https://www.transparenttextures.com/patterns/white-brushed.png");
@@ -212,14 +215,20 @@ textarea {
 .dash-tasks-cards-container,
 .done-cards-container {
 	display: flex;
+	justify-content: flex-start; /* Default alignment: left */
 	flex-wrap: wrap;
 	align-items: start;
-	padding: 15px; /* Padding inside container */
-	justify-content: flex-start; /* Default alignment: left */
-	border-radius: 10px; /* Optional widget look */
+	/* padding: 15px; /* Padding inside container */
+
+	/* border-radius: 10px; /* Optional widget look */
 	/* background-color: #ece5e4; */
-	width: fit-content;
-	margin: 15px;
+	/* width: fit-content;
+	margin: 15px; */
+	width: 100%;
+	margin: 0; /* remove the old margin that offset alignment */
+	padding: var(--sp-2);
+	gap: var(--sp-3);
+	border-radius: 10px;
 }
 
 @media (min-width: 1067px) {
@@ -281,31 +290,24 @@ p {
 	font-weight: 500;
 }
 
-.summary {
-	display: flex;
-	flex-direction: column;
-	text-align: center;
-	padding: 25px;
-	width: 352px;
-}
 .card-actions {
-	display: flex;
 	flex-direction: row;
-	padding: 25px;
 	width: 352px;
-	justify-content: center;
-	text-align: center;
 }
-.tips {
-	padding: 25px;
-	background-color: var(--bg-beige) !important; /* your light beige */
-	/* background-color: #f5ebc1 !important; */
+.tips,
+.mini-dashboard-widgets,
+.dashboard-swimlanes {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	min-width: 95%;
+	min-width: 0;
+	align-items: center;
+	width: 100%;
 }
 
+.mini-dashboard-widgets {
+	text-align: center;
+}
 .h2-heading {
 	@apply text-2xl font-semibold my-2;
 }
@@ -352,28 +354,15 @@ p {
 }
 .widget {
 	box-shadow: 3px 5px 10px 2px #768291;
-	margin: 10px 0px;
+	/* margin: 10px 0px; */
 	/* background-color: rgb(235, 238, 247); */
-	border-radius: 10px;
+	background: var(--bg-container);
+	border: 1px solid var(--surface-border);
+	border-radius: 12px;
+	padding: var(--panel-pad);
 }
-.draft-card-container {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	max-width: fit-content;
-
-	padding: 10px;
-	width: 375px;
-	text-align: center;
-}
-
-/* h3 {
-    text-align: center;
-} */
 
 .swimlane-heading {
-	/* background-color: white; */
 	@apply text-xl font-medium p-2 text-left;
 	/* margin: 10px 0px; */
 }
@@ -384,11 +373,16 @@ p {
 #done-tasks-section {
 	display: flex;
 	flex-direction: column;
-	width: fit-content;
-	border-radius: 10px;
-	margin: 15px 5px;
+	/* width: fit-content; */
+	/* border-radius: 10px; */
+	/* margin: 15px 5px; */
 	/* max-width: 900px; */
-	padding: 10px;
+	/* padding: 10px; */
+
+	width: 100%;
+	margin: var(--sp-3) 0; /* vertical rhythm only */
+	padding: var(--panel-pad);
+	border-radius: 12px;
 }
 
 #high-priority-section {
@@ -481,7 +475,7 @@ p {
 	align-items: center;
 	justify-content: center;
 	min-width: 50%;
-	background-color: #b7d2f0;
+	background-color: var(--bg-container);
 	position: relative;
 }
 .image-hero {
@@ -544,7 +538,8 @@ p {
 
 .header.section {
 	background: var(--bg-section);
-	border-bottom: 1px solid var(--surface-border);
+	/* border-bottom: 1px solid var(--surface-border); */
+	border-bottom: 0;
 	position: sticky;
 	top: 0;
 	z-index: 100;
@@ -670,7 +665,8 @@ hr.or-divider:after {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-evenly;
-	margin: 10px;
+	margin-top: var(--gutter-y);
+	margin-bottom: var(--gutter-y);
 }
 
 .dashboard-is-locked button {
@@ -745,11 +741,13 @@ hr.or-divider:after {
 	padding-left: 0.5rem; /* Controlled gap */
 	color: var(--text-secondary);
 }
-#tips-panel-small {
-	/* background-color: white; */
-	margin: 10px;
+.panel-inner {
+	background: var(--bg-inner);
+	border: 1px solid var(--surface-border);
 	border-radius: 10px;
-	padding: 10px;
+	padding: var(--sp-4);
+	min-width: 320px;
+	justify-content: center;
 }
 ul {
 	list-style: disc !important;
@@ -759,23 +757,17 @@ ul {
 .h3-heading {
 	@apply text-xl font-medium my-1;
 }
-.tips-panels {
+.tips-panels,
+.mini-dashboard-inner-panels {
 	display: flex;
 	flex-wrap: wrap;
+	gap: var(--panel-gap);
+	justify-content: space-between;
+}
+.tips-panels {
+	text-align: left;
 }
 .register-form {
-}
-.dashboard-widgets {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-evenly;
-	width: 95%;
-}
-.dashboard-swimlanes {
-	display: flex;
-	flex-direction: column;
-	min-width: 95%;
-	margin: 0px 10px;
 }
 
 /* 2) Section bands (header/footer/top/swimlanes band) */
@@ -787,16 +779,21 @@ footer,
 	color: var(--text-primary);
 }
 
+.dashboard-top,
+.mini-dashboard-widgets,
+.dashboard-swimlanes {
+	margin: 0 auto var(--gutter-y);
+}
+
 /* some don't even have background colours set */
-.widget,
-.summary,
-.card-actions,
+.widget,/* .summary,
+.card-actions, */
 .login-container,
 .register-container {
 	background-color: var(--bg-container);
 	color: var(--text-primary);
 }
-#tips-panel-small,
+.panel-inner,
 .high-priority-cards-container,
 .dash-tasks-cards-container,
 .all-other-cards-container,
@@ -842,9 +839,13 @@ footer,
 
 /* optional accessibility polish */
 @media (prefers-reduced-motion: reduce) {
-  .card { transition: none; }
+	.card {
+		transition: none;
+	}
 }
 
 @media (prefers-contrast: more) {
-  :root { --card-ring: black; }
+	:root {
+		--card-ring: black;
+	}
 }

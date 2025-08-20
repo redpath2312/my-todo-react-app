@@ -7,7 +7,7 @@ const Summary = ({
 	doneCardsTotal,
 }) => {
 	return (
-		<div className="summary widget">
+		<div className="panel-inner">
 			<h2 className="h2-heading">Summary</h2>
 
 			<SummaryStats

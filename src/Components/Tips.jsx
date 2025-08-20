@@ -11,7 +11,7 @@ const Tips = () => {
 		<div className="tips widget">
 			<h2 className="h2-heading">Getting Started Tips</h2>
 			<div className="tips-panels">
-				<div id="tips-panel-small">
+				<div className="panel-inner">
 					<h3 className="h3-heading">1. Create</h3>
 					<ul>
 						<li>Type task in "Create" box</li>
@@ -27,7 +27,7 @@ const Tips = () => {
 						<li>Task is added to corresponding section</li>
 					</ul>
 				</div>
-				<div id="tips-panel-small">
+				<div className="panel-inner">
 					<h3 className="h3-heading">2. Edit</h3>
 					<ul>
 						<li>Click on the task to update text</li>
@@ -40,7 +40,7 @@ const Tips = () => {
 						</li>
 					</ul>
 				</div>
-				<div id="tips-panel-small">
+				<div className="panel-inner">
 					<h3 className="h3-heading">3. Do</h3>
 					<ul>
 						<li>The age of the task will be displayed on the top right</li>

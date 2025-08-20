@@ -15,7 +15,7 @@ const Actions = ({
 	cardsTotal,
 }) => {
 	return (
-		<div className="card-actions widget">
+		<div className="panel-inner">
 			<div className="card-actions-buttons">
 				<h2 className="h2-heading">Actions</h2>
 				<Tooltip title="Toggle Getting Started Tips" placement="bottom">

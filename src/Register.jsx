@@ -46,7 +46,7 @@ const Register = () => {
 
 				<div className="image-background">
 					<img
-						src="images/logo.JPG"
+						src="images/recraftlogo1.png"
 						alt="Dash Tasker"
 						className="image-hero"
 					></img>

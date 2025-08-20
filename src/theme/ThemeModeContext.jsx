@@ -134,6 +134,19 @@ export function ThemeModeProvider({ children }) {
 								t.palette.mode === "dark"
 									? "rgba(255,255,255,0.90)" // near-white on dark
 									: "rgba(0,0,0,0.45)", // strong gray on light
+							//Spacings -guters, paddings
+							"--sp-1": "4px",
+							"--sp-2": "8px",
+							"--sp-3": "12px",
+							"--sp-4": "16px",
+							"--sp-5": "20px",
+							"--sp-6": "24px",
+							"--sp-8": "32px",
+							"--sp-10": "40px",
+							"--gutter-x": "var(--sp-6)",
+							"--gutter-y": "var(--sp-6)",
+							"--panel-pad": "var(--sp-5)",
+							"--panel-gap": "var(--sp-4)",
 						},
 					})}
 				/>

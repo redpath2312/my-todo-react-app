@@ -188,30 +188,32 @@ const Dashboard = ({
 					<div className="dashboard-top">
 						{!isTipsHidden && <Tips />}
 
-						<div className="dashboard-widgets">
-							<Summary
-								cardsTotal={cardsTotal}
-								highPriorityCardsTotal={highPriorityCardsTotal}
-								dashTaskCardsTotal={dashTaskCardsTotal}
-								doneCardsTotal={doneCardsTotal}
-							/>
+						<section className="mini-dashboard-widgets widget">
+							<div className="mini-dashboard-inner-panels">
+								<Summary
+									cardsTotal={cardsTotal}
+									highPriorityCardsTotal={highPriorityCardsTotal}
+									dashTaskCardsTotal={dashTaskCardsTotal}
+									doneCardsTotal={doneCardsTotal}
+								/>
 
-							<Actions
-								isTipsHidden={isTipsHidden}
-								handleTipsHidden={handleTipsHidden}
-								handleClearAllDoneTasks={handleClearAllDoneTasks}
-								handleDeleteAll={handleDeleteAll}
-								editingLockRefCurrent={editingLockRef.current}
-								doneCardsTotal={doneCardsTotal}
-								cardsTotal={cardsTotal}
-							/>
+								<Actions
+									isTipsHidden={isTipsHidden}
+									handleTipsHidden={handleTipsHidden}
+									handleClearAllDoneTasks={handleClearAllDoneTasks}
+									handleDeleteAll={handleDeleteAll}
+									editingLockRefCurrent={editingLockRef.current}
+									doneCardsTotal={doneCardsTotal}
+									cardsTotal={cardsTotal}
+								/>
 
-							<DraftCard
-								onAdd={addCard}
-								isAdding={isAdding}
-								disabled={editingLockRef.current}
-							/>
-						</div>
+								<DraftCard
+									onAdd={addCard}
+									isAdding={isAdding}
+									disabled={editingLockRef.current}
+								/>
+							</div>
+						</section>
 					</div>
 
 					<div className="dashboard-swimlanes">
