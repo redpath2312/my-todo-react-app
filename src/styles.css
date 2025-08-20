@@ -135,7 +135,6 @@ body {
 .card {
 	width: 340px;
 	height: 170px;
-	/* border: 2px solid var(--secondary-main); */
 	border: var(--card-border-width) solid var(--secondary-main);
 	margin: 1vh;
 	border-radius: 10px;
@@ -143,16 +142,14 @@ body {
 	text-align: center;
 	word-wrap: break-word;
 	transition: background-color 0.12s ease, transform 0.12s ease,
-		box-shadow 0.12s ease;
+		box-shadow 0.12s ease, outline-color 0.12s ease;
+	outline: none;
+	outline-offset: 0;
 }
 .card-hovered {
 	background-color: var(--bg-hovered);
-	/* background-color: #d0e0f7; */
-	/* border: 2px solid var(--card-ring-hover); */
 	transform: translateY(-1px);
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-	outline: var(--card-ring-w) solid var(--card-ring-hover); /* the “bridging” ring */
-	outline-offset: calc(-1 * var(--card-border-width)); /* tuck under border */
 }
 .card-high-priority {
 	border-color: var(--urgent-main);
@@ -165,9 +162,33 @@ body {
 	border-color: var(--dash-main);
 }
 
+.card:focus-within,
 .card:focus-visible {
-	outline: var(--card-ring-w) solid var(--card-ring-hover);
+	outline: var(--card-ring-w) solid var(--card-ring);
 	outline-offset: calc(-1 * var(--card-border-width));
+	box-shadow: none;
+}
+
+/* Hover = lift only (and only when not focused)  */
+.card:hover:not(:focus-within):not(:focus-visible) {
+	background: var(--bg-hovered);
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Optional: in LIGHT mode only, match focus background to hover (no lift) */
+[data-theme="light"] .card:focus-within,
+[data-theme="light"] .card:focus-visible {
+	background: var(--bg-hovered); /* same color as hover */
+	transform: none; /* but keep it steady (no motion) */
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); /* subtle depth to read as active */
+}
+
+/* optional: when keyboard nav is active, mute all hover (global) */
+:root.using-keyboard .card:hover {
+	transform: none;
+	box-shadow: none;
+	background: var(--bg-paper);
 }
 textarea {
 	resize: none;
@@ -817,4 +838,13 @@ footer,
 }
 .muted {
 	color: var(--text-secondary);
+}
+
+/* optional accessibility polish */
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+}
+
+@media (prefers-contrast: more) {
+  :root { --card-ring: black; }
 }

@@ -129,7 +129,11 @@ export function ThemeModeProvider({ children }) {
 									? "rgba(255,255,255,0.85)" // soft white in dark
 									: "rgba(0,0,0,0.35)", // soft gray in light
 							"--card-border-width": "3px",
-							"--card-ring-w": "2px",
+							"--card-ring-w": "3px", // ring thickness; match border for a clean seam
+							"--card-ring":
+								t.palette.mode === "dark"
+									? "rgba(255,255,255,0.90)" // near-white on dark
+									: "rgba(0,0,0,0.45)", // strong gray on light
 						},
 					})}
 				/>
