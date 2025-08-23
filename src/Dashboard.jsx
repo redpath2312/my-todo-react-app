@@ -186,72 +186,76 @@ const Dashboard = ({
 					}`}
 				>
 					<div className="dashboard-top">
-						{!isTipsHidden && <Tips />}
+						<div className="band-inner">
+							{!isTipsHidden && <Tips />}
 
-						<section className="mini-dashboard-widgets widget">
-							<div className="mini-dashboard-inner-panels">
-								<Summary
-									cardsTotal={cardsTotal}
-									highPriorityCardsTotal={highPriorityCardsTotal}
-									dashTaskCardsTotal={dashTaskCardsTotal}
-									doneCardsTotal={doneCardsTotal}
-								/>
+							<section className="mini-dashboard-widgets widget">
+								<div className="mini-dashboard-inner-panels">
+									<Summary
+										cardsTotal={cardsTotal}
+										highPriorityCardsTotal={highPriorityCardsTotal}
+										dashTaskCardsTotal={dashTaskCardsTotal}
+										doneCardsTotal={doneCardsTotal}
+									/>
 
-								<Actions
-									isTipsHidden={isTipsHidden}
-									handleTipsHidden={handleTipsHidden}
-									handleClearAllDoneTasks={handleClearAllDoneTasks}
-									handleDeleteAll={handleDeleteAll}
-									editingLockRefCurrent={editingLockRef.current}
-									doneCardsTotal={doneCardsTotal}
-									cardsTotal={cardsTotal}
-								/>
+									<Actions
+										isTipsHidden={isTipsHidden}
+										handleTipsHidden={handleTipsHidden}
+										handleClearAllDoneTasks={handleClearAllDoneTasks}
+										handleDeleteAll={handleDeleteAll}
+										editingLockRefCurrent={editingLockRef.current}
+										doneCardsTotal={doneCardsTotal}
+										cardsTotal={cardsTotal}
+									/>
 
-								<DraftCard
-									onAdd={addCard}
-									isAdding={isAdding}
-									disabled={editingLockRef.current}
-								/>
-							</div>
-						</section>
+									<DraftCard
+										onAdd={addCard}
+										isAdding={isAdding}
+										disabled={editingLockRef.current}
+									/>
+								</div>
+							</section>
+						</div>
 					</div>
 
 					<div className="dashboard-swimlanes">
-						<Swimlane
-							title="High Priority Tasks"
-							cards={highPriorityCards}
-							hidden={highPriorityHidden}
-							containerClass="high-priority-cards-container"
-							headingID="high-priority-section"
-							{...commonSwimlaneProps}
-						/>
+						<div className="band-inner">
+							<Swimlane
+								title="High Priority Tasks"
+								cards={highPriorityCards}
+								hidden={highPriorityHidden}
+								containerClass="high-priority-cards-container"
+								headingID="high-priority-section"
+								{...commonSwimlaneProps}
+							/>
 
-						<Swimlane
-							title="Dash Tasks"
-							cards={dashTaskCards}
-							hidden={dashTasksHidden}
-							containerClass="dash-tasks-cards-container"
-							headingID="dash-tasks-section"
-							{...commonSwimlaneProps}
-						/>
+							<Swimlane
+								title="Dash Tasks"
+								cards={dashTaskCards}
+								hidden={dashTasksHidden}
+								containerClass="dash-tasks-cards-container"
+								headingID="dash-tasks-section"
+								{...commonSwimlaneProps}
+							/>
 
-						<Swimlane
-							title="All Other Tasks"
-							cards={allOtherCards}
-							hidden={allOtherCardsHidden}
-							containerClass="all-other-cards-container"
-							headingID="all-other-tasks-section"
-							{...commonSwimlaneProps}
-						/>
+							<Swimlane
+								title="All Other Tasks"
+								cards={allOtherCards}
+								hidden={allOtherCardsHidden}
+								containerClass="all-other-cards-container"
+								headingID="all-other-tasks-section"
+								{...commonSwimlaneProps}
+							/>
 
-						<Swimlane
-							title="Done Tasks"
-							cards={doneCards}
-							hidden={doneCardsHidden}
-							containerClass="done-cards-container"
-							headingID="done-tasks-section"
-							{...commonSwimlaneProps}
-						/>
+							<Swimlane
+								title="Done Tasks"
+								cards={doneCards}
+								hidden={doneCardsHidden}
+								containerClass="done-cards-container"
+								headingID="done-tasks-section"
+								{...commonSwimlaneProps}
+							/>
+						</div>
 					</div>
 				</div>
 			</div>

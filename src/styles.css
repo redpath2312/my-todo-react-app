@@ -6,7 +6,7 @@
 }
 
 .page-title {
-	@apply text-3xl font-semibold mb-4;
+	@apply text-3xl font-semibold;
 }
 
 @layer components {
@@ -87,6 +87,7 @@ header {
 	margin-inline: calc(var(--gutter-x) * -1);
 	padding-inline: var(--gutter-x); /* keep content aligned */
 	padding-block: var(--sp-2);
+	align-items: center;
 }
 
 .header.section .container {
@@ -110,7 +111,7 @@ footer {
 	background-color: var(--bg-default);
 	/* keep the texture only in light mode so dark stays clean */
 	background-image: none;
-	padding: var(--gutter-y) var(--gutter-x);
+	padding: 0 var(--gutter-x);
 }
 [data-theme="light"] .main-page-container {
 	background-image: url("https://www.transparenttextures.com/patterns/white-brushed.png");
@@ -119,10 +120,10 @@ footer {
 	min-height: 95vh;
 	display: flex;
 	flex-direction: column;
+	gap: var(--gutter-y);
 }
 
 body {
-	/* background-color: rgb(218, 213, 213); now applied by Cssbaseline */
 	margin: 0px;
 	overflow-y: auto;
 	display: flex;
@@ -299,10 +300,12 @@ p {
 .dashboard-swimlanes {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 	min-width: 0;
 	align-items: center;
-	width: 100%;
+	/* width: 100%; */
+}
+.tips {
+	margin-bottom: var(--gutter-y);
 }
 
 .mini-dashboard-widgets {
@@ -570,8 +573,6 @@ p {
 }
 
 .header-title {
-	margin: 0;
-	text-align: center;
 	justify-self: center; /* forces true centering */
 	font-weight: 600;
 	color: var(--text-primary);
@@ -665,8 +666,6 @@ hr.or-divider:after {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-evenly;
-	margin-top: var(--gutter-y);
-	margin-bottom: var(--gutter-y);
 }
 
 .dashboard-is-locked button {
@@ -766,11 +765,11 @@ ul {
 }
 .tips-panels {
 	text-align: left;
+	padding: var(--panel-pad);
 }
 .register-form {
 }
 
-/* 2) Section bands (header/footer/top/swimlanes band) */
 header,
 footer,
 .dashboard-top,
@@ -779,15 +778,43 @@ footer,
 	color: var(--text-primary);
 }
 
-.dashboard-top,
-.mini-dashboard-widgets,
-.dashboard-swimlanes {
-	margin: 0 auto var(--gutter-y);
+.mini-dashboard-widgets {
+	margin-inline: auto;
+	margin-bottom: var(--gutter-y);
 }
 
-/* some don't even have background colours set */
-.widget,/* .summary,
-.card-actions, */
+.dashboard-top,
+.dashboard-swimlanes {
+	padding-block: var(--sp-4);
+	overflow: clip; /* stops inner shadows peeking */
+	min-width: 0; /* guard against overflow */
+
+	display: grid;
+	grid-template-columns:
+		[full-start] var(--gutter-x)
+		[content-start] minmax(0, var(--page-max))
+		[content-end] var(--gutter-x)
+		[full-end];
+	margin-bottom: var(--gutter-y);
+}
+
+/* Constrain *direct children* to a page max and center them */
+.dashboard-top > *,
+.dashboard-swimlanes > * {
+	min-width: 0;
+	grid-column: content;
+}
+
+/* Subtle separation between the two bands */
+.dashboard-swimlanes {
+	box-shadow: inset 0 1px 0 var(--hairline);
+}
+.band-inner {
+	width: min(var(--page-max), 100%);
+	min-width: 0;
+}
+
+.widget,
 .login-container,
 .register-container {
 	background-color: var(--bg-container);
@@ -801,22 +828,17 @@ footer,
 	background-color: var(--bg-inner);
 }
 
-/* these lose colour in dark mode based on swimlane */
 #high-priority-section {
 	background-color: var(--lane-hp-bg);
-	/* color: var(--lane-on); */
 }
 #dash-tasks-section {
 	background-color: var(--lane-dash-bg);
-	/* color: var(--lane-on); */
 }
 #all-other-tasks-section {
 	background-color: var(--lane-all-bg);
-	/* color: var(--lane-on); */
 }
 #done-tasks-section {
 	background-color: var(--lane-done-bg);
-	/* color: var(--lane-on); */
 }
 
 #high-priority-section .swimlane-heading,
@@ -848,4 +870,11 @@ footer,
 	:root {
 		--card-ring: black;
 	}
+}
+
+:root {
+	/* tune these */
+	--page-max: 1440px;
+	--hairline: color-mix(in srgb, var(--surface-border) 70%, transparent);
+	--gutter-x: clamp(12px, 4vw, 24px);
 }
