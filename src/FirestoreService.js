@@ -1,23 +1,22 @@
 import { db } from "./firebaseconfig";
 import {
-	where,
-	query,
 	doc,
 	getDoc,
-	getDocs,
 	setDoc,
 	updateDoc,
-	addDoc,
-	collection,
-	onSnapshot,
-	deleteDoc,
 	serverTimestamp,
 	runTransaction,
-	increment,
+	arrayUnion,
 } from "firebase/firestore";
 
+function requireUid(user) {
+	const uid = user?.uid;
+	if (!uid) throw new Error("Guest sessions cannt use firestore.");
+	return uid;
+}
 export async function createUserDoc(user) {
-	const userRef = doc(db, "users", user.uid);
+	const uid = requireUid(user);
+	const userRef = doc(db, "users", uid);
 	const userSnap = await getDoc(userRef);
 	if (!userSnap.exists()) {
 		await setDoc(userRef, {
@@ -31,89 +30,92 @@ export async function createUserDoc(user) {
 	console.log(user.uid);
 }
 
-//Adds the new card to firestore, and returns it back to main for local updating.
 export async function addCard(
 	user,
 	cardText,
 	highPriorityDraft,
 	dashTaskDraft
 ) {
-	const userRef = doc(db, "users", user.uid);
-	const userSnap = await getDoc(userRef);
-	if (!userSnap.exists()) {
-		throw new Error("No user on db");
-	} else {
-		const currentMaxID = userSnap.data().maxID;
-		const newID = currentMaxID + 1;
-		const currentCards = userSnap.data().cards || [];
-		const newCard = {
-			id: newID,
+	const uid = requireUid(user);
+	const userRef = doc(db, "users", uid);
+	let newCard;
+	await runTransaction(db, async (tx) => {
+		const userSnap = await tx.get(userRef); // 1) Read inside tx
+		if (!userSnap.exists()) throw new Error("User not found");
+
+		const userData = userSnap.data();
+		const nextID = (userData.maxID ?? 0) + 1; //2) Compuer the next incremental id
+
+		newCard = {
+			id: nextID,
 			text: cardText,
 			renderKey: crypto.randomUUID(),
-			highPriority: highPriorityDraft,
+			highPriority: !!highPriorityDraft,
+			dashTask: !!dashTaskDraft,
 			done: false,
-			dashTask: dashTaskDraft,
 			createdAt: new Date(),
 		};
-		const updatedCards = [...currentCards, newCard];
-		await updateDoc(userRef, {
-			cards: updatedCards,
-			maxID: increment(1),
+		tx.update(userRef, {
+			maxID: nextID, // atomic + consistent with newCard.id
+			cards: arrayUnion(newCard), //efficient append
 		});
-		return newCard;
-	}
+	});
+
+	return newCard; // caller can optimistically insert it into local state
 }
 
 export async function updateCard(user, cardID, updatedFields) {
-	const userRef = doc(db, "users", user.uid);
-	const userSnap = await getDoc(userRef);
-	if (!userSnap.exists()) {
-		throw new Error("No user on db");
-	} else {
-		const userData = userSnap.data();
-		const currentCards = userData.cards || [];
+	const uid = requireUid(user);
+	const userRef = doc(db, "users", uid);
+
+	await runTransaction(db, async (tx) => {
+		const userSnap = await tx.get(userRef);
+		if (!userSnap.exists()) {
+			throw new Error("User not found");
+		}
+		const currentCards = userSnap.data().cards ?? [];
 		console.log(currentCards);
 		console.log(updatedFields);
 		const updatedCards = currentCards.map((card) =>
-			card.id === cardID
-				? {
-						...card,
-						...updatedFields,
-				  }
-				: card
+			card.id === cardID ? { ...card, ...updatedFields } : card
 		);
-		await updateDoc(userRef, { cards: updatedCards });
-		console.log(`Card ID ${cardID} successfully updated in Firestore`);
+
+		tx.update(userRef, { cards: updatedCards });
 		return updatedCards;
-	}
+	});
 }
 export async function clearDoneCards(user, filteredCards) {
-	const userRef = doc(db, "users", user.uid);
+	const uid = requireUid(user);
+	const userRef = doc(db, "users", uid);
 	const userSnap = await getDoc(userRef);
 	if (userSnap.exists()) {
 		await updateDoc(userRef, { cards: filteredCards });
 		console.log("'Done' Cards successfully cleared in firestore");
-	} else throw new Error("No user on db");
-}
-export async function deleteCard(user, cardID) {
-	const userRef = doc(db, "users", user.uid);
-	const userSnap = await getDoc(userRef);
-	if (!userSnap.exists()) {
-		throw new Error("No user on db");
-	} else {
-		const currentCards = userSnap.data().cards;
-		const filteredCards = currentCards.filter((card) => card.id != cardID);
-		await updateDoc(userRef, { cards: filteredCards });
-		console.log("Deleted card from firestore");
-	}
+	} else throw new Error("User not found");
 }
 
 export async function deleteAllCards(user) {
-	const userRef = doc(db, "users", user.uid);
+	const uid = requireUid(user);
+	const userRef = doc(db, "users", uid);
 	const userSnap = await getDoc(userRef);
 	if (!userSnap.exists()) {
 		throw new Error("No user on db");
 	} else {
 		await updateDoc(userRef, { cards: [] });
 	}
+}
+
+export async function deleteCard(user, cardID) {
+	const uid = requireUid(user);
+	const userRef = doc(db, "users", uid);
+	await runTransaction(db, async (tx) => {
+		const userSnap = await tx.get(userRef);
+		if (!userSnap.exists()) {
+			throw new Error("User not found");
+		}
+		const currentCards = userSnap.data().cards ?? [];
+		const updatedCards = currentCards.filter((card) => card.id !== cardID);
+		tx.update(userRef, { cards: updatedCards });
+		return updatedCards;
+	});
 }

@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import DraftCard from "./Components/DraftCard";
-import Card from "./Components/Card";
 
 import { useAuth } from "./AuthContext";
 import ErrorDisplay from "./Components/ErrorDisplay";
 import { useUI } from "./UIContext";
 import Swimlane from "./Components/Swimlane";
 import Summary from "./Components/Summary";
-import SummaryStats from "./Components/SummaryStats";
 import Tips from "./Components/Tips";
 import Actions from "./Components/Actions";
 const Dashboard = ({
@@ -22,7 +20,7 @@ const Dashboard = ({
 	isAdding,
 }) => {
 	const [localCards, setLocalCards] = useState([]);
-	const { user, userState } = useAuth();
+	const { userState } = useAuth();
 	const { isEditingLock, editingLockRef } = useUI();
 	const [isTipsHidden, setTipsHidden] = useState(false);
 
@@ -79,9 +77,7 @@ const Dashboard = ({
 		};
 	}
 
-	useEffect(() => {
-		// console.log("dbcards have changed");
-	}, [dbCards]); // New Use Effect
+	useEffect(() => {}, [dbCards]); // New Use Effect
 
 	async function handleDeleteAll() {
 		if (editingLockRef === true) return;
@@ -138,11 +134,9 @@ const Dashboard = ({
 
 	function updateCardById(id, updatedFields) {
 		if (userState === "guest") {
-			console.log("updated fields = ", updatedFields);
 			const updatedCards = localCards.map((card) => {
 				return card.id === id ? { ...card, ...updatedFields } : card;
 			});
-			console.log("updated cards= ", updatedCards);
 			setLocalCards(updatedCards);
 		} else if (userState === "loggedIn") {
 			updateCardsInDB(id, updatedFields);
@@ -150,10 +144,6 @@ const Dashboard = ({
 	}
 
 	function handleTextChange(id, updatedText, flagProps = {}) {
-		console.log(
-			"handle text change called in dashboard with flagProps = ",
-			flagProps
-		);
 		updateCardById(id, { text: updatedText, ...flagProps });
 	}
 
@@ -171,8 +161,6 @@ const Dashboard = ({
 		onSelect: selectCard,
 		onFlagToggle: handleFlagToggleChange,
 	};
-
-	console.log("Dash Cards: ", dashTaskCards);
 
 	return (
 		<div className="main-page-container">

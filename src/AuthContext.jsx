@@ -46,9 +46,6 @@ export const AuthProvider = ({ children }) => {
 
 	const handleEmailLogin = async (creds) => {
 		try {
-			// console.log(
-			// 	"trying to set up creds before calling signInWithEmailAndPassword"
-			// );
 			const loginEmail = creds.email;
 			const loginPassword = creds.password;
 			const loginDisplayName = creds.displayName;
@@ -62,7 +59,6 @@ export const AuthProvider = ({ children }) => {
 			setUser(userCredential.user);
 			setUserState("loggedIn");
 		} catch (error) {
-			// console.log(error);
 			addAlert(error.message);
 			throw error;
 		}
@@ -114,7 +110,6 @@ export const AuthProvider = ({ children }) => {
 			await signOut(auth);
 			setUser(null);
 			setUserState("loggedOut");
-			// console.log("Firebase has now logged you out");
 		}
 	};
 
@@ -130,14 +125,12 @@ export const AuthProvider = ({ children }) => {
 			.then(() => {
 				console.log("Password reset email sent");
 				// Password reset email sent!
-				// ..
 			})
 			.catch((error) => {
 				const errorCode = error.code;
 				const errorMessage = error.message;
 				alert(`Error: ${errorCode} :${errorMessage}`);
 				addAlert(error.message);
-				// ..
 			});
 	};
 
@@ -182,10 +175,8 @@ export const AuthProvider = ({ children }) => {
 
 				// The signed-in user info.
 				const newUser = result.user;
-				// console.log("Redirect user:", newUser);
 				setUser(newUser);
 				setUserState("loggedIn");
-				// console.log("Redirect result:", newUser);
 				await handlePostLoginSetup(newUser);
 			} catch (error) {
 				console.log("Redirect Login Error failed", error.message);
@@ -194,8 +185,6 @@ export const AuthProvider = ({ children }) => {
 		};
 		handleRedirectResult();
 	}, []);
-
-	console.log("User State is: ", userState);
 
 	return (
 		<AuthContext.Provider

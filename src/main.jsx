@@ -24,6 +24,14 @@ function Main(props) {
 	const { addAlert, addThrottledAlert } = useAlert();
 	const { user, userState } = useAuth();
 
+	function toErrorMessage(err) {
+		// Firebase errors usually have .code and .message
+		if (err?.code || err?.message) {
+			return `[${err.code || "unknown"}] ${err.message || ""}`.trim();
+		}
+		return typeof err === "string" ? err : JSON.stringify(err);
+	}
+
 	const handleDBAddCard = async (
 		cardText,
 		highPriorityDraft,
@@ -37,7 +45,12 @@ function Main(props) {
 			addAlert("Card successfully added", "info", 3000);
 		} catch (error) {
 			console.error("Transaction failed:", error);
-			addThrottledAlert("Error adding card to db", "error", 3000);
+			addThrottledAlert(
+				`Error adding card to db: ${toErrorMessage(error)}`,
+				"error",
+				6000
+			);
+			console.error("updatedCard failed", error);
 		} finally {
 			setIsAdding(false);
 		}
@@ -48,7 +61,12 @@ function Main(props) {
 			await updateCard(user, cardID, updatedFields);
 			addAlert(`Card ${cardID} updated`, "info", 3000);
 		} catch (error) {
-			addAlert("Error updating firestore: ", error);
+			addAlert(
+				`Error updating firestore: ${toErrorMessage(error)}`,
+				"error",
+				6000
+			);
+			console.log("Updating card failed", error);
 		}
 	};
 
@@ -59,7 +77,7 @@ function Main(props) {
 			await clearDoneCards(user, filteredCards);
 			addAlert("Cleared all done cards from db", "info", 3000);
 		} catch (error) {
-			addAlert("Error updating firestore", error);
+			addAlert(`Error updating firestore: ${error}`, "error", 6000);
 		}
 	};
 
@@ -68,7 +86,11 @@ function Main(props) {
 			await deleteCard(user, cardID);
 			addAlert(`Deleted Card ${cardID} from database`, "info", 3000);
 		} catch (error) {
-			addAlert("Error deleting card from database: ", error);
+			addAlert(
+				`Error deleting card from database: ${toErrorMessage(error)}`,
+				"error",
+				6000
+			);
 		}
 	};
 
@@ -77,7 +99,11 @@ function Main(props) {
 			await deleteAllCards(user);
 			addAlert("Deleted cards from database successfully", "info", 3000);
 		} catch (error) {
-			addAlert("Error deleting cards from database: ", error);
+			addAlert(
+				`Error deleting cards from database: ${toErrorMessage(error)}`,
+				"error",
+				6000
+			);
 		}
 	};
 
@@ -89,7 +115,6 @@ function Main(props) {
 			(userSnap) => {
 				if (userSnap.exists()) {
 					const userData = userSnap.data();
-					console.log("Snapshot fired, cards:", userData.cards);
 					setCards(userData.cards || []);
 				} else {
 					setCards([]);
