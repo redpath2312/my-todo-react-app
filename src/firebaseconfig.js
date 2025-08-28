@@ -13,9 +13,6 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 
 const db = getFirestore(firebaseApp);
-connectFirestoreEmulator(db, "localhost", 8080);
-console.log("Hi firestore");
-
 const auth = getAuth(firebaseApp);
 try {
 	connectAuthEmulator(auth, "http://localhost:9099");
@@ -24,4 +21,9 @@ try {
 	console.error("Error connecting to the emulator:", error);
 }
 
+// ✅ Emulators only when running the dev server
+if (import.meta.env.DEV) {
+	connectAuthEmulator(auth, "http://localhost:9099");
+	connectFirestoreEmulator(db, "localhost", 8080);
+}
 export { db, auth };
