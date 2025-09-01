@@ -2,6 +2,11 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { auth } from "./firebaseconfig";
 import { useAlert } from "./ErrorContext";
 import { createUserDoc } from "./FirestoreService";
+import {
+	setRedirectIntent,
+	getRedirectIntent,
+	clearRedirectIntent,
+} from "./utils/redirectIntent";
 
 import {
 	createUserWithEmailAndPassword,
@@ -14,10 +19,15 @@ import {
 	signInWithRedirect,
 	getRedirectResult,
 	sendPasswordResetEmail,
+	signInWithPopup,
+	browserSessionPersistence,
+	setPersistence,
 } from "firebase/auth";
 
 const AuthContext = createContext();
 const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
+
 const facebookProvider = new FacebookAuthProvider();
 
 export const AuthProvider = ({ children }) => {
@@ -25,39 +35,116 @@ export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [userState, setUserState] = useState("checking");
 
-	// Handle Firebase Auth state changes
 	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (user) => {
-			// console.log("onAuthStateChanged fired. User:", user);
-			if (user) {
-				setUser(user);
+		const unsub = onAuthStateChanged(auth, async (u) => {
+			const pending = getRedirectIntent();
+
+			if (u) {
+				if (pending) {
+					try {
+						await handlePostLoginSetup(u);
+					} catch (e) {
+						console.error(e);
+					}
+					clearRedirectIntent();
+					addAlert(`Signed in as ${u.displayName || u.email}`, "success", 3000);
+				}
+				setUser(u);
 				setUserState("loggedIn");
-			} else if (localStorage.getItem("guest") === "true") {
-				setUser(null); // still clear out any lingering user
-				setUserState("guest");
-			} else {
-				setUser(null);
-				setUserState("loggedOut");
+				return;
 			}
+
+			// No user yet:
+			// No user:
+			if (pending) {
+				// ⛔ HOLD only while *pending* is true.
+				// Add a safety timeout so we can't get stuck forever:
+				setTimeout(() => {
+					if (!auth.currentUser && getRedirectIntent()) {
+						// still pending; leave as 'checking'
+					} else if (!auth.currentUser && !getRedirectIntent()) {
+						// pending cleared and still no user → move on
+						setUser(null);
+						setUserState(
+							localStorage.getItem("guest") === "true" ? "guest" : "loggedOut"
+						);
+					}
+				}, 1500);
+				return;
+			}
+
+			// Normal no-user path
+			setUser(null);
+			setUserState(
+				localStorage.getItem("guest") === "true" ? "guest" : "loggedOut"
+			);
 		});
 
-		return () => unsubscribe();
+		return () => unsub();
 	}, []);
+
+	useEffect(() => {
+		getRedirectResult(auth).catch((e) => {
+			console.error("Redirect login error", e);
+			addAlert(
+				`Redirect login failed: [${e?.code || "unknown"}] ${e?.message || ""}`,
+				"error",
+				7000
+			);
+			clearRedirectIntent();
+		});
+	}, []);
+
+	//provider specific redirects
+	const handleGoogleLogin = async () => {
+		try {
+			const cred = await signInWithPopup(auth, googleProvider);
+			await handlePostLoginSetup(cred.user);
+			setUser(cred.user);
+			setUserState("loggedIn");
+		} catch (e) {
+			if (
+				e?.code === "auth/popup-blocked" ||
+				e?.code === "auth/cancelled-popup-request"
+			) {
+				// fallback to redirect if popup is blocked
+				try {
+					await setPersistence(auth, browserSessionPersistence);
+				} catch {}
+				// optional: navigate("/auth/callback", { replace: true });
+				await signInWithRedirect(auth, googleProvider);
+				return;
+			}
+			console.error("Google sign-in failed", e);
+			addAlert(
+				`Google sign-in failed: [${e?.code || "unknown"}] ${e?.message || ""}`,
+				"error",
+				6000
+			);
+		}
+	};
+
+	// FACEBOOK (redirect)
+	const handleFacebookRedirect = async () => {
+		try {
+			await setPersistence(auth, browserSessionPersistence);
+		} catch {}
+		// optional: setRedirectIntent("facebook"); navigate("/auth/callback", { replace: true });
+		await signInWithRedirect(auth, facebookProvider);
+	};
 
 	const handleEmailLogin = async (creds) => {
 		try {
 			const loginEmail = creds.email;
 			const loginPassword = creds.password;
-			const loginDisplayName = creds.displayName;
 			const userCredential = await signInWithEmailAndPassword(
 				auth,
 				loginEmail,
-				loginPassword,
-				loginDisplayName
+				loginPassword
 			);
-			console.log(userCredential.user);
 			setUser(userCredential.user);
 			setUserState("loggedIn");
+			await handlePostLoginSetup(userCredential.user);
 		} catch (error) {
 			addAlert(error.message);
 			throw error;
@@ -80,15 +167,6 @@ export const AuthProvider = ({ children }) => {
 			await updateProfile(userCredential.user, {
 				displayName: registerDisplayName,
 			});
-			// Refresh the user to get the updated displayName
-			// await userCredential.user.reload();
-			// const updatedUser = auth.currentUser;
-			// setUser(updatedUser);
-			// setUserState("loggedIn");
-
-			// await updateProfile(userCredential.user, {
-			// 	displayName: registerDisplayName,
-			// });
 			setUser({
 				...userCredential.user,
 				displayName: registerDisplayName,
@@ -101,7 +179,6 @@ export const AuthProvider = ({ children }) => {
 		}
 	};
 
-	// Logout
 	const handleLogOut = async () => {
 		if (userState === "guest") {
 			localStorage.removeItem("guest");
@@ -119,37 +196,72 @@ export const AuthProvider = ({ children }) => {
 		setUserState("guest");
 	};
 
+	// const handleForgotPwd = async (email) => {
+	// 	await sendPasswordResetEmail(auth, email)
+	// 		.then(() => {
+	// 			console.log("Password reset email sent");
+	// 			addAlert(
+	// 				`If an account exists for ${email}, a reset link has been sent (check spam).`,
+	// 				"info",
+	// 				6000
+	// 			);
+	// 		})
+	// 		.catch((error) => {
+	// 			const errorCode = error.code;
+	// 			const errorMessage = error.message;
+	// 			alert(`Error: ${errorCode} :${errorMessage}`);
+	// 			addAlert(error.message);
+	// 		});
+	// };
+
 	const handleForgotPwd = async (email) => {
-		// console.log("Sending reset email to: ", email);
-		await sendPasswordResetEmail(auth, email)
-			.then(() => {
-				console.log("Password reset email sent");
-				// Password reset email sent!
-			})
-			.catch((error) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-				alert(`Error: ${errorCode} :${errorMessage}`);
-				addAlert(error.message);
-			});
+		if (!email) {
+			addAlert("Please enter your email address.", "warning", 4000);
+			return;
+		}
+		try {
+			await sendPasswordResetEmail(auth, email);
+			addAlert(
+				`If an account exists for ${email}, a reset link has been sent (check spam).`,
+				"info",
+				6000
+			);
+		} catch (e) {
+			const msg =
+				e?.code === "auth/invalid-email"
+					? "That doesn’t look like a valid email."
+					: `[${e?.code || "unknown"}] ${
+							e?.message || "Couldn’t send reset email."
+					  }`;
+			console.error("sendPasswordResetEmail failed", e);
+			addAlert(msg, "error", 7000);
+		}
 	};
 
 	// new redirect handler for multiple providers
-	const handleSocialAuthRedirect = (providerID) => {
+	const handleSocialAuthRedirect = async (providerID) => {
 		let providerMap = {
 			google: googleProvider,
 			facebook: facebookProvider,
 		};
 		const provider = providerMap[providerID];
+		// sessionStorage.setItem("pendingRedirect", providerID);
 		if (!provider) {
 			console.error("Invalid Provider ID: ", providerID);
 			alert("Invalid Login type");
 			return;
 		}
-		signInWithRedirect(auth, provider);
-	};
+		setRedirectIntent(providerID); // ✅ string + timestamp + clear guest
 
-	//provider specific redirects
+		try {
+			await setPersistence(auth, browserSessionPersistence);
+		} catch (e) {
+			console.error("setPersistence(session) failed", e);
+			// still attempt redirect; some browsers will allow it anyway
+		}
+
+		await signInWithRedirect(auth, provider);
+	};
 
 	const handlePostLoginSetup = async (user) => {
 		try {
@@ -162,30 +274,6 @@ export const AuthProvider = ({ children }) => {
 		}
 	};
 
-	useEffect(() => {
-		const handleRedirectResult = async () => {
-			try {
-				const result = await getRedirectResult(auth);
-				// console.log("getRedirectResult fired");
-				if (!result) {
-					console.log("No redirect result");
-					return;
-				}
-				// Avoid errors on first load with no redirect result
-
-				// The signed-in user info.
-				const newUser = result.user;
-				setUser(newUser);
-				setUserState("loggedIn");
-				await handlePostLoginSetup(newUser);
-			} catch (error) {
-				console.log("Redirect Login Error failed", error.message);
-				addAlert("Redirect Login Error failed", error.message);
-			}
-		};
-		handleRedirectResult();
-	}, []);
-
 	return (
 		<AuthContext.Provider
 			value={{
@@ -197,6 +285,7 @@ export const AuthProvider = ({ children }) => {
 				handleGuestSignIn,
 				handleSocialAuthRedirect,
 				handleForgotPwd,
+				handleGoogleLogin,
 			}}
 		>
 			{children}

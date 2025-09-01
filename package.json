@@ -4,9 +4,12 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "vite", 
+		"dev": "vite",
 		"build": "vite build",
 		"lint": "eslint .",
+		"build:devproj": "vite build --mode development",
+    	"dev:prodauth-dbemu": "cross-env VITE_USE_AUTH_EMULATOR=false VITE_USE_DB_EMULATOR=true vite --mode production",
+   		"dev:prod": "cross-env VITE_USE_AUTH_EMULATOR=false VITE_USE_DB_EMULATOR=false vite --mode production",
 		"preview": "vite preview"
 	},
 	"dependencies": {

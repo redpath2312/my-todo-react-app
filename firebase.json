@@ -19,13 +19,9 @@
 		}
 	},
 	"hosting": {
-		"public": "public/firebase-hosting-test",
+		"public": "dist",
 		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-		"rewrites": [
-			{
-				"source": "**",
-				"destination": "/index_static.html"
-			}
-		]
+		"cleanUrls": true,
+		"rewrites": [{ "source": "**", "destination": "/index.html" }]
 	}
 }

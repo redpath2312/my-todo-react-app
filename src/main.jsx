@@ -13,8 +13,10 @@ import {
 
 import { doc, onSnapshot } from "firebase/firestore";
 import { ThemeModeProvider } from "./theme/ThemeModeContext.jsx";
-import { createAppTheme } from "./theme/theme.js";
-const theme = createAppTheme("light");
+
+import { setLogLevel } from "firebase/app";
+setLogLevel("debug"); // verbose Firebase logs in console
+
 // import { textFieldClasses } from "@mui/material";
 
 function Main(props) {
@@ -23,6 +25,18 @@ function Main(props) {
 	const [isAdding, setIsAdding] = useState(false);
 	const { addAlert, addThrottledAlert } = useAlert();
 	const { user, userState } = useAuth();
+
+	//tempoay for auth redirect debugging
+	// before any auth calls (e.g., in main.jsx)
+	try {
+		sessionStorage.setItem("__test", "1");
+		sessionStorage.removeItem("__test");
+		console.log("sessionStorage OK");
+	} catch {
+		console.warn(
+			"sessionStorage blocked. Use popup or change browser settings."
+		);
+	}
 
 	function toErrorMessage(err) {
 		// Firebase errors usually have .code and .message

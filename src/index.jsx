@@ -12,12 +12,12 @@ const root = createRoot(document.getElementById("root"));
 //Change between Login and Main
 root.render(
 	<UIProvider>
-		<Router>
-			<ErrorProvider>
-				<AuthProvider>
+		<ErrorProvider>
+			<AuthProvider>
+				<Router>
 					<Main />
-				</AuthProvider>
-			</ErrorProvider>
-		</Router>
+				</Router>
+			</AuthProvider>
+		</ErrorProvider>
 	</UIProvider>
 );

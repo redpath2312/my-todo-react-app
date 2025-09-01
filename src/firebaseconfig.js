@@ -1,6 +1,11 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
-import { getAuth, connectAuthEmulator } from "firebase/auth";
+import {
+	getAuth,
+	setPersistence,
+	browserSessionPersistence ,
+	connectAuthEmulator,
+} from "firebase/auth";
 
 const firebaseConfig = {
 	apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -10,20 +15,19 @@ const firebaseConfig = {
 	messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
 	appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
-const firebaseApp = initializeApp(firebaseConfig);
+
+const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+// const firebaseApp = initializeApp(firebaseConfig);
 
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
-try {
-	connectAuthEmulator(auth, "http://localhost:9099");
-	console.log("Connected to firebase auth");
-} catch (error) {
-	console.error("Error connecting to the emulator:", error);
-}
 
-// ✅ Emulators only when running the dev server
-if (import.meta.env.DEV) {
-	connectAuthEmulator(auth, "http://localhost:9099");
-	connectFirestoreEmulator(db, "localhost", 8080);
-}
+setPersistence(auth, browserSessionPersistence ).catch(() => {});
+
+const useAuthEmu = import.meta.env.VITE_USE_AUTH_EMULATOR === "true";
+const useDbEmu = import.meta.env.VITE_USE_DB_EMULATOR === "true";
+
+if (useAuthEmu) connectAuthEmulator(auth, "http://localhost:9099");
+if (useDbEmu) connectFirestoreEmulator(db, "localhost", 8080);
+
 export { db, auth };
