@@ -4,6 +4,18 @@ import { getDesignTokens } from "./getDesignTokens";
 export const createAppTheme = (mode) =>
 	createTheme(getDesignTokens(mode), {
 		components: {
+			MuiIconButton: {
+				styleOverrides: {
+					root: {
+						"&.Mui-disabled": {
+							opacity: 0.4,
+							// optionally keep the same color rather than MUI's grey:
+							color: (t) => t.palette.text.primary,
+							cursor: "not-allowed",
+						},
+					},
+				},
+			},
 			MuiButton: {
 				defaultProps: {
 					disableRipple: true, // removes grey ripple/overlay

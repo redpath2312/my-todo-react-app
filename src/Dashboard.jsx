@@ -21,7 +21,7 @@ const Dashboard = ({
 }) => {
 	const [localCards, setLocalCards] = useState([]);
 	const { userState } = useAuth();
-	const { isEditingLock, editingLockRef } = useUI();
+	const { editingLocked, editingLockRef } = useUI();
 	const [isTipsHidden, setTipsHidden] = useState(false);
 
 	const cards =
@@ -132,16 +132,46 @@ const Dashboard = ({
 		}
 	}
 
-	function updateCardById(id, updatedFields) {
+	function updateCardById(id, patch) {
 		if (userState === "guest") {
-			const updatedCards = localCards.map((card) => {
-				return card.id === id ? { ...card, ...updatedFields } : card;
+			// 👇 pass a function to setLocalCards; React calls it with the freshest array
+			setLocalCards((prevCards) => {
+				// prevCards is guaranteed current, even if multiple updates were queued
+				const nextCards = prevCards.map((card) => {
+					// For the matching card, merge in the patch (updated fields)
+					if (card.id === id) {
+						// Spread old card first, then patch so patch wins
+						return { ...card, ...patch };
+					}
+					// Leave other cards untouched (keeps their referential identity)
+					return card;
+				});
+
+				// Return the new array; React will render with this value
+				return nextCards;
 			});
-			setLocalCards(updatedCards);
 		} else if (userState === "loggedIn") {
-			updateCardsInDB(id, updatedFields);
+			// Logged-in path (Firestore): do your DB update
+			// You can keep it non-optimistic:
+			updateCardsInDB(id, patch);
+
+			// Or do an optimistic local update too, then revert on error if you like:
+			// setLocalCards(prev => prev.map(c => c.id === id ? ({...c, ...patch}) : c));
+			// updateCardsInDB(id, patch).catch(() => setLocalCards(prev => /* revert */));
 		}
 	}
+
+	// Original simpler function but it introduced issues with stale localcards in guest mode and cards being overwritten/wiped/reborn
+	// function updateCardById(id, updatedFields) {
+	// 	if (userState === "guest") {
+	// 		const updatedCards = localCards.map((card) => {
+	// 			return card.id === id ? { ...card, ...updatedFields } : card;
+	// 		});
+	// 		setLocalCards(updatedCards);
+	// 	} else if (userState === "loggedIn") {
+	// 		updateCardsInDB(id, updatedFields);
+	// 	}
+	// }
 
 	function handleTextChange(id, updatedText, flagProps = {}) {
 		updateCardById(id, { text: updatedText, ...flagProps });
@@ -170,7 +200,7 @@ const Dashboard = ({
 				</div>
 				<div
 					className={`dashboard-content ${
-						isEditingLock ? "dashboard-is-locked" : ""
+						editingLocked ? "dashboard-is-locked" : ""
 					}`}
 				>
 					<div className="dashboard-top">
@@ -206,45 +236,47 @@ const Dashboard = ({
 						</div>
 					</div>
 
-					<div className="dashboard-swimlanes">
-						<div className="band-inner">
-							<Swimlane
-								title="High Priority Tasks"
-								cards={highPriorityCards}
-								hidden={highPriorityHidden}
-								containerClass="high-priority-cards-container"
-								headingID="high-priority-section"
-								{...commonSwimlaneProps}
-							/>
+					{cardsTotal > 0 && (
+						<div className="dashboard-swimlanes">
+							<div className="band-inner">
+								<Swimlane
+									title="High Priority Tasks"
+									cards={highPriorityCards}
+									hidden={highPriorityHidden}
+									containerClass="high-priority-cards-container"
+									headingID="high-priority-section"
+									{...commonSwimlaneProps}
+								/>
 
-							<Swimlane
-								title="Dash Tasks"
-								cards={dashTaskCards}
-								hidden={dashTasksHidden}
-								containerClass="dash-tasks-cards-container"
-								headingID="dash-tasks-section"
-								{...commonSwimlaneProps}
-							/>
+								<Swimlane
+									title="Dash Tasks"
+									cards={dashTaskCards}
+									hidden={dashTasksHidden}
+									containerClass="dash-tasks-cards-container"
+									headingID="dash-tasks-section"
+									{...commonSwimlaneProps}
+								/>
 
-							<Swimlane
-								title="All Other Tasks"
-								cards={allOtherCards}
-								hidden={allOtherCardsHidden}
-								containerClass="all-other-cards-container"
-								headingID="all-other-tasks-section"
-								{...commonSwimlaneProps}
-							/>
+								<Swimlane
+									title="All Other Tasks"
+									cards={allOtherCards}
+									hidden={allOtherCardsHidden}
+									containerClass="all-other-cards-container"
+									headingID="all-other-tasks-section"
+									{...commonSwimlaneProps}
+								/>
 
-							<Swimlane
-								title="Done Tasks"
-								cards={doneCards}
-								hidden={doneCardsHidden}
-								containerClass="done-cards-container"
-								headingID="done-tasks-section"
-								{...commonSwimlaneProps}
-							/>
+								<Swimlane
+									title="Done Tasks"
+									cards={doneCards}
+									hidden={doneCardsHidden}
+									containerClass="done-cards-container"
+									headingID="done-tasks-section"
+									{...commonSwimlaneProps}
+								/>
+							</div>
 						</div>
-					</div>
+					)}
 				</div>
 			</div>
 

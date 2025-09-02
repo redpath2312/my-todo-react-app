@@ -680,11 +680,11 @@ hr.or-divider:after {
 	justify-content: space-evenly;
 }
 
-.dashboard-is-locked button {
+/* .dashboard-is-locked button {
 	opacity: 0.5;
 	pointer-events: none;
 	cursor: not-allowed;
-}
+} */
 
 .dashboard-is-locked .card textarea {
 	opacity: 0.5;
@@ -703,10 +703,10 @@ hr.or-divider:after {
 	cursor: not-allowed;
 	transition: opacity 0.3s ease;
 }
-.button-toggle-off {
+/* .button-toggle-off {
 	opacity: 0.5;
 	transition: opacity 0.3s ease;
-}
+} */
 .card {
 	cursor: default;
 	user-select: none;

@@ -22,7 +22,7 @@ function Card({
 	onFlagToggle,
 	createdAt,
 }) {
-	const { editingLockRef, setIsEditingLock } = useUI();
+	const { editingLockRef, lockEditing, unlockEditing } = useUI();
 	const [isHovered, setHovered] = useState(false);
 	const [cardText, setCardText] = useState(text);
 	const [isEditing, setEditing] = useState(false);
@@ -34,6 +34,15 @@ function Card({
 	const createdDate = toJSDate(createdAt); // Optional if you want the tooltip date
 	const ageLabel = createdDate ? formatAgeSince(createdDate) : ""; // This will re-render on an interval
 
+	const onStartEdit = () => {
+		setEditing(true);
+		lockEditing(); // turn on global lock
+	};
+	const onEndEdit = () => {
+		setEditing(false);
+		unlockEditing(); // turn off global lock
+	};
+
 	function handleTextChange(event) {
 		handleEditing();
 		setCardText(event.target.value);
@@ -41,9 +50,7 @@ function Card({
 
 	function handleEditing() {
 		if (!isEditing) {
-			setEditing(true);
-			editingLockRef.current = true;
-			setIsEditingLock(true);
+			onStartEdit();
 			console.log("Now editing");
 		}
 	}
@@ -56,10 +63,8 @@ function Card({
 		} catch (error) {
 			console.log("Error saving", error);
 		} finally {
-			editingLockRef.current = false;
-			setIsEditingLock(false);
 			setIsSaving(false);
-			setEditing(false);
+			onEndEdit();
 			console.log("Finished saving and editing");
 		}
 	}
@@ -107,13 +112,6 @@ function Card({
 		onDelete(id);
 	};
 
-	// let theme = createTheme({
-	// 	palette: {
-	// 		primary: { main: "#bdac80" },
-	// 		secondary: { main: "#E98074" },
-	// 	},
-	// });
-
 	function cardClassCheck(done, highPriority, isHovered, dashTask) {
 		const classes = ["card"];
 		if (done) classes.push("card-done");
@@ -154,6 +152,8 @@ function Card({
 							onInput={handleTextChange}
 							id="card-text"
 							onClick={() => onSelect(id)}
+							// onFocus={onStartEdit}
+							onBlur={onEndEdit}
 						/>
 					</form>
 				)}
@@ -212,7 +212,6 @@ function Card({
 						</IconButton>
 					</Tooltip>
 				</div>
-				{/* </ThemeProvider> */}
 			</div>
 		</div>
 	);

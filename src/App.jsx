@@ -43,9 +43,6 @@ function App({
 		}
 	}, [userState, location.pathname, navigate]);
 
-	// if (userState === "checking") {
-	// 	return <div>Loading...</div>;
-	// }
 
 	return (
 		<>

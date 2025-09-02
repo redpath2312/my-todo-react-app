@@ -1,14 +1,24 @@
 import { createContext, useContext, useRef, useState } from "react";
 
-const UIContext = createContext();
+const UIContext = createContext(null);
 
 export const UIProvider = ({ children }) => {
 	const editingLockRef = useRef(false);
-	const [isEditingLock, setIsEditingLock] = useState(false);
+	const [editingLocked, setEditingLocked] = useState(false);
+
+	const lockEditing = () => {
+		editingLockRef.current = true;
+		setEditingLocked(true);
+	};
+
+	const unlockEditing = () => {
+		editingLockRef.current = false;
+		setEditingLocked(false);
+	};
 
 	return (
 		<UIContext.Provider
-			value={{ editingLockRef, isEditingLock, setIsEditingLock }}
+			value={{ editingLockRef, editingLocked, lockEditing, unlockEditing }}
 		>
 			{children}
 		</UIContext.Provider>

@@ -20,16 +20,18 @@ const Actions = ({
 				<h2 className="h2-heading">Actions</h2>
 				<Tooltip title="Toggle Getting Started Tips" placement="bottom">
 					<IconButton
-						className={isTipsHidden ? "button-toggle-off" : ""}
+						aria-pressed={isTipsHidden} // announces toggle state
+						aria-label={isTipsHidden ? "Show tips" : "Hide tips"}
+						sx={{ opacity: isTipsHidden ? 0.5 : 1, transition: "opacity .2s" }}
 						onClick={handleTipsHidden}
 					>
 						<TipsAndUpdatesIcon fontSize="large" color="dash" />
 					</IconButton>
 				</Tooltip>
 
-				<Tooltip title="Clear Done Tasks" pplacement="bottom">
+				<Tooltip title="Clear Done Tasks" placement="bottom">
 					<IconButton
-						className={doneCardsTotal === 0 ? "button-disabled" : ""}
+						// className={doneCardsTotal === 0 ? "button-disabled" : ""}
 						disabled={doneCardsTotal === 0 || editingLockRefCurrent}
 						onClick={handleClearAllDoneTasks}
 					>
