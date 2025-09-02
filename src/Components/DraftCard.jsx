@@ -17,9 +17,6 @@ function DraftCard(props) {
 	const lockedByOthers = editingLocked; // Draft never owns the lock
 
 	const [isHovered, setHovered] = useState(false);
-	// useEffect(() => {
-	// 	console.log("DraftCard re-rendered with lock:", isInteractionLocked);
-	// }, [isInteractionLocked]);
 
 	function handleChange(event) {
 		setCreateCardText(event.target.value);
@@ -76,7 +73,6 @@ function DraftCard(props) {
 						></textarea>
 					</div>
 					<div className="draft-card-bottom">
-						{/* <ThemeProvider theme={theme}> */}
 						<div>
 							<Tooltip title="Toggle High Priority" placement="bottom">
 								<IconButton onClick={() => handleFlagClick("high-priority")}>
@@ -114,7 +110,6 @@ function DraftCard(props) {
 								</IconButton>
 							</Tooltip>
 						</div>
-						{/* </ThemeProvider> */}
 					</div>
 				</div>
 			</form>

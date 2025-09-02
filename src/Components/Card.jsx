@@ -152,8 +152,6 @@ function Card({
 							onInput={handleTextChange}
 							id="card-text"
 							onClick={() => onSelect(id)}
-							// onFocus={onStartEdit}
-							onBlur={onEndEdit}
 						/>
 					</form>
 				)}

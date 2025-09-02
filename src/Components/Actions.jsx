@@ -3,7 +3,6 @@ import Tooltip from "@mui/material/Tooltip";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
-import ThemeModeToggle from "./Buttons/ThemeModeToggle";
 
 const Actions = ({
 	isTipsHidden,
@@ -31,7 +30,6 @@ const Actions = ({
 
 				<Tooltip title="Clear Done Tasks" placement="bottom">
 					<IconButton
-						// className={doneCardsTotal === 0 ? "button-disabled" : ""}
 						disabled={doneCardsTotal === 0 || editingLockRefCurrent}
 						onClick={handleClearAllDoneTasks}
 					>
@@ -41,7 +39,6 @@ const Actions = ({
 
 				<Tooltip title="Delete All Tasks" placement="bottom">
 					<IconButton
-						className={cardsTotal === 0 ? "button-disabled" : ""}
 						disabled={cardsTotal === 0 || editingLockRefCurrent}
 						onClick={handleDeleteAll}
 					>
