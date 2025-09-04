@@ -135,6 +135,12 @@ export function ThemeModeProvider({ children }) {
 									? "rgba(255,255,255,0.90)" // near-white on dark
 									: "rgba(0,0,0,0.45)", // strong gray on light
 							//Spacings -guters, paddings
+							"--page-max": "1540px", // page max width -maybe put up to 1920
+							"--narrow-max": "860px", // text/mini-dashboard column
+							"--gutter-xs": "10px",
+							"--gutter-sm": "12px",
+							"--gutter-md": "16px",
+							"--gutter-lg": "24px",
 							"--sp-1": "4px",
 							"--sp-2": "8px",
 							"--sp-3": "12px",
@@ -143,8 +149,8 @@ export function ThemeModeProvider({ children }) {
 							"--sp-6": "24px",
 							"--sp-8": "32px",
 							"--sp-10": "40px",
-							"--gutter-x": "var(--sp-5)",
-							"--gutter-y": "var(--sp-5)",
+							"--gutter-x": "var(--gutter-sm)",
+							"--gutter-y": "var(--gutter-sm)",
 							"--panel-pad": "var(--sp-5)",
 							"--panel-gap": "var(--sp-4)",
 						},

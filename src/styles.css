@@ -134,10 +134,19 @@ body {
 	width: 340px;
 	height: 165px;
 	border: 2px solid var(--primary-main);
+	justify-self: center;
+}
+
+#draft-card,
+#draft-card > *,
+#draft-card textarea {
+	width: 100% !important;
+	max-width: 100% !important;
+	box-sizing: border-box;
 }
 
 .card {
-	width: 340px;
+	width: 330px;
 	height: 170px;
 	border: var(--card-border-width) solid var(--secondary-main);
 	margin: 1vh;
@@ -293,7 +302,7 @@ p {
 
 .card-actions {
 	flex-direction: row;
-	width: 352px;
+	width: 100%;
 }
 .tips,
 .mini-dashboard-widgets,
@@ -303,6 +312,11 @@ p {
 	min-width: 0;
 	align-items: center;
 	/* width: 100%; */
+
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	justify-content: center;
 }
 .tips {
 	margin-bottom: var(--gutter-y);
@@ -402,6 +416,10 @@ p {
 }
 @media (max-width: 900px) {
 	.login-page {
+		flex-direction: column;
+		align-items: center;
+	}
+	.register-page {
 		flex-direction: column;
 		align-items: center;
 	}
@@ -562,7 +580,7 @@ p {
 
 .header-grid {
 	display: grid;
-	grid-template-columns: auto 1fr auto; /* left | center | right */
+	grid-template-columns: auto minmax(0, 1fr) auto; /* left | center | right */
 	align-items: center;
 	gap: 8px;
 	padding-inline: var(--gutter, 12px);
@@ -581,16 +599,26 @@ p {
 	justify-self: start;
 }
 .header-right {
-	justify-self: end;
+	/* justify-self: end; */
+	min-width: 100px; /* tweak based on toggle + button width */
+	justify-content: flex-end;
 }
 
 .header-title {
 	justify-self: center; /* forces true centering */
 	font-weight: 600;
 	color: var(--text-primary);
-	white-space: nowrap;
+	overflow-wrap: break-word;
+	white-space: normal;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	text-align: center;
+}
+
+.header-title h1.page-title {
+	font-size: clamp(16px, 4vw, 22px);
+	line-height: 1.2;
+	margin: 0;
 }
 
 .logout-btn {
@@ -770,10 +798,23 @@ ul {
 }
 .tips-panels,
 .mini-dashboard-inner-panels {
-	display: flex;
+	/* display: flex;
 	flex-wrap: wrap;
 	gap: var(--panel-gap);
-	justify-content: space-between;
+	justify-content: space-between; */
+
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: var(--panel-gap, 16px);
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.mini-dashboard-inner-panels,
+.tips-panels > * {
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
 }
 .tips-panels {
 	text-align: left;
@@ -944,4 +985,132 @@ header,
 	--page-max: 1440px;
 	--hairline: color-mix(in srgb, var(--surface-border) 70%, transparent);
 	--gutter-x: clamp(12px, 4vw, 24px);
+}
+/* A) Let grid/flex children actually shrink (prevents momentary overlap) */
+.header-grid > *,
+.mini-dashboard-inner-panels > *,
+.tips-panels > *,
+.swimlane > * {
+	min-width: 0; /* critical when children have long text */
+}
+
+/* B) Never animate layout properties (kills janky breakpoint transitions) */
+* {
+	/* If you used transition: all somewhere, this narrows it to safe properties */
+	transition-property: color, background-color, opacity, transform, box-shadow,
+		border-color;
+}
+@media (prefers-reduced-motion: reduce) {
+	* {
+		transition: none !important;
+	}
+}
+
+/* C) Consistent container alignment (you already have band-inner) */
+.band-inner,
+.mini-dashboard-widgets,
+.tips {
+	width: 100%;
+	max-width: var(--page-max);
+	margin-inline: auto;
+	padding-inline: var(--gutter-sm);
+	box-sizing: border-box;
+}
+@media (min-width: 640px) {
+	.band-inner,
+	.mini-dashboard-widgets,
+	.tips {
+		padding-inline: var(--gutter-md);
+	}
+}
+@media (min-width: 1024px) {
+	.band-inner,
+	.mini-dashboard-widgets,
+	.tips {
+		padding-inline: var(--gutter-lg);
+	}
+}
+
+.swimlane-heading h3 {
+	padding-bottom: 15px;
+}
+/* D) Unified responsive grids */
+.mini-dashboard-inner-panels,
+.tips-panels {
+	display: grid;
+	grid-template-columns: repeat(
+		auto-fit,
+		minmax(280px, 1fr)
+	); /* 240–280px works well */
+	gap: var(--panel-gap, 16px);
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* E) Make every card obey its parent width */
+.mini-dashboard-inner-panels > *,
+.tips-panels > *,
+.panel-inner,
+.tips-card,
+.draft-card {
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+/* 1) Single-column range (your containers already center at <=1066px)
+      Keep the 330px width and center the card. */
+.dashboard-swimlanes .card {
+	/* min 260px, grow a bit on midsize, cap at 330px */
+	width: 330px; /* stable target width */
+	max-width: 100%;
+	box-sizing: border-box;
+}
+/* 2) Phones: when the container gets too tight, let the card shrink,
+      but only as much as needed to fit (no side gaps). */
+@media (max-width: 640px) {
+	.dashboard-swimlanes .card {
+		/* container-relative shrink: fill lane minus a little breathing room */
+		width: min(330px, calc(100% - 24px));
+		margin-inline: auto;
+	}
+}
+
+/* optional: tighten lane padding to claw back a bit more space */
+/* .dashboard-swimlanes {
+	padding-inline: var(--gutter-xs, 10px);
+} */
+
+/* (Optional) ultra-narrow phones: remove the extra 24px if needed */
+@media (max-width: 360px) {
+	.dashboard-swimlanes .card {
+		width: calc(100% - 12px);
+	}
+}
+
+/* F) Usual width culprits (textarea/img/svg) */
+.draft-card textarea,
+.panel-inner textarea {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+img,
+svg {
+	max-width: 100%;
+	height: auto;
+}
+
+/* G) Header fix you applied; keep it */
+.header-grid {
+	grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+/* H) Mobile gutters so lanes feel wider but aligned */
+@media (max-width: 640px) {
+	.dashboard-swimlanes {
+		padding-inline: var(--gutter-xs, 10px);
+	}
+	.swimlane {
+		margin-inline: 6px;
+	}
 }

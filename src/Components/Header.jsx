@@ -27,13 +27,6 @@ function Header() {
 		<header className="header section">
 			<div className="container header-grid">
 				<div className="header-left">
-					{/* 
-				<img
-					className="header-icon"
-					src="images/check-list-icon_128.svg"
-					alt="List Logo"
-				/>
-			 */}
 					<ThemeModeToggle />
 				</div>
 

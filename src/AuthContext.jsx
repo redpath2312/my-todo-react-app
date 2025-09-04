@@ -196,24 +196,6 @@ export const AuthProvider = ({ children }) => {
 		setUserState("guest");
 	};
 
-	// const handleForgotPwd = async (email) => {
-	// 	await sendPasswordResetEmail(auth, email)
-	// 		.then(() => {
-	// 			console.log("Password reset email sent");
-	// 			addAlert(
-	// 				`If an account exists for ${email}, a reset link has been sent (check spam).`,
-	// 				"info",
-	// 				6000
-	// 			);
-	// 		})
-	// 		.catch((error) => {
-	// 			const errorCode = error.code;
-	// 			const errorMessage = error.message;
-	// 			alert(`Error: ${errorCode} :${errorMessage}`);
-	// 			addAlert(error.message);
-	// 		});
-	// };
-
 	const handleForgotPwd = async (email) => {
 		if (!email) {
 			addAlert("Please enter your email address.", "warning", 4000);
