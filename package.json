@@ -15,6 +15,7 @@
 		"deploy:dev:preview": "npm run build:devpreview && firebase hosting:channel:deploy preview-dev --expires 7d --project dash-dev",
 		"predeploy:prod:preview": "npm run lint && npm run build && npm run check:branch:prodprep",
 		"deploy:prod:preview": "npm run predeploy:prod:preview && firebase hosting:channel:deploy prod-preview --expires 7d --project dash-prod",
+		"deploy:prod:preview:force": "npm run check:branch:prodprep && npm run build && firebase hosting:channel:deploy prod-preview --project dash-prod --expires 7d",
 		"predeploy:prod:live": "npm run lint && npm run build && npm run check:branch:main && npm run check:clean",
 		"deploy:prod:live": "npm run predeploy:prod:live && firebase deploy --only hosting --project dash-prod",
 		"rules:dev": "firebase deploy --only firestore:rules --project dash-dev",

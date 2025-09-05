@@ -78,13 +78,14 @@ export default function SocialLogin() {
 				<img src="images/google.svg" alt="Google" className="social-icon" />{" "}
 				Google
 			</button> */}
-			<button
+			{/* Disabled facebook as will need consent and auth via redirect working */}
+			{/* <button
 				className="social-button"
 				onClick={() => beginRedirect("facebook")}
 			>
 				<img src="images/facebook.svg" alt="facebook" className="social-icon" />{" "}
 				facebook
-			</button>
+			</button> */}
 		</div>
 	);
 }

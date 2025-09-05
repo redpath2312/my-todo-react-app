@@ -149,7 +149,7 @@ body {
 	width: 330px;
 	height: 170px;
 	border: var(--card-border-width) solid var(--secondary-main);
-	margin: 1vh;
+	/* margin: 1vh; */
 	border-radius: 10px;
 	background-color: var(--bg-paper);
 	text-align: center;
@@ -236,7 +236,7 @@ textarea {
 	margin: 15px; */
 	width: 100%;
 	margin: 0; /* remove the old margin that offset alignment */
-	padding: var(--sp-2);
+	padding: var(--sp-3);
 	gap: var(--sp-3);
 	border-radius: 10px;
 }
@@ -265,6 +265,18 @@ textarea {
 	#all-other-tasks-section,
 	#done-tasks-section {
 		margin: 15px auto;
+	}
+}
+
+/* 4) Lane containers: tighten their own inner padding on phones */
+@media (max-width: 640px) {
+	.high-priority-cards-container,
+	.dash-tasks-cards-container,
+	.all-other-cards-container,
+	.done-cards-cards-container,
+	.done-cards-container {
+		padding: 8px !important; /* down from ~var(--sp-2)  */
+		gap: 10px !important;
 	}
 }
 
@@ -813,12 +825,34 @@ ul {
 .mini-dashboard-inner-panels,
 .tips-panels > * {
 	width: 100%;
+	min-width: 0;
 	max-width: 100%;
 	box-sizing: border-box;
 }
 .tips-panels {
 	text-align: left;
 	padding: var(--panel-pad);
+}
+
+/* Let inner tips panels shrink with the grid */
+.tips .panel-inner {
+	min-width: 0;
+	width: 100%;
+	max-width: 100%;
+}
+
+/* One-column hard stop on very small screens */
+@media (max-width: 520px) {
+	.tips-panels {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* (optional) a touch tighter padding on phones */
+@media (max-width: 520px) {
+	.tips {
+		padding-inline: 12px;
+	}
 }
 .register-form {
 }
@@ -840,7 +874,7 @@ header,
 	padding-block: var(--sp-4);
 	overflow: clip; /* stops inner shadows peeking */
 	min-width: 0; /* guard against overflow */
-
+	padding-inline: 0 !important;
 	display: grid;
 	grid-template-columns:
 		[full-start] var(--gutter-x)
@@ -848,6 +882,13 @@ header,
 		[content-end] var(--gutter-x)
 		[full-end];
 	margin-bottom: var(--gutter-y);
+}
+
+/* Page chrome: remove outer page padding on phones */
+@media (max-width: 640px) {
+	.main-page-container {
+		padding-inline: 3px !important;
+	}
 }
 
 /* Constrain *direct children* to a page max and center them */
@@ -1013,7 +1054,7 @@ header,
 	width: 100%;
 	max-width: var(--page-max);
 	margin-inline: auto;
-	padding-inline: var(--gutter-sm);
+	/* padding-inline: var(--sp-2); */
 	box-sizing: border-box;
 }
 @media (min-width: 640px) {
@@ -1068,10 +1109,15 @@ header,
 }
 /* 2) Phones: when the container gets too tight, let the card shrink,
       but only as much as needed to fit (no side gaps). */
-@media (max-width: 640px) {
+@media (max-width: 520px) {
 	.dashboard-swimlanes .card {
 		/* container-relative shrink: fill lane minus a little breathing room */
-		width: min(330px, calc(100% - 24px));
+		width: min(330px, calc(100% - 12px));
+		margin-inline: auto;
+	}
+	#draft-card {
+		/* container-relative shrink: fill lane minus a little breathing room */
+		width: min(560px, calc(100% - 12px));
 		margin-inline: auto;
 	}
 }
@@ -1080,13 +1126,6 @@ header,
 /* .dashboard-swimlanes {
 	padding-inline: var(--gutter-xs, 10px);
 } */
-
-/* (Optional) ultra-narrow phones: remove the extra 24px if needed */
-@media (max-width: 360px) {
-	.dashboard-swimlanes .card {
-		width: calc(100% - 12px);
-	}
-}
 
 /* F) Usual width culprits (textarea/img/svg) */
 .draft-card textarea,
@@ -1108,9 +1147,39 @@ svg {
 /* H) Mobile gutters so lanes feel wider but aligned */
 @media (max-width: 640px) {
 	.dashboard-swimlanes {
-		padding-inline: var(--gutter-xs, 10px);
+		/* padding-inline: var(--gutter-xs, 10px); */
 	}
 	.swimlane {
 		margin-inline: 6px;
 	}
+}
+
+/* Let the inner cards actually shrink and count padding in width */
+.tips .panel-inner {
+	min-width: 0 !important; /* override the global 320px */
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+/* Reduce the grid's min column size so padding + borders don't cause overflow */
+.tips-panels {
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	padding-inline: 12px; /* was var(--panel-pad) (~20px) */
+}
+
+/* Ensure grid children can shrink */
+.tips-panels > * {
+	min-width: 0;
+}
+
+/* On small phones, just force one column and tighten padding a bit more */
+@media (max-width: 520px) {
+	.tips-panels {
+		grid-template-columns: 1fr;
+		padding-inline: 8px;
+	}
+	.tips .panel-inner ul {
+		padding: 10px;
+	} /* trims list padding slightly */
 }
