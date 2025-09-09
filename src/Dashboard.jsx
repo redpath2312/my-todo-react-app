@@ -243,7 +243,7 @@ const Dashboard = ({
 									title="High Priority Tasks"
 									cards={highPriorityCards}
 									hidden={highPriorityHidden}
-									containerClass="high-priority-cards-container"
+									containerClass="cards-container"
 									headingID="high-priority-section"
 									{...commonSwimlaneProps}
 								/>
@@ -252,7 +252,7 @@ const Dashboard = ({
 									title="Dash Tasks"
 									cards={dashTaskCards}
 									hidden={dashTasksHidden}
-									containerClass="dash-tasks-cards-container"
+									containerClass="cards-container"
 									headingID="dash-tasks-section"
 									{...commonSwimlaneProps}
 								/>
@@ -261,7 +261,7 @@ const Dashboard = ({
 									title="All Other Tasks"
 									cards={allOtherCards}
 									hidden={allOtherCardsHidden}
-									containerClass="all-other-cards-container"
+									containerClass="cards-container"
 									headingID="all-other-tasks-section"
 									{...commonSwimlaneProps}
 								/>
@@ -270,7 +270,7 @@ const Dashboard = ({
 									title="Done Tasks"
 									cards={doneCards}
 									hidden={doneCardsHidden}
-									containerClass="done-cards-container"
+									containerClass="cards-container"
 									headingID="done-tasks-section"
 									{...commonSwimlaneProps}
 								/>

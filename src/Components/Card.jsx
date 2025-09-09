@@ -117,7 +117,7 @@ function Card({
 		if (done) classes.push("card-done");
 		else if (highPriority) classes.push("card-high-priority");
 		else if (dashTask) classes.push("card-dash");
-		if (isHovered) classes.push("card-hovered");
+		// if (isHovered) classes.push("card-hovered");
 		return classes.join(" ");
 	}
 
@@ -125,7 +125,7 @@ function Card({
 		<div
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
-			className={`${cardClassCheck(done, highPriority, isHovered, dashTask)} ${
+			className={`${cardClassCheck(done, highPriority, dashTask)} ${
 				isEditing ? "is-editing" : ""
 			}`}
 		>
