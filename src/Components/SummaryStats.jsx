@@ -4,6 +4,8 @@ const SummaryStats = ({
 	highPriorityCardsTotal,
 	dashTaskCardsTotal,
 	doneCardsTotal,
+	allOtherCardsTotal,
+	hpDashTotal,
 }) => {
 	return (
 		<div className="summary-inner">
@@ -23,7 +25,7 @@ const SummaryStats = ({
 						</Typography>
 					</span>
 					<span className="summary-description text-gray-700">
-						High Priority Tasks
+						High Priority Tasks (Inc. {`${hpDashTotal} Dash Tasks`})
 					</span>
 				</div>
 
@@ -35,6 +37,17 @@ const SummaryStats = ({
 					</span>
 					<span className="summary-description text-gray-700">
 						Other Dash Tasks
+					</span>
+				</div>
+
+				<div className="summary-row">
+					<span className="summary-number">
+						<Typography component="span" color="secondary" fontWeight={700}>
+							{allOtherCardsTotal}
+						</Typography>
+					</span>
+					<span className="summary-description text-gray-700">
+						All Other Tasks
 					</span>
 				</div>
 

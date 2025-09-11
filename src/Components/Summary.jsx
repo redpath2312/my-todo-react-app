@@ -5,6 +5,8 @@ const Summary = ({
 	highPriorityCardsTotal,
 	dashTaskCardsTotal,
 	doneCardsTotal,
+	allOtherCardsTotal,
+	hpDashTotal,
 }) => {
 	return (
 		<div className="panel-inner">
@@ -15,6 +17,8 @@ const Summary = ({
 				highPriorityCardsTotal={highPriorityCardsTotal}
 				dashTaskCardsTotal={dashTaskCardsTotal}
 				doneCardsTotal={doneCardsTotal}
+				allOtherCardsTotal={allOtherCardsTotal}
+				hpDashTotal={hpDashTotal}
 			/>
 		</div>
 	);

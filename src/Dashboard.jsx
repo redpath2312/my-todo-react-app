@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import DraftCard from "./Components/DraftCard";
@@ -24,12 +24,14 @@ const Dashboard = ({
 	const { editingLocked, editingLockRef } = useUI();
 	const [isTipsHidden, setTipsHidden] = useState(false);
 
-	const cards =
-		userState === "loggedIn"
+	/* 1) Memoize the source list once */
+	const cards = useMemo(() => {
+		return userState === "loggedIn"
 			? dbCards
 			: userState === "guest"
 			? localCards
 			: [];
+	}, [userState, dbCards, localCards]); // ✅ true deps, linter happy
 	const [maxLocalIndexKey, setMaxLocalIndexKey] = useState(0);
 	const [selectedCardID, setSelectedCardID] = useState(null);
 
@@ -46,36 +48,46 @@ const Dashboard = ({
 		highPriorityHidden,
 		dashTasksHidden,
 		allOtherCardsHidden,
-	} = getCardFilters(cards);
+		allOtherCardsTotal,
+		hpDashTotal,
+	} = useMemo(() => {
+		const list = cards;
+		const doneCards = list.filter((c) => c.done);
+		const highPriorityCards = list.filter((c) => c.highPriority && !c.done);
+		const dashTaskCards = list.filter(
+			(c) => c.dashTask && !c.highPriority && !c.done
+		);
+		const allOtherCards = list.filter(
+			(c) => !c.highPriority && !c.dashTask && !c.done
+		);
 
-	function getCardFilters(cards) {
-		const doneCards = (cards || []).filter((card) => card.done === true);
-		const highPriorityCards = (cards || []).filter(
-			(card) => card.highPriority === true && !card.done
-		);
-		const dashTaskCards = (cards || []).filter(
-			(card) =>
-				card.dashTask === true && !card.highPriority === true && !card.done
-		);
-		const allOtherCards = (cards || []).filter(
-			(card) =>
-				card.highPriority === false && card.dashTask === false && !card.done
+		// accumulating on every card "c" a count "n" if hp or dash but not done to get total.
+		const hpDashTotal = list.reduce(
+			(n, c) => n + (c.highPriority && c.dashTask && !c.done ? 1 : 0),
+			0
 		);
 		return {
-			cardsTotal: (cards || []).length,
+			cardsTotal: list.length,
+
 			doneCards,
-			doneCardsTotal: (doneCards || []).length,
-			highPriorityCards,
-			highPriorityCardsTotal: highPriorityCards.length || 0,
-			dashTaskCards,
-			dashTaskCardsTotal: dashTaskCards.length || 0,
-			allOtherCards,
+			doneCardsTotal: doneCards.length,
 			doneCardsHidden: doneCards.length === 0,
+
+			highPriorityCards,
+			highPriorityCardsTotal: highPriorityCards.length,
 			highPriorityHidden: highPriorityCards.length === 0,
+
+			dashTaskCards,
+			dashTaskCardsTotal: dashTaskCards.length,
 			dashTasksHidden: dashTaskCards.length === 0,
+
+			allOtherCards,
+			allOtherCardsTotal: allOtherCards.length,
 			allOtherCardsHidden: allOtherCards.length === 0,
+
+			hpDashTotal,
 		};
-	}
+	}, [cards]);
 
 	useEffect(() => {}, [dbCards]); // New Use Effect
 
@@ -214,6 +226,8 @@ const Dashboard = ({
 										highPriorityCardsTotal={highPriorityCardsTotal}
 										dashTaskCardsTotal={dashTaskCardsTotal}
 										doneCardsTotal={doneCardsTotal}
+										allOtherCardsTotal={allOtherCardsTotal}
+										hpDashTotal={hpDashTotal}
 									/>
 
 									<Actions

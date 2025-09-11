@@ -1022,6 +1022,44 @@ svg {
 	}
 }
 
+@media (max-width: 640px) {
+	.header-grid {
+		/* controls on row 1, title on row 2 */
+		grid-template-areas:
+			"left  right"
+			"title title";
+		grid-template-columns: auto 1fr; /* left hugs content, right takes end */
+		row-gap: 6px; /* space between controls and title */
+	}
+	.header-left {
+		grid-area: left;
+		min-width: auto;
+	}
+	.header-right {
+		grid-area: right;
+		min-width: auto;
+		justify-self: end;
+	}
+	.header-title {
+		grid-area: title;
+		justify-self: center;
+		text-align: center;
+	}
+
+	/* Let the title wrap nicely to two lines, centered */
+	.header-title h1 {
+		white-space: normal;
+		line-height: 1.2;
+		max-width: min(90vw, 28ch); /* cap width so it looks balanced */
+		margin: 0;
+		text-wrap: balance; /* optional, modern browsers */
+		font-size: clamp(16px, 4.6vw, 20px);
+	}
+	.header.section {
+		padding-block: 8px 12px; /* small extra padding at the bottom only */
+	}
+}
+
 /* Tablet */
 
 @media (max-width: 900px) {
