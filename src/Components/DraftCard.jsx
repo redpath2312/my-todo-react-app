@@ -48,7 +48,7 @@ function DraftCard(props) {
 
 	return (
 		<div
-			className="panel-inner"
+			className="panel-inner panel--draft"
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 		>

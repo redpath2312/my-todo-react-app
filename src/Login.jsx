@@ -6,8 +6,15 @@ import { useAuth } from "./AuthContext";
 import { Link } from "react-router-dom";
 import ErrorDisplay from "./Components/ErrorDisplay";
 import ThemeModeToggle from "./Components/Buttons/ThemeModeToggle";
+import { useEffect } from "react";
 
 const Login = () => {
+	useEffect(() => {
+		document.documentElement.classList.add("icons-wait");
+		document.fonts.load('20px "Material Symbols Rounded"').finally(() => {
+			document.documentElement.classList.remove("icons-wait");
+		});
+	}, []);
 	const {
 		// userErrorInfo,
 		// handleEmailLogin,

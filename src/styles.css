@@ -23,10 +23,16 @@ body {
 }
 
 :root {
-	/* tune these */
+	/* will be overridden by theme but good default backup on first load */
 	--page-max: 1920px;
 	--hairline: color-mix(in srgb, var(--surface-border) 70%, transparent);
 	--gutter-x: clamp(12px, 4vw, 24px);
+	--edge-buffer: var(--gutter-x);
+}
+@media (max-width: 480px) {
+	:root {
+		--edge-buffer: 6px;
+	}
 }
 
 /* ===== CSS CUSTOM PROPERTIES ===== */
@@ -85,8 +91,6 @@ body {
 }
 
 .band-inner {
-	/* Need to redeclare localy as otherwise doesn't use page-max */
-	--page-max: 1920px;
 	width: min(var(--page-max), 100%);
 	margin-inline: auto;
 	box-sizing: border-box;
@@ -96,14 +100,8 @@ body {
 header {
 	background-color: var(--bg-section);
 	color: var(--text-primary);
-	/* margin-inline: calc(var(--gutter-x) * -1); */
-	/* padding-inline: var(--gutter-x); keep content aligned */
 	padding-block: var(--sp-2);
 	align-items: center;
-}
-
-.header.section .container {
-	padding-inline: 0;
 }
 
 header h1 {
@@ -123,7 +121,7 @@ header h1 {
 	grid-template-columns: auto minmax(0, 1fr) auto; /* left | center | right */
 	align-items: center;
 	gap: 8px;
-	padding-inline: var(--gutter, 12px);
+	padding-inline: var(--gutter-x, 12px);
 	min-height: 48px; /* comfortable hit area */
 	min-width: 100%;
 }
@@ -256,12 +254,6 @@ footer {
 	user-select: none;
 }
 
-.card-hovered {
-	/* Not needed now have separate hover properties below so can remove if no issues */
-	/* background-color: var(--bg-hovered);
-	transform: translateY(-1px);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); */
-}
 /* Hover = lift only (and only when not focused)  */
 .card:hover:not(:focus-within):not(:focus-visible) {
 	background: var(--bg-hovered);
@@ -292,10 +284,10 @@ footer {
 }
 /* Draft Card */
 #draft-card {
-	width: min(340px, calc(100% - 20px)); /* Never wider than container */
-	/* min-width: 300px; */
-	/* width: 340px;	
-	max-width: min(340px, calc(100vw - 24px)); Never wider than viewport */
+	width: min(
+		340px,
+		calc(100% - var(--edge-buffer))
+	); /* Never wider than container */
 	height: 165px;
 	border: 2px solid var(--primary-main);
 	justify-self: center;
@@ -473,12 +465,12 @@ textarea {
 	padding-block: var(--sp-4);
 	overflow: clip; /* stops inner shadows peeking */
 	min-width: 0; /* guard against overflow */
-	padding-inline: 0 !important;
+	/* padding-inline: 0 !important; edge-buffer rules should avoid this*/
 	display: grid;
 	grid-template-columns:
-		[full-start] var(--gutter-x)
-		[content-start] minmax(0, 2048px)
-		[content-end] var(--gutter-x)
+		[full-start] var(--edge-buffer)
+		[content-start] minmax(0, var(--page-max))
+		[content-end] var(--edge-buffer)
 		[full-end];
 	margin-bottom: var(--gutter-y);
 	background: var(--bg-section);
@@ -529,13 +521,6 @@ textarea {
 	text-align: center;
 }
 
-.tips-panels,
-.mini-dashboard-inner-panels {
-	display: grid;
-	gap: var(--panel-gap, 16px);
-	box-sizing: border-box;
-}
-
 .mini-dashboard-inner-panels {
 	grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
 }
@@ -551,7 +536,7 @@ textarea {
 	text-align: left;
 	padding: var(--panel-pad);
 	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-	padding-inline: 12px; /* was var(--panel-pad) (~20px) */
+	padding-inline: var(--gutter-x);
 }
 
 .mini-dashboard-widgets {
@@ -568,7 +553,8 @@ textarea {
 }
 
 /* But give the Create panel special treatment */
-.mini-dashboard-inner-panels .panel-inner:has(#draft-card) {
+.mini-dashboard-inner-panels .panel-inner:has(#draft-card),
+.mini-dashboard-inner-panels .panel--draft {
 	min-width: 360px; /* Wider minimum for the draft card container */
 }
 
@@ -711,6 +697,10 @@ textarea {
 
 .forgotpwd-form i {
 	padding-left: 8px;
+}
+
+.icons-wait .material-symbols-rounded {
+	visibility: hidden;
 }
 
 /* ========== SOCIAL LOGIN + REG ========== */
@@ -910,7 +900,10 @@ hr.or-divider:after {
 }
 
 .material-symbols-rounded {
-	font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 20;
+	font-family: "Material Symbols Rounded";
+	font-style: normal;
+	font-weight: 300;
+	font-variation-settings: "FILL" 0, "GRAD" 0, "opsz" 20;
 	/* optional but nice: */
 	font-size: 20px;
 	line-height: 1;
@@ -947,7 +940,7 @@ svg {
 	height: auto;
 }
 
-/* C) Consistent container alignment (you already have band-inner) */
+/* Consistent container alignment (you already have band-inner) */
 .mini-dashboard-widgets,
 .tips {
 	width: 100%;
@@ -959,7 +952,7 @@ svg {
 	.band-inner,
 	.mini-dashboard-widgets,
 	.tips {
-		padding-inline: var(--gutter-md);
+		padding-inline: var(--gutter-md, 16px);
 	}
 }
 
@@ -988,14 +981,14 @@ svg {
 	} /* trims list padding slightly */
 	.dashboard-swimlanes .card {
 		/* container-relative shrink: fill lane minus a little breathing room */
-		width: min(330px, calc(100% - 12px));
+		width: min(330px, calc(100% - var(--edge-buffer)));
 		margin-inline: auto;
 	}
 	.cards-container {
 		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 	}
 	#draft-card {
-		width: calc(100% - 12px);
+		width: min(340px, calc(100% - var(--edge-buffer)));
 		margin-inline: auto;
 	}
 	.mini-dashboard-inner-panels {
@@ -1010,15 +1003,15 @@ svg {
 	}
 }
 
-/* 4) Lane containers: tighten their own inner padding on phones */
+/* Lane containers: tighten their own inner padding on phones */
 @media (max-width: 640px) {
 	.cards-container {
-		padding: 8px !important; /* down from ~var(--sp-2)  */
+		padding: var(--edge-buffer); /* down from ~var(--sp-2)  */
 		gap: 10px !important;
 	}
 	.main-page-container {
 		/* Page chrome: remove outer page padding on phones */
-		padding-inline: 3px !important;
+		padding-inline: var(--edge-buffer) !important;
 	}
 }
 
@@ -1076,7 +1069,7 @@ svg {
 	.band-inner,
 	.mini-dashboard-widgets,
 	.tips {
-		padding-inline: var(--gutter-lg);
+		padding-inline: var(--gutter-lg, 24px);
 	}
 }
 @media (max-width: 1066px) {
@@ -1097,7 +1090,19 @@ svg {
 		justify-content: start;
 	}
 }
-
+/* nudge paddings/gaps down a touch ≥1440px so 5 cards fit cleanly - colour band around card container, and padding either side of card rows */
+@media (min-width: 1440px) {
+	#high-priority-section,
+	#dash-tasks-section,
+	#all-other-tasks-section,
+	#done-tasks-section {
+		padding-inline: 16px; /* was ~20 */
+	}
+	.cards-container {
+		gap: 10px; /* was 12 */
+		padding-inline: 8px; /* was 12 */
+	}
+}
 /* ===== ACCESSIBILITY & MOTION ===== */
 
 /* accessibility: respect reduced motion */
