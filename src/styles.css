@@ -703,6 +703,12 @@ textarea {
 	visibility: hidden;
 }
 
+/* confirm dialog focus ring (scoped so it doesn't affect other buttons) */
+.confirm-dialog .btn-cancel:focus,
+.confirm-dialog .btn-cancel:focus-visible {
+	outline: 2px solid var(--primary-main);
+	outline-offset: 3px;
+}
 /* ========== SOCIAL LOGIN + REG ========== */
 @layer components {
 	.social-login,

@@ -10,6 +10,8 @@ import Swimlane from "./Components/Swimlane";
 import Summary from "./Components/Summary";
 import Tips from "./Components/Tips";
 import Actions from "./Components/Actions";
+import ConfirmDialog from "./Components/ConfirmDialog";
+
 const Dashboard = ({
 	dbCards,
 	addCardToDB,
@@ -23,6 +25,7 @@ const Dashboard = ({
 	const { userState } = useAuth();
 	const { editingLocked, editingLockRef } = useUI();
 	const [isTipsHidden, setTipsHidden] = useState(false);
+	const [confirmOpen, setConfirmOpen] = useState(false);
 
 	/* 1) Memoize the source list once */
 	const cards = useMemo(() => {
@@ -93,6 +96,11 @@ const Dashboard = ({
 
 	async function handleDeleteAll() {
 		if (editingLockRef === true) return;
+		setConfirmOpen(true);
+	}
+
+	async function confirmDeleteAll() {
+		setConfirmOpen(false);
 		if (userState === "loggedIn") {
 			await deleteAllCardsInDB();
 		} else {
@@ -298,6 +306,16 @@ const Dashboard = ({
 				<Footer />
 			</div>
 			<ErrorDisplay />
+			<ConfirmDialog
+				open={confirmOpen}
+				title="Delete all cards?"
+				description="This will permanently remove every card in your dashboard. This cannot be undone."
+				confirmText="Delete all"
+				cancelText="Cancel"
+				tone="danger"
+				onConfirm={confirmDeleteAll}
+				onCancel={() => setConfirmOpen(false)}
+			/>
 		</div>
 	);
 };
