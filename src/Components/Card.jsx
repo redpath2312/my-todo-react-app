@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import IconButton from "@mui/material/IconButton";
@@ -18,12 +18,10 @@ function Card({
 	dashTask,
 	onDelete,
 	onTextUpdate,
-	onSelect,
 	onFlagToggle,
 	createdAt,
 }) {
 	const { editingLockRef, lockEditing, unlockEditing } = useUI();
-	const [isHovered, setHovered] = useState(false);
 	const [cardText, setCardText] = useState(text);
 	const [isEditing, setEditing] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
@@ -69,12 +67,7 @@ function Card({
 		}
 	}
 
-	function handleMouseEnter() {
-		setHovered(true);
-	}
-
 	function handleMouseLeave() {
-		setHovered(false);
 		if (!isEditing || cardText === text) return;
 		if (debounceTimeout) {
 			clearTimeout(debounceTimeout);
@@ -112,18 +105,16 @@ function Card({
 		onDelete(id);
 	};
 
-	function cardClassCheck(done, highPriority, isHovered, dashTask) {
+	function cardClassCheck(done, highPriority, dashTask) {
 		const classes = ["card"];
 		if (done) classes.push("card-done");
 		else if (highPriority) classes.push("card-high-priority");
 		else if (dashTask) classes.push("card-dash");
-		// if (isHovered) classes.push("card-hovered");
 		return classes.join(" ");
 	}
 
 	return (
 		<div
-			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 			className={`${cardClassCheck(done, highPriority, dashTask)} ${
 				isEditing ? "is-editing" : ""
@@ -151,7 +142,6 @@ function Card({
 							value={cardText}
 							onInput={handleTextChange}
 							id="card-text"
-							onClick={() => onSelect(id)}
 						/>
 					</form>
 				)}

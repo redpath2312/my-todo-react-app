@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import DraftCard from "./Components/DraftCard";
@@ -36,7 +36,6 @@ const Dashboard = ({
 			: [];
 	}, [userState, dbCards, localCards]); // ✅ true deps, linter happy
 	const [maxLocalIndexKey, setMaxLocalIndexKey] = useState(0);
-	const [selectedCardID, setSelectedCardID] = useState(null);
 
 	const {
 		cardsTotal,
@@ -115,10 +114,6 @@ const Dashboard = ({
 		} else {
 			setLocalCards(clearedDoneCards);
 		}
-	}
-
-	function selectCard(id) {
-		setSelectedCardID(id);
 	}
 
 	function addCard(inputText, highPriorityDraft, dashTaskDraft) {
@@ -208,7 +203,6 @@ const Dashboard = ({
 	const commonSwimlaneProps = {
 		onDelete: deleteCard,
 		onTextUpdate: handleTextChange,
-		onSelect: selectCard,
 		onFlagToggle: handleFlagToggleChange,
 	};
 

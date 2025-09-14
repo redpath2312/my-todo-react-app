@@ -12,7 +12,7 @@ const getIntent = () => {
 	return n && Date.now() - at < TTL ? n : null;
 };
 
-export default function DebugAuthPanel({ userState, user }) {
+export default function DebugAuthPanel({ userState }) {
 	const loc = useLocation();
 	const [intent, setIntent] = useState(getIntent());
 

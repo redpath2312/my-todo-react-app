@@ -1,4 +1,3 @@
-import React from "react";
 import LoginForm from "./Components/LoginForm";
 import SocialLogin from "./Components/SocialLogin";
 import Footer from "./Components/Footer";
@@ -46,7 +45,7 @@ const Login = () => {
 
 						<div className="no-account-section">
 							<div className="no-account-text small-text">
-								<p> Don't have an account?</p>
+								<p> Don`&apos;`t have an account?</p>
 								<Link to="/guest" onClick={handleGuestClick}>
 									Try now as a guest
 								</Link>

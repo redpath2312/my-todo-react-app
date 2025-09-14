@@ -110,7 +110,9 @@ export const AuthProvider = ({ children }) => {
 				// fallback to redirect if popup is blocked
 				try {
 					await setPersistence(auth, browserSessionPersistence);
-				} catch {}
+				} catch (error) {
+					console.error(error, ": "`${error.message}`);
+				}
 				// optional: navigate("/auth/callback", { replace: true });
 				await signInWithRedirect(auth, googleProvider);
 				return;
@@ -124,14 +126,14 @@ export const AuthProvider = ({ children }) => {
 		}
 	};
 
-	// FACEBOOK (redirect)
-	const handleFacebookRedirect = async () => {
-		try {
-			await setPersistence(auth, browserSessionPersistence);
-		} catch {}
-		// optional: setRedirectIntent("facebook"); navigate("/auth/callback", { replace: true });
-		await signInWithRedirect(auth, facebookProvider);
-	};
+	// FACEBOOK (redirect) Implement Later
+	// const handleFacebookRedirect = async () => {
+	// 	try {
+	// 		await setPersistence(auth, browserSessionPersistence);
+	// 	} catch (error) {console.error(error, ": "`${error.message}`);}
+	// 	// optional: setRedirectIntent("facebook"); navigate("/auth/callback", { replace: true });
+	// 	await signInWithRedirect(auth, facebookProvider);
+	// };
 
 	const handleEmailLogin = async (creds) => {
 		try {

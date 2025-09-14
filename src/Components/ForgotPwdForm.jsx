@@ -1,4 +1,4 @@
-import react, { useState } from "react";
+import { useState } from "react";
 import PrimaryButton from "./Buttons/PrimaryButton";
 import { useAuth } from "../AuthContext";
 const ForgotPwdForm = () => {

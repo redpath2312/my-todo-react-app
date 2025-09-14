@@ -11,7 +11,9 @@ function readInitialMode() {
 	try {
 		const saved = localStorage.getItem(KEY);
 		if (saved === "light" || saved === "dark") return saved; // authoritative
-	} catch {}
+	} catch (e) {
+		console.error(e);
+	}
 	// only if nothing saved, use system
 	const prefersDark =
 		typeof window !== "undefined" &&
@@ -31,7 +33,9 @@ export function ThemeModeProvider({ children }) {
 			if (saved === "light" || saved === "dark") {
 				if (saved !== mode) setMode(saved);
 			}
-		} catch {}
+		} catch (e) {
+			console.error(e);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 

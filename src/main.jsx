@@ -1,7 +1,7 @@
-import { StrictMode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import App from "./App.jsx";
 import { useAuth } from "./AuthContext";
-import { db, auth } from "./firebaseconfig.js";
+import { db } from "./firebaseconfig.js";
 import { useAlert } from "./ErrorContext.jsx";
 import {
 	addCard,
@@ -19,14 +19,14 @@ setLogLevel("debug"); // verbose Firebase logs in console
 
 // import { textFieldClasses } from "@mui/material";
 
-function Main(props) {
+function Main() {
 	// console.log("Main.jsx rendered");
 	const [cards, setCards] = useState([]);
 	const [isAdding, setIsAdding] = useState(false);
 	const { addAlert, addThrottledAlert } = useAlert();
-	const { user, userState } = useAuth();
+	const { user } = useAuth();
 
-	//tempoay for auth redirect debugging
+	//temporary for auth redirect debugging
 	// before any auth calls (e.g., in main.jsx)
 	try {
 		sessionStorage.setItem("__test", "1");
