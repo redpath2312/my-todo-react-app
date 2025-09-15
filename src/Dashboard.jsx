@@ -52,6 +52,7 @@ const Dashboard = ({
 		allOtherCardsHidden,
 		allOtherCardsTotal,
 		hpDashTotal,
+		hpOnlyTotal,
 	} = useMemo(() => {
 		const list = cards;
 		const doneCards = list.filter((c) => c.done);
@@ -66,6 +67,11 @@ const Dashboard = ({
 		// accumulating on every card "c" a count "n" if hp or dash but not done to get total.
 		const hpDashTotal = list.reduce(
 			(n, c) => n + (c.highPriority && c.dashTask && !c.done ? 1 : 0),
+			0
+		);
+
+		const hpOnlyTotal = list.reduce(
+			(n, c) => n + (c.highPriority && !c.dashTask && !c.done ? 1 : 0),
 			0
 		);
 		return {
@@ -88,6 +94,7 @@ const Dashboard = ({
 			allOtherCardsHidden: allOtherCards.length === 0,
 
 			hpDashTotal,
+			hpOnlyTotal,
 		};
 	}, [cards]);
 
@@ -230,6 +237,7 @@ const Dashboard = ({
 										doneCardsTotal={doneCardsTotal}
 										allOtherCardsTotal={allOtherCardsTotal}
 										hpDashTotal={hpDashTotal}
+										hpOnlyTotal={hpOnlyTotal}
 									/>
 
 									<Actions

@@ -62,7 +62,7 @@ const Tips = () => {
 				</div>
 			</div>
 			<h3 className="h3-heading">
-				Note - Guest Mode doesn`&apos;`t save your tasks, login first if want to
+				Note - Guest Mode doesn&apos;t save your tasks, login first if want to
 				save tasks.{" "}
 			</h3>
 		</div>

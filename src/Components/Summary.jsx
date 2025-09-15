@@ -7,6 +7,7 @@ const Summary = ({
 	doneCardsTotal,
 	allOtherCardsTotal,
 	hpDashTotal,
+	hpOnlyTotal,
 }) => {
 	return (
 		<div className="panel-inner">
@@ -19,6 +20,7 @@ const Summary = ({
 				doneCardsTotal={doneCardsTotal}
 				allOtherCardsTotal={allOtherCardsTotal}
 				hpDashTotal={hpDashTotal}
+				hpOnlyTotal={hpOnlyTotal}
 			/>
 		</div>
 	);

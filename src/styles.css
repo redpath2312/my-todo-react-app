@@ -559,25 +559,32 @@ textarea {
 }
 
 /* ========== SUMMARY ========== */
+
+.summary-inner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
 .summary-stats-rows {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
-	width: fit-content;
-	margin: 1rem auto;
-	border-radius: 10px;
-	padding: 1px;
+	inline-size: clamp(10rem, 80vw, 20rem); /* responsive width */
+	margin: 1rem 0;
+	max-width: 100%;
 }
 
+/* row uses 3 flex columns: [number] [icon] [label] */
 .summary-row {
 	display: flex;
-	width: 300px; /* This defines the total row width */
-	justify-content: center; /* center the content */
+	align-items: center;
+	gap: 8px; /* space between number and label */
+	min-width: 0; /* <— IMPORTANT for flex shrink */
+	overflow: hidden; /* <— stops row from spilling container */
 }
 
 .summary-number {
-	text-align: right;
-	width: 2rem; /* Fixed width for alignment */
+	flex: 0 0 2rem; /* fixed column for numbers */
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
@@ -585,16 +592,33 @@ textarea {
 
 .summary-number span {
 	line-height: 1;
-	margin-top: 1px;
+	font-variant-numeric: tabular-nums; /* tidy alignment for 1/2/3 digits */
 }
 
-.summary-description {
+.summary-icon {
+	/* consistent start point for labels */
+	flex-basis: 58px;
+	min-width: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 4px;
+}
+
+.summary-label {
+	flex: 1 1 auto;
 	text-align: left;
-	width: 10rem; /* Match total width – number width + description width = .summary-row width */
-	padding-left: 0.5rem; /* Controlled gap */
+	min-width: 0; /*important so ellipsis can work */
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* optional: mute zero rows (only label + icons) */
+.summary-row.is-zero .summary-label,
+.summary-row.is-zero .summary-icon {
 	color: var(--text-secondary);
 }
-
 /* ========== FORMS ========== */
 
 .forgotpwd-form .input {
