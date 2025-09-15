@@ -569,9 +569,9 @@ textarea {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
-	inline-size: clamp(10rem, 80vw, 20rem); /* responsive width */
+	inline-size: clamp(16rem, 80vw, 20rem); /* responsive width */
 	margin: 1rem 0;
-	max-width: 100%;
+	/* max-width: 100%; */
 }
 
 /* row uses 3 flex columns: [number] [icon] [label] */
@@ -584,8 +584,8 @@ textarea {
 }
 
 .summary-number {
-	flex: 0 0 2rem; /* fixed column for numbers */
 	display: flex;
+	flex: 0 0 clamp(1.6rem, 4vw, 2rem);
 	justify-content: flex-end;
 	align-items: center;
 }
@@ -597,6 +597,7 @@ textarea {
 
 .summary-icon {
 	/* consistent start point for labels */
+	/* flex: 0 0 clamp(2.5rem, 6vw, 2.9rem); */
 	flex-basis: 58px;
 	min-width: 0;
 	display: inline-flex;

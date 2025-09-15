@@ -66,7 +66,7 @@ const SummaryStats = ({
 							/>
 						</Typography>
 					</span>
-					<span className="summary-label">Other High Priority Tasks</span>
+					<span className="summary-label">High Priority Tasks</span>
 				</div>
 
 				{/* Dash (non-high) */}
@@ -85,7 +85,7 @@ const SummaryStats = ({
 							/>
 						</Typography>
 					</span>
-					<span className="summary-label">Other Dash Tasks </span>
+					<span className="summary-label">Dash Tasks</span>
 				</div>
 
 				{/* All Other */}
@@ -104,7 +104,7 @@ const SummaryStats = ({
 							/>
 						</Typography>
 					</span>
-					<span className="summary-label">All Other Tasks</span>
+					<span className="summary-label">Other Tasks</span>
 				</div>
 
 				{/* Done */}
@@ -123,7 +123,7 @@ const SummaryStats = ({
 							/>
 						</Typography>
 					</span>
-					<span className="summary-label">Tasks Done</span>
+					<span className="summary-label">Done</span>
 				</div>
 			</div>
 		</div>
