@@ -204,7 +204,6 @@ const Dashboard = ({
 	}
 
 	function handleTipsHidden() {
-		console.log("Tips toggle fired");
 		setTipsHidden(!isTipsHidden);
 	}
 	const commonSwimlaneProps = {

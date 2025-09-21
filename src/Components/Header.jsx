@@ -14,11 +14,10 @@ function Header() {
 	const handleLogOutSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			console.log("Trying to Log Out");
 			await handleLogOut();
 			navigate("/Login");
 		} catch (error) {
-			console.log("Error logging out...", error.message);
+			console.error("Error logging out...", error.message);
 		}
 	};
 

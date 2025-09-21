@@ -27,7 +27,6 @@ export async function createUserDoc(user) {
 			cards: [],
 		});
 	}
-	console.log(user.uid);
 }
 
 export async function addCard(
@@ -74,8 +73,6 @@ export async function updateCard(user, cardID, updatedFields) {
 			throw new Error("User not found");
 		}
 		const currentCards = userSnap.data().cards ?? [];
-		console.log(currentCards);
-		console.log(updatedFields);
 		const updatedCards = currentCards.map((card) =>
 			card.id === cardID ? { ...card, ...updatedFields } : card
 		);
@@ -90,7 +87,6 @@ export async function clearDoneCards(user, filteredCards) {
 	const userSnap = await getDoc(userRef);
 	if (userSnap.exists()) {
 		await updateDoc(userRef, { cards: filteredCards });
-		console.log("'Done' Cards successfully cleared in firestore");
 	} else throw new Error("User not found");
 }
 

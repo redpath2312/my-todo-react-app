@@ -14,15 +14,13 @@ const RegisterForm = () => {
 
 	const handleRegisterClick = async (e) => {
 		e.preventDefault();
-		console.log("Trying to register with", email, password);
-
 		//Check for confirm password
 
 		if (password == confirmPassword) {
 			try {
 				await handleRegister({ email, password, displayName });
 			} catch (error) {
-				console.log("Error Registering", error.message);
+				console.error("Error Registering", error.message);
 			}
 		} else {
 			addAlert("Passwords don't match", "warn", 4000);

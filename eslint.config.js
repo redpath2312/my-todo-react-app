@@ -49,7 +49,7 @@ export default [
 			],
 
 			// Reasonable noise control
-			"no-console": ["warn", { allow: ["warn", "error"] }],
+			"no-console": ["warn", { allow: ["warn", "error", "info"] }],
 			"react/prop-types": "off",
 			"react/jsx-no-target-blank": "off",
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import App from "./App.jsx";
 import { useAuth } from "./AuthContext";
 import { db } from "./firebaseconfig.js";
@@ -24,19 +24,20 @@ function Main() {
 	const [cards, setCards] = useState([]);
 	const [isAdding, setIsAdding] = useState(false);
 	const { addAlert, addThrottledAlert } = useAlert();
+	const addAlertRef = useRef(addAlert);
 	const { user } = useAuth();
 
 	//temporary for auth redirect debugging
 	// before any auth calls (e.g., in main.jsx)
-	try {
-		sessionStorage.setItem("__test", "1");
-		sessionStorage.removeItem("__test");
-		console.log("sessionStorage OK");
-	} catch {
-		console.warn(
-			"sessionStorage blocked. Use popup or change browser settings."
-		);
-	}
+	// try {
+	// 	sessionStorage.setItem("__test", "1");
+	// 	sessionStorage.removeItem("__test");
+	// 	console.log("sessionStorage OK");
+	// } catch {
+	// 	console.warn(
+	// 		"sessionStorage blocked. Use popup or change browser settings."
+	// 	);
+	// }
 
 	function toErrorMessage(err) {
 		// Firebase errors usually have .code and .message
@@ -80,14 +81,12 @@ function Main() {
 				"error",
 				6000
 			);
-			console.log("Updating card failed", error);
+			console.error("Updating card failed", error);
 		}
 	};
 
 	const handleDBClearDone = async (filteredCards) => {
 		try {
-			console.log("filtered Cards to be passed", filteredCards);
-			console.log("About to clear done cards");
 			await clearDoneCards(user, filteredCards);
 			addAlert("Cleared all done cards from db", "info", 3000);
 		} catch (error) {
@@ -135,10 +134,18 @@ function Main() {
 				}
 			},
 			(error) => {
-				addAlert("Snapshot listener error:", error);
+				// ensure it's a single string; your addAlert likely expects (msg, severity?, ms?)
+				addAlertRef.current?.(
+					`Snapshot listener error: ${
+						toErrorMessage?.(error) ?? String(error)
+					}`,
+					"error",
+					6000
+				);
+				// allowed by your lint:errors rule
+				console.error("Snapshot error", error);
 			}
 		);
-
 		// Cleanup the listener on component unmount
 		return () => unsubscribe();
 	}, [user]);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import IconButton from "@mui/material/IconButton";
@@ -26,8 +26,9 @@ function Card({
 	const [isEditing, setEditing] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [debounceTimeout, setDebounceTimeout] = useState(null);
+	const debounceRef = useRef(null);
 
-	const flagProps = { done, highPriority };
+	// const flagProps = { done, highPriority };
 
 	const createdDate = toJSDate(createdAt); // Optional if you want the tooltip date
 	const ageLabel = createdDate ? formatAgeSince(createdDate) : ""; // This will re-render on an interval
@@ -36,10 +37,10 @@ function Card({
 		setEditing(true);
 		lockEditing(); // turn on global lock
 	};
-	const onEndEdit = () => {
-		setEditing(false);
-		unlockEditing(); // turn off global lock
-	};
+	// const onEndEdit = () => {
+	// 	setEditing(false);
+	// 	unlockEditing(); // turn off global lock
+	// };
 
 	function handleTextChange(event) {
 		handleEditing();
@@ -49,23 +50,37 @@ function Card({
 	function handleEditing() {
 		if (!isEditing) {
 			onStartEdit();
-			console.log("Now editing");
 		}
 	}
 
-	async function handleSaveCardUpdate(newText) {
-		try {
-			setIsSaving(true);
-			await onTextUpdate(id, newText, flagProps);
-			console.log("Saved");
-		} catch (error) {
-			console.log("Error saving", error);
-		} finally {
-			setIsSaving(false);
-			onEndEdit();
-			console.log("Finished saving and editing");
-		}
-	}
+	const handleSaveCardUpdate = useCallback(
+		async (newText) => {
+			try {
+				setIsSaving(true);
+				await onTextUpdate(id, newText, { done, highPriority });
+			} catch (error) {
+				console.error("Error saving", error);
+			} finally {
+				setIsSaving(false);
+				//inline OnEndEdit logic so not depending on external function
+				setEditing(false);
+				unlockEditing(); // turn off global lock
+			}
+		},
+		[id, onTextUpdate, done, highPriority, setEditing, unlockEditing]
+	);
+
+	// async function handleSaveCardUpdate(newText) {
+	// 	try {
+	// 		setIsSaving(true);
+	// 		await onTextUpdate(id, newText, flagProps);
+	// 	} catch (error) {
+	// 		console.error("Error saving", error);
+	// 	} finally {
+	// 		setIsSaving(false);
+	// 		onEndEdit();
+	// 	}
+	// }
 
 	function handleMouseLeave() {
 		if (!isEditing || cardText === text) return;
@@ -79,19 +94,19 @@ function Card({
 
 	useEffect(() => {
 		if (cardText === text) return;
-		if (debounceTimeout) clearTimeout(debounceTimeout);
+		if (debounceRef.current) clearTimeout(debounceRef.current);
 
-		const timeout = setTimeout(() => {
-			handleSaveCardUpdate(cardText);
-		}, 2000);
-		setDebounceTimeout(timeout);
-
-		return () => clearTimeout(debounceTimeout);
-	}, [cardText]);
+		debounceRef.current = setTimeout(() => {
+			handleSaveCardUpdate(text);
+		}, 300);
+		return () => {
+			if (debounceRef.current) clearTimeout(debounceRef.current);
+		};
+	}, [cardText, text, handleSaveCardUpdate]);
 
 	const handleFlagClick = (flagName, currentValue) => {
 		if (editingLockRef.current || isEditing) {
-			console.log("Blocked due to editing/saving lock");
+			console.warn("Blocked due to editing/saving lock");
 			return;
 		}
 		onFlagToggle(id, flagName, currentValue, cardText);
@@ -99,7 +114,7 @@ function Card({
 
 	const handleDeleteClick = (id) => {
 		if (editingLockRef.current || isEditing) {
-			console.log("Blocked due to editing/saving lock");
+			console.warn("Blocked due to editing/saving lock");
 			return;
 		}
 		onDelete(id);

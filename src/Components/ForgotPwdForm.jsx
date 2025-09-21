@@ -8,7 +8,6 @@ const ForgotPwdForm = () => {
 
 	const handleSubmitForgotPwdClick = async (e) => {
 		e.preventDefault();
-		console.log("Sending forgot password request to", email);
 		setIsSending(true);
 		try {
 			await handleForgotPwd(email);

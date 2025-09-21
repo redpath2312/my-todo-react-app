@@ -170,6 +170,8 @@ export function ThemeModeProvider({ children }) {
 // 3. Custom hook so any component can easily use theme mode state.
 //    Example usage:
 //      const { mode, toggle } = useThemeMode();
+
+// eslint-disable-next-line react-refresh/only-export-components
 export function useThemeMode() {
 	return useContext(ThemeModeContext);
 }

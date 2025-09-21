@@ -15,7 +15,10 @@ export default function AuthCallback() {
 
 		getRedirectResult(auth)
 			.then((res) => {
-				console.log("[callback] redirect result:", res ? "HAS RESULT" : "NULL");
+				console.error(
+					"[callback] redirect result:",
+					res ? "HAS RESULT" : "NULL"
+				);
 				if (res?.user) {
 					// onAuthStateChanged will finalize; nothing else to do
 					return;

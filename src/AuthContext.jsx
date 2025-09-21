@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { auth } from "./firebaseconfig";
 import { useAlert } from "./ErrorContext";
+import { useRef } from "react";
 import { createUserDoc } from "./FirestoreService";
 import {
 	setRedirectIntent,
@@ -32,6 +33,7 @@ const facebookProvider = new FacebookAuthProvider();
 
 export const AuthProvider = ({ children }) => {
 	const { addAlert } = useAlert();
+	const addAlertRef = useRef(addAlert);
 	const [user, setUser] = useState(null);
 	const [userState, setUserState] = useState("checking");
 
@@ -47,7 +49,11 @@ export const AuthProvider = ({ children }) => {
 						console.error(e);
 					}
 					clearRedirectIntent();
-					addAlert(`Signed in as ${u.displayName || u.email}`, "success", 3000);
+					addAlertRef.current(
+						`Signed in as ${u.displayName || u.email}`,
+						"success",
+						3000
+					);
 				}
 				setUser(u);
 				setUserState("loggedIn");
@@ -86,7 +92,7 @@ export const AuthProvider = ({ children }) => {
 	useEffect(() => {
 		getRedirectResult(auth).catch((e) => {
 			console.error("Redirect login error", e);
-			addAlert(
+			addAlertRef.current(
 				`Redirect login failed: [${e?.code || "unknown"}] ${e?.message || ""}`,
 				"error",
 				7000
@@ -159,7 +165,6 @@ export const AuthProvider = ({ children }) => {
 			const registerEmail = creds.email;
 			const registerPassword = creds.password;
 			const registerDisplayName = creds.displayName;
-			console.log(registerDisplayName);
 
 			const userCredential = await createUserWithEmailAndPassword(
 				auth,
@@ -251,7 +256,7 @@ export const AuthProvider = ({ children }) => {
 		try {
 			await createUserDoc(user);
 		} catch (error) {
-			console.log(
+			console.error(
 				"Error ensuring user doc exists after login: ",
 				error.message
 			);
@@ -276,5 +281,5 @@ export const AuthProvider = ({ children }) => {
 		</AuthContext.Provider>
 	);
 };
-
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);

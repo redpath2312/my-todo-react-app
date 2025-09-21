@@ -14,7 +14,6 @@ const LoginForm = () => {
 
 	const handleEmailLoginSubmit = async (e) => {
 		e.preventDefault();
-		console.log("Trying to log in with", email, password);
 
 		try {
 			await handleEmailLogin({ email, password });
