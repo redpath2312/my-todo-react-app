@@ -1,0 +1,31 @@
+/* eslint-disable no-console */ // allow console in this one helper file only
+
+// Decide when to be chatty
+const isDevServer = import.meta.env.DEV; // vite dev
+const isDevPreview =
+	import.meta.env.MODE === "devpreview" ||
+	import.meta.env.VITE_ENV_NAME === "devpreview";
+
+const debugFlag = import.meta.env.VITE_DEBUG_LOGS === "true";
+export const debugEnabled = isDevServer || isDevPreview || debugFlag;
+
+// Public API
+export const log = (...args) => {
+	if (debugEnabled) console.log(...args);
+};
+export const info = (...args) => {
+	if (debugEnabled) console.info(...args);
+};
+export const warn = (...args) => console.warn(...args); // allowed by your lint
+export const error = (...args) => console.error(...args); // allowed by your lint
+
+// Optional niceties
+export const trace = (tag, payload) => {
+	if (debugEnabled) console.info(`[TRACE] ${tag}`, payload);
+};
+export const time = (label) => {
+	if (debugEnabled) console.time(label);
+};
+export const timeEnd = (label) => {
+	if (debugEnabled) console.timeEnd(label);
+};

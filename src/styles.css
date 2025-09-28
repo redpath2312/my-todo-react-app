@@ -326,7 +326,7 @@ textarea {
 	overflow: hidden;
 }
 
-.draft-card textarea,
+#draft-card textarea,
 .panel-inner textarea {
 	width: 100% !important;
 	max-width: 100% !important;
@@ -558,6 +558,9 @@ textarea {
 	min-width: 360px; /* Wider minimum for the draft card container */
 }
 
+.panel--draft .h2-heading {
+	margin-bottom: 20px;
+}
 /* ========== SUMMARY ========== */
 
 .summary-inner {

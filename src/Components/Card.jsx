@@ -9,6 +9,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import { useUI } from "../UIContext";
 import { formatAgeSince, toJSDate } from "../utils/timeElapsed";
+import { log, info, warn, error as logError, trace } from "../utils/logger";
 
 function Card({
 	id,
@@ -25,11 +26,19 @@ function Card({
 	const [cardText, setCardText] = useState(text);
 	const [isEditing, setEditing] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
-	const [debounceTimeout, setDebounceTimeout] = useState(null);
-	const debounceRef = useRef(null);
-
-	// const flagProps = { done, highPriority };
-
+	const saveGateRef = useRef(false);
+	const isSavingRef = useRef(false);
+	const debounceRef = useRef();
+	const flagBusyRef = useRef(false);
+	const isDeletingRef = useRef(false);
+	const lastSavedRef = useRef({
+		text: (text ?? "").trim(),
+		done,
+		highPriority,
+		dashTask,
+	});
+	const flagCooldownRef = useRef(0);
+	const FLAG_WINDOW_MS = 700;
 	const createdDate = toJSDate(createdAt); // Optional if you want the tooltip date
 	const ageLabel = createdDate ? formatAgeSince(createdDate) : ""; // This will re-render on an interval
 
@@ -37,10 +46,70 @@ function Card({
 		setEditing(true);
 		lockEditing(); // turn on global lock
 	};
+	// const flagProps = { done, highPriority };
 	// const onEndEdit = () => {
 	// 	setEditing(false);
 	// 	unlockEditing(); // turn off global lock
 	// };
+
+	const handleSaveCardUpdate = useCallback(
+		async (newText) => {
+			const next = {
+				text: (newText ?? "").trim(),
+				done,
+				highPriority,
+				dashTask,
+			};
+			trace("card:save:start", { id, newText });
+			// guards
+			// if (!next.text) return;
+			if (isSavingRef.current) return;
+
+			const prev = lastSavedRef.current;
+			const unchanged =
+				next.text === prev.text &&
+				next.done === prev.done &&
+				next.highPriority === prev.highPriority &&
+				next.dashTask === prev.dashTask;
+			if (unchanged) return;
+
+			try {
+				isSavingRef.current = true;
+				setIsSaving(true);
+				await onTextUpdate(id, newText, {
+					done: next.done,
+					highPriority: next.highPriority,
+					dashTask: next.dashTask,
+				});
+				// update AFTER success
+				lastSavedRef.current = next;
+				info("card:save:ok", { id });
+			} catch (err) {
+				logError("Error saving", err);
+			} finally {
+				isSavingRef.current = false;
+				setIsSaving(false);
+
+				//inline OnEndEdit logic so not depending on external function
+				setEditing(false);
+				unlockEditing(); // turn off global lock
+				log("card:save:end", { id });
+			}
+		},
+		[id, onTextUpdate, done, highPriority, dashTask, setEditing, unlockEditing]
+	);
+
+	const fireSaveOnce = useCallback(
+		(nextText, source) => {
+			if (saveGateRef.current) return; //already queued/inflight
+			saveGateRef.current = true;
+			trace("card:queued", { id, source });
+			handleSaveCardUpdate(nextText).finally(() => {
+				saveGateRef.current = false;
+			});
+		},
+		[id, handleSaveCardUpdate]
+	);
 
 	function handleTextChange(event) {
 		handleEditing();
@@ -53,71 +122,213 @@ function Card({
 		}
 	}
 
-	const handleSaveCardUpdate = useCallback(
-		async (newText) => {
-			try {
-				setIsSaving(true);
-				await onTextUpdate(id, newText, { done, highPriority });
-			} catch (error) {
-				console.error("Error saving", error);
-			} finally {
-				setIsSaving(false);
-				//inline OnEndEdit logic so not depending on external function
-				setEditing(false);
-				unlockEditing(); // turn off global lock
-			}
-		},
-		[id, onTextUpdate, done, highPriority, setEditing, unlockEditing]
-	);
-
-	// async function handleSaveCardUpdate(newText) {
-	// 	try {
-	// 		setIsSaving(true);
-	// 		await onTextUpdate(id, newText, flagProps);
-	// 	} catch (error) {
-	// 		console.error("Error saving", error);
-	// 	} finally {
-	// 		setIsSaving(false);
-	// 		onEndEdit();
-	// 	}
-	// }
-
 	function handleMouseLeave() {
-		if (!isEditing || cardText === text) return;
-		if (debounceTimeout) {
-			clearTimeout(debounceTimeout);
-			setDebounceTimeout(null);
+		if (!isEditing) return;
+
+		// snapshot the prior state, then cancel once
+		const hadDebounce = !!debounceRef.current;
+		if (hadDebounce) {
+			warn(`[card ${id}] mouseleave: clear debounce`);
+			clearTimeout(debounceRef.current);
+			debounceRef.current = null;
 		}
-		setEditing(false);
-		handleSaveCardUpdate(cardText);
+
+		// Compare what you actually persist (text + flags)
+		const fromDb = {
+			text: (text ?? "").trim(),
+			done,
+			highPriority,
+			dashTask,
+		};
+		const next = {
+			text: (cardText ?? "").trim(),
+			done,
+			highPriority,
+			dashTask,
+		};
+
+		const unchanged =
+			next.text === fromDb.text &&
+			next.done === fromDb.done &&
+			next.highPriority === fromDb.highPriority &&
+			next.dashTask === fromDb.dashTask;
+
+		warn(
+			`card ${id} mouseleave: haddebounce= ${hadDebounce}, unchanged= ${unchanged}`
+		);
+
+		if (!unchanged) {
+			// save path → saver’s finally will unlock
+			warn(`[card ${id}] mouseleave: save now`);
+			fireSaveOnce(next.text, "handleMouseLeave");
+		} else {
+			// no change → unlock immediately (nice UX)
+			warn(`[card ${id}] mouseleave: no change → unlock`);
+			setEditing(false);
+			unlockEditing();
+		}
 	}
 
+	// Debounce only while editing- schedules the save when the edited value differs.
 	useEffect(() => {
-		if (cardText === text) return;
-		if (debounceRef.current) clearTimeout(debounceRef.current);
+		if (!isEditing) return;
+		if (debounceRef.current) {
+			clearTimeout(debounceRef.current); //Always cancel any previous timer first, so hasPendingDebounce is accurate and we never fire stale saves.
+			debounceRef.current = null;
+		}
 
-		debounceRef.current = setTimeout(() => {
-			handleSaveCardUpdate(text);
-		}, 300);
-		return () => {
-			if (debounceRef.current) clearTimeout(debounceRef.current);
+		const fromDb = {
+			text: (text ?? "").trim(),
+			done,
+			highPriority,
+			dashTask,
 		};
-	}, [cardText, text, handleSaveCardUpdate]);
+		const next = {
+			text: (cardText ?? "").trim(),
+			done,
+			highPriority,
+			dashTask,
+		};
 
-	const handleFlagClick = (flagName, currentValue) => {
-		if (editingLockRef.current || isEditing) {
-			console.warn("Blocked due to editing/saving lock");
+		//guards
+		// if (!next.text) return;
+		if (isSavingRef.current) return;
+
+		const unchangedToDb =
+			next.text === fromDb.text &&
+			next.done === fromDb.done &&
+			next.highPriority === fromDb.highPriority &&
+			next.dashTask === fromDb.dashTask;
+
+		const unchangedToLast =
+			next.text === lastSavedRef.current.text &&
+			next.done === lastSavedRef.current.done &&
+			next.highPriority === lastSavedRef.current.highPriority &&
+			next.dashTask === lastSavedRef.current.dashTask;
+		// If no change, don't re-arm a timer
+		if (unchangedToLast || unchangedToDb) {
+			setEditing(false);
+			unlockEditing(); // <-- enable if you want instant unlock-on-revert
 			return;
 		}
-		onFlagToggle(id, flagName, currentValue, cardText);
+
+		debounceRef.current = window.setTimeout(() => {
+			fireSaveOnce(next.text, "debounce Save");
+		}, 350); // you can keep 300–350ms safely with these guards
+
+		//Clean up if deps change again before the timer fires
+		return () => {
+			if (debounceRef.current) {
+				clearTimeout(debounceRef.current);
+				debounceRef.current = null;
+			}
+		};
+	}, [
+		isEditing,
+		cardText,
+		text,
+		done,
+		highPriority,
+		dashTask,
+		handleSaveCardUpdate,
+		fireSaveOnce,
+		setEditing,
+		unlockEditing,
+	]);
+	// Safety-unlock effect guard to unlock isEditing - a backup timer that turns editing off if nothing is pending.
+	useEffect(() => {
+		if (!isEditing) return;
+		const hasPendingDebounce = () => Boolean(debounceRef.current);
+		const hasUnsavedChange = () => {
+			const fromDb = {
+				text: (text ?? "").trim(),
+				done,
+				highPriority,
+				dashTask,
+			};
+			const next = {
+				text: (cardText ?? "").trim(),
+				done,
+				highPriority,
+				dashTask,
+			};
+
+			const differsFromDb =
+				next.text !== fromDb.text ||
+				next.done !== fromDb.done ||
+				next.highPriority !== fromDb.highPriority ||
+				next.dashTask !== fromDb.dashTask;
+
+			const differsFromLast =
+				next.text !== lastSavedRef.current.text ||
+				next.done !== lastSavedRef.current.done ||
+				next.highPriority !== lastSavedRef.current.highPriority ||
+				next.dashTask !== lastSavedRef.current.dashTask;
+			return differsFromDb && differsFromLast;
+		};
+		const editingIdleTimer = setTimeout(() => {
+			warn("idle:check", {
+				saving: isSavingRef.current,
+				hasDebounce: !!debounceRef.current,
+				hasUnsaved: hasUnsavedChange(),
+			});
+			if (
+				!isSavingRef.current &&
+				!hasPendingDebounce() &&
+				!hasUnsavedChange()
+			) {
+				warn("idle:unlock");
+				setEditing(false);
+				unlockEditing();
+			}
+		}, 1500);
+		return () => clearTimeout(editingIdleTimer);
+	}, [isEditing, cardText, text, done, highPriority, dashTask, unlockEditing]);
+
+	useEffect(() => {
+		lastSavedRef.current = {
+			text: (text ?? "").trim(),
+			done,
+			highPriority,
+			dashTask,
+		};
+	}, [text, done, highPriority, dashTask]);
+
+	const handleFlagClick = async (flagName, currentFlagValue) => {
+		// block while editing text or another write is in-flight
+		if (editingLockRef.current || isEditing) {
+			warn("Blocked due to editing/saving lock");
+			return;
+		}
+
+		// time-based burst lock (synchronous)
+		const now = performance.now();
+
+		if (now - flagCooldownRef < FLAG_WINDOW_MS) return;
+		flagCooldownRef.current = now;
+
+		// don't start a second write until the first has finished
+		if (flagBusyRef.current) return;
+		flagBusyRef.current = true;
+		try {
+			await onFlagToggle(id, flagName, currentFlagValue, cardText);
+		} finally {
+			flagBusyRef.current = false;
+		}
 	};
 
-	const handleDeleteClick = (id) => {
-		if (editingLockRef.current || isEditing) {
-			console.warn("Blocked due to editing/saving lock");
+	const handleDeleteClick = async (id) => {
+		if (editingLockRef.current || isEditing || isDeletingRef.current) {
+			warn("Blocked due to editing/saving lock");
 			return;
 		}
-		onDelete(id);
+		isDeletingRef.current = true;
+		clearTimeout(debounceRef.current); // cancel pending save
+		try {
+			await onDelete(id);
+		} finally {
+			isDeletingRef.current = false;
+		}
 	};
 
 	function cardClassCheck(done, highPriority, dashTask) {
@@ -157,6 +368,7 @@ function Card({
 							value={cardText}
 							onInput={handleTextChange}
 							id="card-text"
+							onBlur={handleMouseLeave}
 						/>
 					</form>
 				)}

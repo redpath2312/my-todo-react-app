@@ -43,7 +43,6 @@ function App({
 		}
 	}, [userState, location.pathname, navigate]);
 
-
 	return (
 		<>
 			<Routes>
@@ -104,9 +103,10 @@ function App({
 			</Routes>
 
 			{/* Fixed overlay, always visible on every page */}
-			{import.meta.env.DEV && (
+			{/* Debug AuthPanel if needed*/}
+			{/* {import.meta.env.DEV && (
 				<DebugAuthPanel userState={userState} user={user} />
-			)}
+			)} */}
 		</>
 	);
 }

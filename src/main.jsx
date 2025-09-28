@@ -14,8 +14,10 @@ import {
 import { doc, onSnapshot } from "firebase/firestore";
 import { ThemeModeProvider } from "./theme/ThemeModeContext.jsx";
 
-import { setLogLevel } from "firebase/app";
-setLogLevel("debug"); // verbose Firebase logs in console
+import { setLogLevel } from "firebase/firestore";
+if (import.meta.env.DEV || import.meta.env.MODE === "devpreview") {
+	setLogLevel("error"); // verbose Firebase logs in console
+}
 
 // import { textFieldClasses } from "@mui/material";
 
@@ -52,20 +54,19 @@ function Main() {
 		highPriorityDraft,
 		dashTaskDraft
 	) => {
-		//have state of isAdding and whilst is Adding pass down as prop so card knows to disable
-		//once card in db update isAdding to false
+		if (isAdding) return;
 		setIsAdding(true);
 		try {
 			await addCard(user, cardText, highPriorityDraft, dashTaskDraft);
 			addAlert("Card successfully added", "info", 3000);
-		} catch (error) {
-			console.error("Transaction failed:", error);
+		} catch (err) {
+			console.error("Transaction failed:", err);
 			addThrottledAlert(
-				`Error adding card to db: ${toErrorMessage(error)}`,
+				`Error adding card to db: ${toErrorMessage(err)}`,
 				"error",
 				6000
 			);
-			console.error("updatedCard failed", error);
+			console.error("updatedCard failed", err);
 		} finally {
 			setIsAdding(false);
 		}
@@ -81,7 +82,7 @@ function Main() {
 				"error",
 				6000
 			);
-			console.error("Updating card failed", error);
+			throw error;
 		}
 	};
 
@@ -125,7 +126,10 @@ function Main() {
 		const userRef = doc(db, "users", user.uid);
 		const unsubscribe = onSnapshot(
 			userRef,
+			{ includeMetadataChanges: true },
 			(userSnap) => {
+				// ⬇️ ignore local echoes from our own pending writes
+				if (userSnap.metadata.hasPendingWrites) return;
 				if (userSnap.exists()) {
 					const userData = userSnap.data();
 					setCards(userData.cards || []);
@@ -148,17 +152,17 @@ function Main() {
 		);
 		// Cleanup the listener on component unmount
 		return () => unsubscribe();
-	}, [user]);
+	}, [db, user?.uid]);
 
-	console.info(
-		`[DashTasker] MODE=${import.meta.env.MODE} | PROD=${
-			import.meta.env.PROD
-		} | ENV=${import.meta.env.VITE_ENV_NAME} | PROJECT=${
-			import.meta.env.VITE_FIREBASE_PROJECT_ID
-		} | EMU_AUTH=${import.meta.env.VITE_USE_AUTH_EMULATOR} | EMU_DB=${
-			import.meta.env.VITE_USE_DB_EMULATOR
-		}`
-	);
+	// console.info(
+	// 	`[DashTasker] MODE=${import.meta.env.MODE} | PROD=${
+	// 		import.meta.env.PROD
+	// 	} | ENV=${import.meta.env.VITE_ENV_NAME} | PROJECT=${
+	// 		import.meta.env.VITE_FIREBASE_PROJECT_ID
+	// 	} | EMU_AUTH=${import.meta.env.VITE_USE_AUTH_EMULATOR} | EMU_DB=${
+	// 		import.meta.env.VITE_USE_DB_EMULATOR
+	// 	}`
+	// );
 
 	return (
 		// <StrictMode>

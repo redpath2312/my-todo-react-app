@@ -175,7 +175,7 @@ const Dashboard = ({
 		} else if (userState === "loggedIn") {
 			// Logged-in path (Firestore): do your DB update
 			// You can keep it non-optimistic:
-			updateCardsInDB(id, patch);
+			return updateCardsInDB(id, patch);
 
 			// Or do an optimistic local update too, then revert on error if you like:
 			// setLocalCards(prev => prev.map(c => c.id === id ? ({...c, ...patch}) : c));
