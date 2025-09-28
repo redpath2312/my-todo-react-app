@@ -29,7 +29,6 @@ function Card({
 	const saveGateRef = useRef(false);
 	const isSavingRef = useRef(false);
 	const debounceRef = useRef();
-	const flagBusyRef = useRef(false);
 	const isDeletingRef = useRef(false);
 	const lastSavedRef = useRef({
 		text: (text ?? "").trim(),
@@ -37,20 +36,73 @@ function Card({
 		highPriority,
 		dashTask,
 	});
-	const flagCooldownRef = useRef(0);
-	const FLAG_WINDOW_MS = 700;
+	const flagCooldownRef = useRef({ highPriority: 0, dashTask: 0, done: 0 });
+	const flagBusyRef = useRef({
+		highPriority: false,
+		dashTask: false,
+		done: false,
+	});
+	const FLAG_WINDOW_MS = 700; // for slow 4G.
+
 	const createdDate = toJSDate(createdAt); // Optional if you want the tooltip date
 	const ageLabel = createdDate ? formatAgeSince(createdDate) : ""; // This will re-render on an interval
+
+	// --- helpers ---
+	// Has this flag been toggled too recently?
+	function withinCooldown(flagName) {
+		const last = flagCooldownRef.current[flagName] || 0;
+		return performance.now() - last < FLAG_WINDOW_MS;
+	}
+
+	// Start a new cooldown window for a flag
+	function armCooldown(flagName) {
+		flagCooldownRef.current[flagName] = performance.now();
+	}
+	// Is a write currently in-flight for this flag?
+	function isBusy(flagName) {
+		return !!flagBusyRef.current[flagName];
+	}
+	// Mark a flag as busy / not busy
+	function setBusy(flagName, nextBusy) {
+		flagBusyRef.current[flagName] = nextBusy;
+	}
+
+	function onFlagPointerDown(e, flagName) {
+		if (editingLockRef.current || isEditing) return;
+
+		// Cancel any pending text autosave so the flag write doesn’t race it
+		if (debounceRef.current) {
+			clearTimeout(debounceRef.current);
+			debounceRef.current = null;
+			warn(`[card ${id}] ${flagName}: cancelled text debounce`);
+		}
+
+		// Hard-stop bursts before the click fires
+		// If a write is already in flight
+
+		if (isBusy(flagName)) {
+			warn(`[card ${id}] ${flagName}: blocked (busy)`);
+			e.preventDefault();
+			e.stopPropagation();
+			return;
+		}
+
+		// If within cooldown window
+		if (withinCooldown(flagName)) {
+			warn(`[card ${id}] ${flagName}: blocked (cooldown)`);
+			e.preventDefault();
+			e.stopPropagation(); // stop this click from bubbling to any parent onClick
+			return;
+		}
+		// Otherwise prearm for this burst
+		armCooldown(flagName); // pre-arm
+		warn(`[card ${id}] ${flagName}: pre-armed`);
+	}
 
 	const onStartEdit = () => {
 		setEditing(true);
 		lockEditing(); // turn on global lock
 	};
-	// const flagProps = { done, highPriority };
-	// const onEndEdit = () => {
-	// 	setEditing(false);
-	// 	unlockEditing(); // turn off global lock
-	// };
 
 	const handleSaveCardUpdate = useCallback(
 		async (newText) => {
@@ -76,11 +128,15 @@ function Card({
 			try {
 				isSavingRef.current = true;
 				setIsSaving(true);
-				await onTextUpdate(id, newText, {
-					done: next.done,
-					highPriority: next.highPriority,
-					dashTask: next.dashTask,
-				});
+				await onTextUpdate(
+					id,
+					newText
+					// 	 {
+					// 	done: next.done,
+					// 	highPriority: next.highPriority,
+					// 	dashTask: next.dashTask,
+					// }
+				);
 				// update AFTER success
 				lastSavedRef.current = next;
 				info("card:save:ok", { id });
@@ -125,7 +181,7 @@ function Card({
 	function handleMouseLeave() {
 		if (!isEditing) return;
 
-		// snapshot the prior state, then cancel once
+		//  1) cancel any pending debounce to avoid racing
 		const hadDebounce = !!debounceRef.current;
 		if (hadDebounce) {
 			warn(`[card ${id}] mouseleave: clear debounce`);
@@ -133,7 +189,12 @@ function Card({
 			debounceRef.current = null;
 		}
 
-		// Compare what you actually persist (text + flags)
+		// 2) if a save is already in flight, do nothing; saver’s finally will unlock
+		if (isSavingRef.current) {
+			warn(`[card ${id}] mouseleave: isSaving → defer unlock to saver`);
+			return;
+		}
+		// 3) compare persisted vs local; we still consider flags here for safety
 		const fromDb = {
 			text: (text ?? "").trim(),
 			done,
@@ -158,14 +219,54 @@ function Card({
 		);
 
 		if (!unchanged) {
-			// save path → saver’s finally will unlock
+			// 4) changed → persist TEXT ONLY; saver’s finally will unlock
 			warn(`[card ${id}] mouseleave: save now`);
 			fireSaveOnce(next.text, "handleMouseLeave");
-		} else {
-			// no change → unlock immediately (nice UX)
-			warn(`[card ${id}] mouseleave: no change → unlock`);
-			setEditing(false);
-			unlockEditing();
+			return;
+		}
+		// 5) no change → unlock immediately (nice UX)
+		warn(`[card ${id}] mouseleave: no change → unlock`);
+		setEditing(false);
+		unlockEditing();
+	}
+
+	const handleDeleteClick = async (id) => {
+		if (editingLockRef.current || isEditing || isDeletingRef.current) {
+			warn("Blocked due to editing/saving lock");
+			return;
+		}
+		isDeletingRef.current = true;
+		clearTimeout(debounceRef.current); // cancel pending save
+		try {
+			await onDelete(id);
+		} finally {
+			isDeletingRef.current = false;
+		}
+	};
+
+	function cardClassCheck(done, highPriority, dashTask) {
+		const classes = ["card"];
+		if (done) classes.push("card-done");
+		else if (highPriority) classes.push("card-high-priority");
+		else if (dashTask) classes.push("card-dash");
+		return classes.join(" ");
+	}
+
+	async function handleFlagClick(flagName, currentFlagValue) {
+		if (editingLockRef.current || isEditing) return;
+
+		// Re-check for keyboard-triggered clicks
+		if (isBusy(flagName)) return;
+
+		armCooldown(flagName);
+		setBusy(flagName, true);
+		warn(`[card ${id}] ${flagName}: click → persist start`);
+		try {
+			// CRITICAL: onFlagToggle must return the Promise (Dashboard → Main → Service)
+			await onFlagToggle(id, flagName, currentFlagValue);
+			warn(`[card ${id}] ${flagName}: persist ok`);
+		} finally {
+			setBusy(flagName, false);
 		}
 	}
 
@@ -294,51 +395,6 @@ function Card({
 		};
 	}, [text, done, highPriority, dashTask]);
 
-	const handleFlagClick = async (flagName, currentFlagValue) => {
-		// block while editing text or another write is in-flight
-		if (editingLockRef.current || isEditing) {
-			warn("Blocked due to editing/saving lock");
-			return;
-		}
-
-		// time-based burst lock (synchronous)
-		const now = performance.now();
-
-		if (now - flagCooldownRef < FLAG_WINDOW_MS) return;
-		flagCooldownRef.current = now;
-
-		// don't start a second write until the first has finished
-		if (flagBusyRef.current) return;
-		flagBusyRef.current = true;
-		try {
-			await onFlagToggle(id, flagName, currentFlagValue, cardText);
-		} finally {
-			flagBusyRef.current = false;
-		}
-	};
-
-	const handleDeleteClick = async (id) => {
-		if (editingLockRef.current || isEditing || isDeletingRef.current) {
-			warn("Blocked due to editing/saving lock");
-			return;
-		}
-		isDeletingRef.current = true;
-		clearTimeout(debounceRef.current); // cancel pending save
-		try {
-			await onDelete(id);
-		} finally {
-			isDeletingRef.current = false;
-		}
-	};
-
-	function cardClassCheck(done, highPriority, dashTask) {
-		const classes = ["card"];
-		if (done) classes.push("card-done");
-		else if (highPriority) classes.push("card-high-priority");
-		else if (dashTask) classes.push("card-dash");
-		return classes.join(" ");
-	}
-
 	return (
 		<div
 			onMouseLeave={handleMouseLeave}
@@ -389,8 +445,11 @@ function Card({
 				<div>
 					<Tooltip title="Toggle High Priority" placement="bottom">
 						<IconButton
-							disabled={editingLockRef.current}
+							disabled={
+								editingLockRef.current || isEditing || isBusy("highPriority")
+							}
 							onClick={() => handleFlagClick("highPriority", highPriority)}
+							onPointerDown={(e) => onFlagPointerDown(e, "highPriority")}
 						>
 							<PriorityHighIcon
 								value={highPriority}
@@ -403,8 +462,11 @@ function Card({
 				<div>
 					<Tooltip title="Toggle Dash Task" placement="bottom">
 						<IconButton
-							disabled={editingLockRef.current}
+							disabled={
+								editingLockRef.current || isEditing || isBusy("dashTask")
+							}
 							onClick={() => handleFlagClick("dashTask", dashTask)}
+							onPointerDown={(e) => onFlagPointerDown(e, "dashTask")}
 						>
 							<ElectricBoltIcon
 								value={dashTask}
@@ -417,8 +479,9 @@ function Card({
 				<div>
 					<Tooltip title="Toggle Done" placement="bottom">
 						<IconButton
-							disabled={editingLockRef.current}
+							disabled={editingLockRef.current || isEditing || isBusy("done")}
 							onClick={() => handleFlagClick("done", done)}
+							onPointerDown={(e) => onFlagPointerDown(e, "done")}
 						>
 							<CheckCircleIcon
 								value={done}

@@ -175,7 +175,7 @@ const Dashboard = ({
 		} else if (userState === "loggedIn") {
 			// Logged-in path (Firestore): do your DB update
 			// You can keep it non-optimistic:
-			return updateCardsInDB(id, patch);
+			return updateCardsInDB(id, patch); //must return
 
 			// Or do an optimistic local update too, then revert on error if you like:
 			// setLocalCards(prev => prev.map(c => c.id === id ? ({...c, ...patch}) : c));
@@ -183,24 +183,12 @@ const Dashboard = ({
 		}
 	}
 
-	// Original simpler function but it introduced issues with stale localcards in guest mode and cards being overwritten/wiped/reborn
-	// function updateCardById(id, updatedFields) {
-	// 	if (userState === "guest") {
-	// 		const updatedCards = localCards.map((card) => {
-	// 			return card.id === id ? { ...card, ...updatedFields } : card;
-	// 		});
-	// 		setLocalCards(updatedCards);
-	// 	} else if (userState === "loggedIn") {
-	// 		updateCardsInDB(id, updatedFields);
-	// 	}
-	// }
-
-	function handleTextChange(id, updatedText, flagProps = {}) {
-		updateCardById(id, { text: updatedText, ...flagProps });
+	function handleTextChange(id, updatedText) {
+		return updateCardById(id, { text: updatedText });
 	}
 
-	function handleFlagToggleChange(id, flagName, currentFlagValue, currentText) {
-		updateCardById(id, { [flagName]: !currentFlagValue, text: currentText });
+	function handleFlagToggleChange(id, flagName, currentFlagValue) {
+		return updateCardById(id, { [flagName]: !currentFlagValue });
 	}
 
 	function handleTipsHidden() {
