@@ -404,12 +404,12 @@ function Card({
 		>
 			<div className="cards-top">
 				<span>id: {id}</span>
-
+				{/* 
 				{isEditing && (
 					<div className="card-spinner-wrapper">
 						<CircularProgress size={16} />
 					</div>
-				)}
+				)} */}
 				<span title={createdDate ? createdDate.toLocaleString() : ""}>
 					{ageLabel}
 				</span>

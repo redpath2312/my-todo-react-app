@@ -60,4 +60,12 @@ export default [
 			],
 		},
 	},
+
+	// ⬇️ Per-file override for your logger helper
+	{
+		files: ["src/utils/logger.js"],
+		rules: {
+			"no-console": "off", // allow log/info/time/timeEnd here
+		},
+	},
 ];

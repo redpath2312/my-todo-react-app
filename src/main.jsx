@@ -15,8 +15,17 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { ThemeModeProvider } from "./theme/ThemeModeContext.jsx";
 
 import { setLogLevel } from "firebase/firestore";
-if (import.meta.env.DEV || import.meta.env.MODE === "devpreview") {
-	setLogLevel("error"); // verbose Firebase logs in console
+// Optional manual override: VITE_FIRESTORE_LOG (debug | error | silent)
+const manual = import.meta.env.VITE_FIRESTORE_LOG;
+
+if (manual) {
+	setLogLevel(manual); // trust your override
+} else if (import.meta.env.DEV) {
+	setLogLevel("debug"); // local dev
+} else if (import.meta.env.MODE === "devpreview") {
+	setLogLevel("error"); // show only errors on preview
+} else {
+	setLogLevel("silent"); // prod: no Firestore noise
 }
 
 // import { textFieldClasses } from "@mui/material";
@@ -152,7 +161,7 @@ function Main() {
 		);
 		// Cleanup the listener on component unmount
 		return () => unsubscribe();
-	}, [db, user?.uid]);
+	}, [user]);
 
 	// console.info(
 	// 	`[DashTasker] MODE=${import.meta.env.MODE} | PROD=${

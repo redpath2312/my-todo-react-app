@@ -8,7 +8,7 @@ import {
 	runTransaction,
 	arrayUnion,
 } from "firebase/firestore";
-import { log, error as logError } from "./utils/logger";
+import { error as logError } from "./utils/logger";
 
 // helper (optional): normalized log payload
 const logFsError = (where, e) =>

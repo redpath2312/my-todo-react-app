@@ -8,7 +8,7 @@ import { useLocation } from "react-router";
 import { useAuth } from "./AuthContext";
 import ForgotPwd from "./ForgotPwd";
 import { getRedirectIntent } from "./utils/redirectIntent";
-import DebugAuthPanel from "./utils/DebugAuthPanel";
+// import DebugAuthPanel from "./utils/DebugAuthPanel";
 import AuthCallback from "./AuthCallback";
 function App({
 	// userState,
@@ -20,7 +20,7 @@ function App({
 	deleteAllCardsInDB,
 	isAdding,
 }) {
-	const { user, userState } = useAuth();
+	const { userState } = useAuth();
 	const navigate = useNavigate();
 	const location = useLocation();
 

@@ -45,7 +45,7 @@ const Login = () => {
 
 						<div className="no-account-section">
 							<div className="no-account-text small-text">
-								<p> Don`&apos;`t have an account?</p>
+								<p> Don&apos;t have an account?</p>
 								<Link to="/guest" onClick={handleGuestClick}>
 									Try now as a guest
 								</Link>

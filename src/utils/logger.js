@@ -6,8 +6,9 @@ const isDevPreview =
 	import.meta.env.MODE === "devpreview" ||
 	import.meta.env.VITE_ENV_NAME === "devpreview";
 
-const debugFlag = import.meta.env.VITE_DEBUG_LOGS === "true";
-export const debugEnabled = isDevServer || isDevPreview || debugFlag;
+const debugFlagEnv = import.meta.env.VITE_DEBUG_LOGS; // "true" | "false" | undefined
+export const debugEnabled =
+	debugFlagEnv != null ? debugFlagEnv === "true" : isDevServer || isDevPreview;
 
 // Public API
 export const log = (...args) => {
