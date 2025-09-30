@@ -46,10 +46,15 @@ const Register = () => {
 
 				<div className="image-background">
 					<img
-						src="images/recraftlogo1.png"
+						src="images/recraftlogo2.webp"
+						width="1024"
+						height="1024"
 						alt="Dash Tasker"
 						className="image-hero"
-					></img>
+						loading="eager"
+						fetchPriority="high"
+						decoding="async"
+					/>
 				</div>
 			</div>
 			<ErrorDisplay />

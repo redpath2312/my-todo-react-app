@@ -9,7 +9,14 @@ import CircularProgress from "@mui/material/CircularProgress";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import { useUI } from "../UIContext";
 import { formatAgeSince, toJSDate } from "../utils/timeElapsed";
-import { log, info, warn, error as logError, trace } from "../utils/logger";
+import {
+	log,
+	info,
+	error as logError,
+	trace,
+	devDebug,
+	devWarn,
+} from "../utils/logger";
 
 function Card({
 	id,
@@ -42,6 +49,14 @@ function Card({
 		dashTask: false,
 		done: false,
 	});
+
+	// mirror in state so React re-renders when busy changes
+	const [busyState, setBusyState] = useState({
+		dashTask: false,
+		highPriority: false,
+		done: false,
+	});
+
 	const FLAG_WINDOW_MS = 700; // for slow 4G.
 
 	const createdDate = toJSDate(createdAt); // Optional if you want the tooltip date
@@ -60,11 +75,13 @@ function Card({
 	}
 	// Is a write currently in-flight for this flag?
 	function isBusy(flagName) {
-		return !!flagBusyRef.current[flagName];
+		return !!busyState[flagName];
 	}
 	// Mark a flag as busy / not busy
 	function setBusy(flagName, nextBusy) {
 		flagBusyRef.current[flagName] = nextBusy;
+		// update state to trigger a re-render
+		setBusyState((prev) => ({ ...prev, [flagName]: nextBusy }));
 	}
 
 	function onFlagPointerDown(e, flagName) {
@@ -74,14 +91,14 @@ function Card({
 		if (debounceRef.current) {
 			clearTimeout(debounceRef.current);
 			debounceRef.current = null;
-			warn(`[card ${id}] ${flagName}: cancelled text debounce`);
+			devDebug(`[card ${id}] ${flagName}: cancelled text debounce`);
 		}
 
 		// Hard-stop bursts before the click fires
 		// If a write is already in flight
 
 		if (isBusy(flagName)) {
-			warn(`[card ${id}] ${flagName}: blocked (busy)`);
+			devWarn(`[card ${id}] ${flagName}: blocked (busy)`);
 			e.preventDefault();
 			e.stopPropagation();
 			return;
@@ -89,14 +106,14 @@ function Card({
 
 		// If within cooldown window
 		if (withinCooldown(flagName)) {
-			warn(`[card ${id}] ${flagName}: blocked (cooldown)`);
+			devWarn(`[card ${id}] ${flagName}: blocked (cooldown)`);
 			e.preventDefault();
 			e.stopPropagation(); // stop this click from bubbling to any parent onClick
 			return;
 		}
 		// Otherwise prearm for this burst
 		armCooldown(flagName); // pre-arm
-		warn(`[card ${id}] ${flagName}: pre-armed`);
+		devDebug(`[card ${id}] ${flagName}: pre-armed`);
 	}
 
 	const onStartEdit = () => {
@@ -184,14 +201,14 @@ function Card({
 		//  1) cancel any pending debounce to avoid racing
 		const hadDebounce = !!debounceRef.current;
 		if (hadDebounce) {
-			warn(`[card ${id}] mouseleave: clear debounce`);
+			devDebug(`[card ${id}] mouseleave: clear debounce`);
 			clearTimeout(debounceRef.current);
 			debounceRef.current = null;
 		}
 
 		// 2) if a save is already in flight, do nothing; saver’s finally will unlock
 		if (isSavingRef.current) {
-			warn(`[card ${id}] mouseleave: isSaving → defer unlock to saver`);
+			devDebug(`[card ${id}] mouseleave: isSaving → defer unlock to saver`);
 			return;
 		}
 		// 3) compare persisted vs local; we still consider flags here for safety
@@ -214,25 +231,25 @@ function Card({
 			next.highPriority === fromDb.highPriority &&
 			next.dashTask === fromDb.dashTask;
 
-		warn(
+		devDebug(
 			`card ${id} mouseleave: haddebounce= ${hadDebounce}, unchanged= ${unchanged}`
 		);
 
 		if (!unchanged) {
 			// 4) changed → persist TEXT ONLY; saver’s finally will unlock
-			warn(`[card ${id}] mouseleave: save now`);
+			devDebug(`[card ${id}] mouseleave: save now`);
 			fireSaveOnce(next.text, "handleMouseLeave");
 			return;
 		}
 		// 5) no change → unlock immediately (nice UX)
-		warn(`[card ${id}] mouseleave: no change → unlock`);
+		devDebug(`[card ${id}] mouseleave: no change → unlock`);
 		setEditing(false);
 		unlockEditing();
 	}
 
 	const handleDeleteClick = async (id) => {
 		if (editingLockRef.current || isEditing || isDeletingRef.current) {
-			warn("Blocked due to editing/saving lock");
+			devWarn("Blocked due to editing/saving lock");
 			return;
 		}
 		isDeletingRef.current = true;
@@ -254,17 +271,16 @@ function Card({
 
 	async function handleFlagClick(flagName, currentFlagValue) {
 		if (editingLockRef.current || isEditing) return;
-
 		// Re-check for keyboard-triggered clicks
 		if (isBusy(flagName)) return;
 
 		armCooldown(flagName);
 		setBusy(flagName, true);
-		warn(`[card ${id}] ${flagName}: click → persist start`);
+		devDebug(`[card ${id}] ${flagName}: click → persist start`);
 		try {
 			// CRITICAL: onFlagToggle must return the Promise (Dashboard → Main → Service)
 			await onFlagToggle(id, flagName, currentFlagValue);
-			warn(`[card ${id}] ${flagName}: persist ok`);
+			devDebug(`[card ${id}] ${flagName}: persist ok`);
 		} finally {
 			setBusy(flagName, false);
 		}
@@ -368,7 +384,7 @@ function Card({
 			return differsFromDb && differsFromLast;
 		};
 		const editingIdleTimer = setTimeout(() => {
-			warn("idle:check", {
+			devDebug("idle:check", {
 				saving: isSavingRef.current,
 				hasDebounce: !!debounceRef.current,
 				hasUnsaved: hasUnsavedChange(),
@@ -378,7 +394,7 @@ function Card({
 				!hasPendingDebounce() &&
 				!hasUnsavedChange()
 			) {
-				warn("idle:unlock");
+				devDebug("idle:unlock");
 				setEditing(false);
 				unlockEditing();
 			}

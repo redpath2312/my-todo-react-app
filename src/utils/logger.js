@@ -30,3 +30,9 @@ export const time = (label) => {
 export const timeEnd = (label) => {
 	if (debugEnabled) console.timeEnd(label);
 };
+export const devDebug = (...a) => {
+	if (import.meta.env.DEV) console.debug(...a);
+};
+export const devWarn = (...a) => {
+	if (import.meta.env.DEV) console.warn(...a);
+};

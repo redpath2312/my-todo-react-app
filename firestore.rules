@@ -1,12 +1,20 @@
 rules_version = '2';
-
 service cloud.firestore {
-    match /databases/{database}/documents {
+  match /databases/{db}/documents {
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(uid) { return request.auth.uid == uid; }
+    function smallWrite() {
+      return request.resource.size < 256 * 1024 // 256KB
+        && (request.time - resource.data._lastWriteAt).toMillis() > 200;
+    }
 
-// Only allow users access to their own own user data
-    function authed() { return request.auth != null; }
     match /users/{uid} {
-      allow read, write: if authed() && request.auth.uid == uid;
-    }    
+      allow read, write: if isSignedIn() && isOwner(uid);
+    }
+
+    match /users/{uid}/cards/{cardId} {
+      allow read: if isSignedIn() && isOwner(uid);
+      allow create, update, delete: if isSignedIn() && isOwner(uid) && smallWrite();
+    }
   }
 }
