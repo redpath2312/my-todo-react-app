@@ -331,7 +331,7 @@ function Card({
 
 		debounceRef.current = window.setTimeout(() => {
 			fireSaveOnce(next.text, "debounce Save");
-		}, 350); // you can keep 300–350ms safely with these guards
+		}, 2000); // you can keep 300–350ms safely with these guards,- upped as was re-rendering too frequently and losing focus
 
 		//Clean up if deps change again before the timer fires
 		return () => {
