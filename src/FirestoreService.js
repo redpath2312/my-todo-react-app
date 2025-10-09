@@ -1,13 +1,5 @@
-import { db } from "./firebaseconfig";
-import {
-	doc,
-	getDoc,
-	setDoc,
-	updateDoc,
-	serverTimestamp,
-	runTransaction,
-	arrayUnion,
-} from "firebase/firestore";
+import { getDbClient, fs } from "./firebaseDbClient";
+//  now do i just create a const db for this so the db referred to in funcitons below ocntinue to work?
 import { error as logError } from "./utils/logger";
 
 // helper (optional): normalized log payload
@@ -20,11 +12,15 @@ function requireUid(user) {
 	return uid;
 }
 export async function createUserDoc(user) {
+	console.info("CreateUserDoc Started");
 	const uid = requireUid(user);
+	const db = await getDbClient();
+	const { doc, getDoc, setDoc, serverTimestamp } = await fs();
 	const userRef = doc(db, "users", uid);
 	const userSnap = await getDoc(userRef);
 	if (!userSnap.exists()) {
 		try {
+			console.info("SetDoc attempting");
 			await setDoc(userRef, {
 				displayName: user.displayName || "Anonymous",
 				email: user.email,
@@ -46,6 +42,8 @@ export async function addCard(
 	dashTaskDraft
 ) {
 	const uid = requireUid(user);
+	const db = await getDbClient();
+	const { doc, runTransaction, arrayUnion } = await fs();
 	const userRef = doc(db, "users", uid);
 	let newCard;
 	try {
@@ -79,6 +77,8 @@ export async function addCard(
 
 export async function updateCard(user, cardID, updatedFields) {
 	const uid = requireUid(user);
+	const db = await getDbClient();
+	const { doc, runTransaction } = await fs();
 	const userRef = doc(db, "users", uid);
 	try {
 		await runTransaction(db, async (tx) => {
@@ -121,6 +121,8 @@ export async function updateCard(user, cardID, updatedFields) {
 }
 export async function clearDoneCards(user, filteredCards) {
 	const uid = requireUid(user);
+	const db = await getDbClient();
+	const { doc, getDoc, updateDoc } = await fs();
 	const userRef = doc(db, "users", uid);
 	const userSnap = await getDoc(userRef);
 	if (userSnap.exists()) {
@@ -130,6 +132,8 @@ export async function clearDoneCards(user, filteredCards) {
 
 export async function deleteAllCards(user) {
 	const uid = requireUid(user);
+	const db = await getDbClient();
+	const { doc, getDoc, updateDoc } = await fs();
 	const userRef = doc(db, "users", uid);
 	const userSnap = await getDoc(userRef);
 	try {
@@ -146,6 +150,8 @@ export async function deleteAllCards(user) {
 
 export async function deleteCard(user, cardID) {
 	const uid = requireUid(user);
+	const db = await getDbClient();
+	const { doc, runTransaction } = await fs();
 	const userRef = doc(db, "users", uid);
 	try {
 		await runTransaction(db, async (tx) => {

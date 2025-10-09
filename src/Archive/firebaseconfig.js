@@ -1,11 +1,11 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
-import {
-	getAuth,
-	setPersistence,
-	browserSessionPersistence,
-	connectAuthEmulator,
-} from "firebase/auth";
+// import { initializeApp, getApps, getApp } from "firebase/app";
+// import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+// import {
+// 	getAuth,
+// 	setPersistence,
+// 	browserSessionPersistence,
+// 	connectAuthEmulator,
+// } from "firebase/auth";
 
 const firebaseConfig = {
 	apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -16,7 +16,7 @@ const firebaseConfig = {
 	appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+// const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 // const firebaseApp = initializeApp(firebaseConfig);
 
 const db = getFirestore(firebaseApp);

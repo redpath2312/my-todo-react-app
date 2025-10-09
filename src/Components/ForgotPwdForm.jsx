@@ -26,6 +26,7 @@ const ForgotPwdForm = () => {
 						type="email"
 						name="email"
 						placeholder="Email address"
+						autoComplete="email"
 						className="input-field"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}

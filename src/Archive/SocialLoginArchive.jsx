@@ -32,17 +32,18 @@
 // export default SocialLogin;
 
 // SocialLogin.jsx
-import { useNavigate } from "react-router-dom";
-import {
-	setPersistence,
-	browserSessionPersistence,
-	signInWithRedirect,
-	GoogleAuthProvider,
-	FacebookAuthProvider,
-} from "firebase/auth";
-import { auth } from "../firebaseconfig";
-import { setRedirectIntent } from "../utils/redirectIntent";
-import { useAuth } from "../AuthContext";
+
+// import { useNavigate } from "react-router-dom";
+// import {
+// 	setPersistence,
+// 	browserSessionPersistence,
+// 	signInWithRedirect,
+// 	GoogleAuthProvider,
+// 	FacebookAuthProvider,
+// } from "firebase/auth";
+// import { auth } from "../firebaseconfig";
+// import { setRedirectIntent } from "../utils/redirectIntent";
+// import { useAuth } from "../AuthContext";
 
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });

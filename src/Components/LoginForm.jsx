@@ -28,6 +28,7 @@ const LoginForm = () => {
 				<input
 					type="email"
 					name="email"
+					autoComplete="email"
 					placeholder="Email address"
 					className="input-field"
 					value={email}
@@ -40,6 +41,7 @@ const LoginForm = () => {
 				<input
 					type={isPasswordVisible ? "text" : "password"}
 					name="password"
+					autoComplete="current-password"
 					placeholder="Password"
 					className="input-field"
 					value={password}

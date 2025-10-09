@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
+import { DisabledTooltip } from "./DisabledTooltip";
 // import { createTheme, ThemeProvider } from "@mui/material/styles";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -63,6 +63,13 @@ function Card({
 	const ageLabel = createdDate ? formatAgeSince(createdDate) : ""; // This will re-render on an interval
 
 	// --- helpers ---
+	// inside your Card component
+	const isLocked = editingLockRef.current || isEditing;
+
+	function isActionDisabled(flagName) {
+		return isLocked || isBusy(flagName);
+	}
+
 	// Has this flag been toggled too recently?
 	function withinCooldown(flagName) {
 		const last = flagCooldownRef.current[flagName] || 0;
@@ -449,21 +456,29 @@ function Card({
 			<div className="cards-bottom">
 				{/* <ThemeProvider theme={theme}> */}
 				<div>
-					<Tooltip title="Delete" placement="bottom">
+					<DisabledTooltip
+						title={isLocked ? "Not available whilst editing" : "Delete"}
+						placement="bottom"
+					>
 						<IconButton
-							disabled={editingLockRef.current}
+							disabled={isLocked}
 							onClick={() => handleDeleteClick(id)}
 						>
 							<DeleteForeverIcon color="delete" />
 						</IconButton>
-					</Tooltip>
+					</DisabledTooltip>
 				</div>
 				<div>
-					<Tooltip title="Toggle High Priority" placement="bottom">
+					<DisabledTooltip
+						title={
+							isActionDisabled("highPriority")
+								? "Please Wait..."
+								: "Toggle High Priority"
+						}
+						placement="bottom"
+					>
 						<IconButton
-							disabled={
-								editingLockRef.current || isEditing || isBusy("highPriority")
-							}
+							disabled={isActionDisabled("highPriority")}
 							onClick={() => handleFlagClick("highPriority", highPriority)}
 							onPointerDown={(e) => onFlagPointerDown(e, "highPriority")}
 						>
@@ -472,15 +487,20 @@ function Card({
 								color={highPriority ? "urgent" : "disabled"}
 							/>
 						</IconButton>
-					</Tooltip>
+					</DisabledTooltip>
 				</div>
 
 				<div>
-					<Tooltip title="Toggle Dash Task" placement="bottom">
+					<DisabledTooltip
+						title={
+							isActionDisabled("dashTask")
+								? "Please Wait..."
+								: "Toggle Dash Task"
+						}
+						placement="bottom"
+					>
 						<IconButton
-							disabled={
-								editingLockRef.current || isEditing || isBusy("dashTask")
-							}
+							disabled={isActionDisabled("dashTask")}
 							onClick={() => handleFlagClick("dashTask", dashTask)}
 							onPointerDown={(e) => onFlagPointerDown(e, "dashTask")}
 						>
@@ -489,13 +509,16 @@ function Card({
 								color={dashTask ? "dash" : "disabled"}
 							/>
 						</IconButton>
-					</Tooltip>
+					</DisabledTooltip>
 				</div>
 
 				<div>
-					<Tooltip title="Toggle Done" placement="bottom">
+					<DisabledTooltip
+						title={isActionDisabled("done") ? "Please Wait..." : "Toggle Done"}
+						placement="bottom"
+					>
 						<IconButton
-							disabled={editingLockRef.current || isEditing || isBusy("done")}
+							disabled={isActionDisabled("done")}
 							onClick={() => handleFlagClick("done", done)}
 							onPointerDown={(e) => onFlagPointerDown(e, "done")}
 						>
@@ -504,7 +527,7 @@ function Card({
 								color={done ? "success" : "disabled"}
 							/>
 						</IconButton>
-					</Tooltip>
+					</DisabledTooltip>
 				</div>
 			</div>
 		</div>

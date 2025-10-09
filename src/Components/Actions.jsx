@@ -3,7 +3,7 @@ import Tooltip from "@mui/material/Tooltip";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
-
+import { DisabledTooltip } from "./DisabledTooltip";
 const Actions = ({
 	isTipsHidden,
 	handleTipsHidden,
@@ -13,6 +13,27 @@ const Actions = ({
 	doneCardsTotal,
 	cardsTotal,
 }) => {
+	// Centralised “disabled” logic
+	const isLocked = !!editingLockRefCurrent;
+	const hasDone = doneCardsTotal > 0;
+	const hasAny = cardsTotal > 0;
+
+	const clearDoneDisabled = isLocked || !hasDone;
+	const deleteAllDisabled = isLocked || !hasAny;
+
+	// Tooltip messages encode *why* it’s disabled
+	const clearDoneTitle = isLocked
+		? "Busy… please wait"
+		: !hasDone
+		? "No done tasks to clear"
+		: "Clear Done Tasks";
+
+	const deleteAllTitle = isLocked
+		? "Busy… please wait"
+		: !hasAny
+		? "No tasks to delete"
+		: "Delete All Tasks";
+
 	return (
 		<div className="panel-inner">
 			<div className="card-actions-buttons">
@@ -28,23 +49,27 @@ const Actions = ({
 					</IconButton>
 				</Tooltip>
 
-				<Tooltip title="Clear Done Tasks" placement="bottom">
+				<DisabledTooltip title={clearDoneTitle} placement="bottom">
 					<IconButton
-						disabled={doneCardsTotal === 0 || editingLockRefCurrent}
-						onClick={handleClearAllDoneTasks}
+						disabled={clearDoneDisabled}
+						onClick={!clearDoneDisabled ? handleClearAllDoneTasks : undefined}
+						// optional: ensure cursor doesn’t show as clickable when disabled
+						style={clearDoneDisabled ? { pointerEvents: "none" } : undefined}
 					>
 						<PublishedWithChangesIcon fontSize="large" color="success" />
 					</IconButton>
-				</Tooltip>
+				</DisabledTooltip>
 
-				<Tooltip title="Delete All Tasks" placement="bottom">
+				<DisabledTooltip title={deleteAllTitle} placement="bottom">
 					<IconButton
-						disabled={cardsTotal === 0 || editingLockRefCurrent}
-						onClick={handleDeleteAll}
+						disabled={deleteAllDisabled}
+						onClick={!deleteAllDisabled ? handleDeleteAll : undefined}
+						// optional: ensure cursor doesn’t show as clickable when disabled
+						style={deleteAllDisabled ? { pointerEvents: "none" } : undefined}
 					>
 						<DeleteSweepIcon fontSize="large" color="delete" />
 					</IconButton>
-				</Tooltip>
+				</DisabledTooltip>
 			</div>
 		</div>
 	);

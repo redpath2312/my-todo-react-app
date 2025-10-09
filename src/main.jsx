@@ -1,32 +1,21 @@
 import { useEffect, useState, useRef } from "react";
 import App from "./App.jsx";
 import { useAuth } from "./AuthContext";
-import { db } from "./firebaseconfig.js";
+// import { db } from "./firebaseconfig.js";
+import { getDbClient, fs } from "./firebaseDbClient.js";
 import { useAlert } from "./ErrorContext.jsx";
-import {
-	addCard,
-	clearDoneCards,
-	updateCard,
-	deleteCard,
-	deleteAllCards,
-} from "./FirestoreService.js";
+import { error as logError } from "./utils/logger";
 
-import { doc, onSnapshot } from "firebase/firestore";
+// import {
+// 	addCard,
+// 	clearDoneCards,
+// 	updateCard,
+// 	deleteCard,
+// 	deleteAllCards,
+// } from "./FirestoreService.js";
+
+// import { doc, onSnapshot } from "firebase/firestore";
 import { ThemeModeProvider } from "./theme/ThemeModeContext.jsx";
-
-import { setLogLevel } from "firebase/firestore";
-// Optional manual override: VITE_FIRESTORE_LOG (debug | error | silent)
-const manual = import.meta.env.VITE_FIRESTORE_LOG;
-
-if (manual) {
-	setLogLevel(manual); // trust your override
-} else if (import.meta.env.DEV) {
-	setLogLevel("debug"); // local dev
-} else if (import.meta.env.MODE === "devpreview") {
-	setLogLevel("error"); // show only errors on preview
-} else {
-	setLogLevel("silent"); // prod: no Firestore noise
-}
 
 // import { textFieldClasses } from "@mui/material";
 
@@ -36,19 +25,23 @@ function Main() {
 	const [isAdding, setIsAdding] = useState(false);
 	const { addAlert, addThrottledAlert } = useAlert();
 	const addAlertRef = useRef(addAlert);
-	const { user } = useAuth();
+	const { userState, user } = useAuth();
+	const svcRef = useRef(null); // FirestoreService once logged in
+	const unsubRef = useRef(null); // snapshot unsubscribe
+	// keep alert ref fresh
+	useEffect(() => {
+		addAlertRef.current = addAlert;
+	}, [addAlert]);
 
-	//temporary for auth redirect debugging
-	// before any auth calls (e.g., in main.jsx)
-	// try {
-	// 	sessionStorage.setItem("__test", "1");
-	// 	sessionStorage.removeItem("__test");
-	// 	console.log("sessionStorage OK");
-	// } catch {
-	// 	console.warn(
-	// 		"sessionStorage blocked. Use popup or change browser settings."
-	// 	);
-	// }
+	useEffect(() => {
+		(async () => {
+			if (userState === "loggedIn") {
+				svcRef.current = await import("./FirestoreService.js");
+			} else {
+				svcRef.current = null;
+			}
+		})();
+	}, [userState]);
 
 	function toErrorMessage(err) {
 		// Firebase errors usually have .code and .message
@@ -63,10 +56,16 @@ function Main() {
 		highPriorityDraft,
 		dashTaskDraft
 	) => {
+		if (userState !== "loggedIn" || !user?.uid) return;
 		if (isAdding) return;
 		setIsAdding(true);
 		try {
-			await addCard(user, cardText, highPriorityDraft, dashTaskDraft);
+			await svcRef.current?.addCard(
+				user,
+				cardText,
+				highPriorityDraft,
+				dashTaskDraft
+			);
 			addAlert("Card successfully added", "info", 3000);
 		} catch (err) {
 			console.error("Transaction failed:", err);
@@ -82,8 +81,9 @@ function Main() {
 	};
 
 	const handleDBUpdate = async (cardID, updatedFields) => {
+		if (userState !== "loggedIn" || !user?.uid) return;
 		try {
-			await updateCard(user, cardID, updatedFields);
+			await svcRef.current?.updateCard(user, cardID, updatedFields);
 			addAlert(`Card ${cardID} updated`, "info", 3000);
 		} catch (error) {
 			addAlert(
@@ -96,8 +96,9 @@ function Main() {
 	};
 
 	const handleDBClearDone = async (filteredCards) => {
+		if (userState !== "loggedIn" || !user?.uid) return;
 		try {
-			await clearDoneCards(user, filteredCards);
+			await svcRef.current?.clearDoneCards(user, filteredCards);
 			addAlert("Cleared all done cards from db", "info", 3000);
 		} catch (error) {
 			addAlert(`Error updating firestore: ${error}`, "error", 6000);
@@ -105,8 +106,9 @@ function Main() {
 	};
 
 	const handleDBCardDelete = async (cardID) => {
+		if (userState !== "loggedIn" || !user?.uid) return;
 		try {
-			await deleteCard(user, cardID);
+			await svcRef.current?.deleteCard(user, cardID);
 			addAlert(`Deleted Card ${cardID} from database`, "info", 3000);
 		} catch (error) {
 			addAlert(
@@ -118,8 +120,9 @@ function Main() {
 	};
 
 	const handleDBDeleteAll = async () => {
+		if (userState !== "loggedIn" || !user?.uid) return;
 		try {
-			await deleteAllCards(user);
+			await svcRef.current?.deleteAllCards(user);
 			addAlert("Deleted cards from database successfully", "info", 3000);
 		} catch (error) {
 			addAlert(
@@ -129,39 +132,62 @@ function Main() {
 			);
 		}
 	};
-
+	// Live user doc listener (only when logged in)
 	useEffect(() => {
-		if (!user) return;
-		const userRef = doc(db, "users", user.uid);
-		const unsubscribe = onSnapshot(
-			userRef,
-			{ includeMetadataChanges: true },
-			(userSnap) => {
-				// ⬇️ ignore local echoes from our own pending writes
-				if (userSnap.metadata.hasPendingWrites) return;
-				if (userSnap.exists()) {
-					const userData = userSnap.data();
-					setCards(userData.cards || []);
-				} else {
-					setCards([]);
+		// cleanup prior listener
+		if (unsubRef.current) {
+			unsubRef.current();
+			unsubRef.current = null;
+		}
+		if (userState !== "loggedIn" || !user?.uid) {
+			// not authed - Main won't manage cards, dashboard handles guest.
+			setCards([]);
+			return;
+		}
+
+		let active = true;
+		(async () => {
+			const db = await getDbClient();
+			const { doc, onSnapshot } = await fs();
+
+			const userRef = doc(db, "users", user.uid);
+			const unsubscribe = onSnapshot(
+				userRef,
+				{ includeMetadataChanges: true },
+				(userSnap) => {
+					if (!active) return;
+					// ⬇️ ignore local echoes from our own pending writes
+					if (userSnap.metadata.hasPendingWrites) return;
+					if (userSnap.exists()) {
+						const userData = userSnap.data();
+						setCards(userData.cards || []);
+					} else {
+						setCards([]);
+					}
+				},
+				(error) => {
+					// ensure it's a single string; your addAlert likely expects (msg, severity?, ms?)
+					addAlertRef.current?.(
+						`Snapshot listener error: ${
+							toErrorMessage?.(error) ?? String(error)
+						}`,
+						"error",
+						6000
+					);
+					// allowed by your lint:errors rule
+					logError("Snapshot error", error);
 				}
-			},
-			(error) => {
-				// ensure it's a single string; your addAlert likely expects (msg, severity?, ms?)
-				addAlertRef.current?.(
-					`Snapshot listener error: ${
-						toErrorMessage?.(error) ?? String(error)
-					}`,
-					"error",
-					6000
-				);
-				// allowed by your lint:errors rule
-				console.error("Snapshot error", error);
+			);
+			unsubRef.current = unsubscribe;
+		})();
+		return () => {
+			active = false;
+			if (unsubRef.current) {
+				unsubRef.current();
+				unsubRef.current = null;
 			}
-		);
-		// Cleanup the listener on component unmount
-		return () => unsubscribe();
-	}, [user]);
+		};
+	}, [userState, user?.uid]);
 
 	// console.info(
 	// 	`[DashTasker] MODE=${import.meta.env.MODE} | PROD=${

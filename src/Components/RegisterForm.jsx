@@ -34,6 +34,7 @@ const RegisterForm = () => {
 					type="text"
 					name="displayName"
 					placeholder="Display Name"
+					autoComplete="name"
 					className="input-field"
 					value={displayName}
 					onChange={(e) => setDisplayName(e.target.value)}
@@ -45,6 +46,7 @@ const RegisterForm = () => {
 					type="email"
 					name="email"
 					placeholder="Email address"
+					autoComplete="email"
 					className="input-field"
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
@@ -56,6 +58,7 @@ const RegisterForm = () => {
 					type="password"
 					name="password"
 					placeholder="Password"
+					autoComplete="new-password"
 					className="input-field"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}

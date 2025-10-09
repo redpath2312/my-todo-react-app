@@ -58,6 +58,7 @@ export default [
 				"warn",
 				{ allowConstantExport: true },
 			],
+			"react/no-unknown-property": ["error", { ignore: ["fetchpriority"] }], //was being flagged in the browser console
 		},
 	},
 

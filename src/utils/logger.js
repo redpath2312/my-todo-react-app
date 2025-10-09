@@ -1,4 +1,4 @@
-/* eslint-disable no-console */ // allow console in this one helper file only
+// allow console in this one helper file only -override setup in lint config
 
 // Decide when to be chatty
 const isDevServer = import.meta.env.DEV; // vite dev

@@ -52,7 +52,7 @@ const Register = () => {
 						alt="Dash Tasker"
 						className="image-hero"
 						loading="eager"
-						fetchPriority="high"
+						fetchpriority="high"
 						decoding="async"
 					/>
 				</div>

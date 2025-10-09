@@ -1,150 +1,155 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { auth } from "./firebaseconfig";
 import { useAlert } from "./ErrorContext";
+import { error as logError } from "./utils/logger";
 import { useRef } from "react";
-import { createUserDoc } from "./FirestoreService";
 import {
 	setRedirectIntent,
 	getRedirectIntent,
 	clearRedirectIntent,
 } from "./utils/redirectIntent";
 
-import {
-	createUserWithEmailAndPassword,
-	signOut,
-	onAuthStateChanged,
-	signInWithEmailAndPassword,
-	updateProfile,
-	GoogleAuthProvider,
-	FacebookAuthProvider,
-	signInWithRedirect,
-	getRedirectResult,
-	sendPasswordResetEmail,
-	signInWithPopup,
-	browserSessionPersistence,
-	setPersistence,
-} from "firebase/auth";
+import { useLocation } from "react-router-dom";
+import { getAuthClient } from "./firebaseAuthClient";
 
 const AuthContext = createContext();
-const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({ prompt: "select_account" });
-
-const facebookProvider = new FacebookAuthProvider();
 
 export const AuthProvider = ({ children }) => {
+	const { pathname } = useLocation();
 	const { addAlert } = useAlert();
 	const addAlertRef = useRef(addAlert);
 	const [user, setUser] = useState(null);
-	const [userState, setUserState] = useState("checking");
+	const [userState, setUserState] = useState(
+		localStorage.getItem("guest") === "true" ? "guest" : "checking"
+	);
 
 	useEffect(() => {
-		const unsub = onAuthStateChanged(auth, async (u) => {
-			const pending = getRedirectIntent();
+		if (pathname === "/guest") return;
 
-			if (u) {
-				if (pending) {
-					try {
-						await handlePostLoginSetup(u);
-					} catch (e) {
-						console.error(e);
-					}
-					clearRedirectIntent();
-					addAlertRef.current(
-						`Signed in as ${u.displayName || u.email}`,
-						"success",
-						3000
-					);
-				}
-				setUser(u);
-				setUserState("loggedIn");
-				return;
+		let unsub;
+
+		const run = async () => {
+			const auth = await getAuthClient(); //lazy
+			const { getRedirectResult, onAuthStateChanged } = await import(
+				"firebase/auth"
+			); //lazy
+			try {
+				await getRedirectResult(auth);
+			} catch (err) {
+				logError("Redirect login error", err);
+				addAlertRef.current(
+					`Redirect login failed: [${err?.code || "unknown"}] ${
+						err?.message || ""
+					}`,
+					"error",
+					7000
+				);
+				clearRedirectIntent();
 			}
 
-			// No user yet:
-			// No user:
-			if (pending) {
-				// ⛔ HOLD only while *pending* is true.
-				// Add a safety timeout so we can't get stuck forever:
-				setTimeout(() => {
-					if (!auth.currentUser && getRedirectIntent()) {
-						// still pending; leave as 'checking'
-					} else if (!auth.currentUser && !getRedirectIntent()) {
-						// pending cleared and still no user → move on
-						setUser(null);
-						setUserState(
-							localStorage.getItem("guest") === "true" ? "guest" : "loggedOut"
+			unsub = onAuthStateChanged(auth, async (u) => {
+				const pending = getRedirectIntent();
+
+				if (u) {
+					if (pending) {
+						try {
+							await handlePostLoginSetup(u);
+						} catch (e) {
+							console.error(e);
+						}
+						clearRedirectIntent();
+						addAlertRef.current(
+							`Signed in as ${u.displayName || u.email}`,
+							"success",
+							3000
 						);
 					}
-				}, 1500);
-				return;
-			}
+					setUser(u);
+					setUserState("loggedIn");
+					return;
+				}
 
-			// Normal no-user path
-			setUser(null);
-			setUserState(
-				localStorage.getItem("guest") === "true" ? "guest" : "loggedOut"
-			);
-		});
+				// No user yet:
+				// No user:
+				if (pending) {
+					// ⛔ HOLD only while *pending* is true.
+					// Add a safety timeout so we can't get stuck forever:
+					setTimeout(() => {
+						if (!auth.currentUser && getRedirectIntent()) {
+							// still pending; leave as 'checking'
+						} else if (!auth.currentUser && !getRedirectIntent()) {
+							// pending cleared and still no user → move on
+							setUser(null);
+							setUserState(
+								localStorage.getItem("guest") === "true" ? "guest" : "loggedOut"
+							);
+						}
+					}, 1500);
+					return;
+				}
 
-		return () => unsub();
-	}, []);
-
-	useEffect(() => {
-		getRedirectResult(auth).catch((e) => {
-			console.error("Redirect login error", e);
-			addAlertRef.current(
-				`Redirect login failed: [${e?.code || "unknown"}] ${e?.message || ""}`,
-				"error",
-				7000
-			);
-			clearRedirectIntent();
-		});
-	}, []);
+				// Normal no-user path
+				setUser(null);
+				setUserState(
+					localStorage.getItem("guest") === "true" ? "guest" : "loggedOut"
+				);
+			});
+		};
+		run();
+		return () => unsub && unsub();
+	}, [pathname]);
 
 	//provider specific redirects
 	const handleGoogleLogin = async () => {
+		// Hoist: get auth once, and load the auth module once.
+		const auth = await getAuthClient();
+		const {
+			GoogleAuthProvider,
+			signInWithPopup,
+			signInWithRedirect,
+			setPersistence,
+			browserSessionPersistence,
+		} = await import("firebase/auth");
+		const googleProvider = new GoogleAuthProvider();
+		googleProvider.setCustomParameters({ prompt: "select_account" });
 		try {
 			const cred = await signInWithPopup(auth, googleProvider);
 			await handlePostLoginSetup(cred.user);
 			setUser(cred.user);
 			setUserState("loggedIn");
-		} catch (e) {
+		} catch (err) {
 			if (
-				e?.code === "auth/popup-blocked" ||
-				e?.code === "auth/cancelled-popup-request"
+				err?.code === "auth/popup-blocked" ||
+				err?.code === "auth/cancelled-popup-request"
 			) {
 				// fallback to redirect if popup is blocked
 				try {
+					// getAuthClient already set persistence, but this is harmless + helps Safari/ITP
 					await setPersistence(auth, browserSessionPersistence);
-				} catch (error) {
-					console.error(error, ": "`${error.message}`);
+				} catch (err) {
+					logError(err, ": "`${err.message}`);
 				}
+				setRedirectIntent("google");
 				// optional: navigate("/auth/callback", { replace: true });
 				await signInWithRedirect(auth, googleProvider);
 				return;
 			}
-			console.error("Google sign-in failed", e);
+			logError("Google sign-in failed", err);
 			addAlert(
-				`Google sign-in failed: [${e?.code || "unknown"}] ${e?.message || ""}`,
+				`Google sign-in failed: [${err?.code || "unknown"}] ${
+					err?.message || ""
+				}`,
 				"error",
 				6000
 			);
 		}
 	};
 
-	// FACEBOOK (redirect) Implement Later
-	// const handleFacebookRedirect = async () => {
-	// 	try {
-	// 		await setPersistence(auth, browserSessionPersistence);
-	// 	} catch (error) {console.error(error, ": "`${error.message}`);}
-	// 	// optional: setRedirectIntent("facebook"); navigate("/auth/callback", { replace: true });
-	// 	await signInWithRedirect(auth, facebookProvider);
-	// };
-
 	const handleEmailLogin = async (creds) => {
+		const auth = await getAuthClient();
+		const { signInWithEmailAndPassword } = await import("firebase/auth");
+		const loginEmail = creds.email;
+		const loginPassword = creds.password;
 		try {
-			const loginEmail = creds.email;
-			const loginPassword = creds.password;
 			const userCredential = await signInWithEmailAndPassword(
 				auth,
 				loginEmail,
@@ -153,14 +158,18 @@ export const AuthProvider = ({ children }) => {
 			setUser(userCredential.user);
 			setUserState("loggedIn");
 			await handlePostLoginSetup(userCredential.user);
-		} catch (error) {
-			addAlert(error.message);
-			throw error;
+		} catch (err) {
+			logError(err.message);
+			throw err;
 		}
 	};
 
 	// Register new user
 	const handleRegister = async (creds) => {
+		const auth = await getAuthClient();
+		const { createUserWithEmailAndPassword, updateProfile } = await import(
+			"firebase/auth"
+		);
 		try {
 			const registerEmail = creds.email;
 			const registerPassword = creds.password;
@@ -180,9 +189,9 @@ export const AuthProvider = ({ children }) => {
 			});
 			setUserState("loggedIn");
 			await handlePostLoginSetup(userCredential.user);
-		} catch (error) {
-			console.error("Registration failed:", error.message);
-			addAlert(error.message);
+		} catch (err) {
+			logError("Registration failed:", err.message);
+			addAlert(err.message);
 		}
 	};
 
@@ -190,11 +199,13 @@ export const AuthProvider = ({ children }) => {
 		if (userState === "guest") {
 			localStorage.removeItem("guest");
 			setUserState("loggedOut");
-		} else {
-			await signOut(auth);
-			setUser(null);
-			setUserState("loggedOut");
+			return;
 		}
+		const auth = await getAuthClient();
+		const { signOut } = await import("firebase/auth");
+		await signOut(auth);
+		setUser(null);
+		setUserState("loggedOut");
 	};
 
 	const handleGuestSignIn = () => {
@@ -208,6 +219,8 @@ export const AuthProvider = ({ children }) => {
 			addAlert("Please enter your email address.", "warning", 4000);
 			return;
 		}
+		const auth = await getAuthClient();
+		const { sendPasswordResetEmail } = await import("firebase/auth");
 		try {
 			await sendPasswordResetEmail(auth, email);
 			addAlert(
@@ -215,53 +228,31 @@ export const AuthProvider = ({ children }) => {
 				"info",
 				6000
 			);
-		} catch (e) {
+		} catch (err) {
 			const msg =
-				e?.code === "auth/invalid-email"
+				err?.code === "auth/invalid-email"
 					? "That doesn’t look like a valid email."
-					: `[${e?.code || "unknown"}] ${
-							e?.message || "Couldn’t send reset email."
+					: `[${err?.code || "unknown"}] ${
+							err?.message || "Couldn’t send reset email."
 					  }`;
-			console.error("sendPasswordResetEmail failed", e);
+			logError("sendPasswordResetEmail failed", err);
 			addAlert(msg, "error", 7000);
 		}
 	};
 
-	// new redirect handler for multiple providers
-	const handleSocialAuthRedirect = async (providerID) => {
-		let providerMap = {
-			google: googleProvider,
-			facebook: facebookProvider,
-		};
-		const provider = providerMap[providerID];
-		// sessionStorage.setItem("pendingRedirect", providerID);
-		if (!provider) {
-			console.error("Invalid Provider ID: ", providerID);
-			alert("Invalid Login type");
-			return;
-		}
-		setRedirectIntent(providerID); // ✅ string + timestamp + clear guest
-
-		try {
-			await setPersistence(auth, browserSessionPersistence);
-		} catch (e) {
-			console.error("setPersistence(session) failed", e);
-			// still attempt redirect; some browsers will allow it anyway
-		}
-
-		await signInWithRedirect(auth, provider);
-	};
-
 	const handlePostLoginSetup = async (user) => {
+		console.info("handlePostLogin Started");
 		try {
+			const { createUserDoc } = await import("./FirestoreService");
 			await createUserDoc(user);
-		} catch (error) {
-			console.error(
-				"Error ensuring user doc exists after login: ",
-				error.message
-			);
+		} catch (err) {
+			logError("Error ensuring user doc exists after login: ", err.message);
 		}
 	};
+
+	useEffect(() => {
+		addAlertRef.current = addAlert;
+	}, [addAlert]);
 
 	return (
 		<AuthContext.Provider
@@ -272,7 +263,6 @@ export const AuthProvider = ({ children }) => {
 				handleRegister,
 				handleLogOut,
 				handleGuestSignIn,
-				handleSocialAuthRedirect,
 				handleForgotPwd,
 				handleGoogleLogin,
 			}}

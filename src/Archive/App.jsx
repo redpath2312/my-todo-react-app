@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import Login from "./Login";
 import Register from "./Register";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 
 import { useAuth } from "./AuthContext";
 import ForgotPwd from "./ForgotPwd";
@@ -20,24 +20,28 @@ function App({
 	deleteAllCardsInDB,
 	isAdding,
 }) {
-	const { userState, handleGuestSignIn } = useAuth();
-
-	const { pathname } = useLocation();
+	const { userState } = useAuth();
+	const navigate = useNavigate();
+	const location = useLocation();
 
 	useEffect(() => {
+		const protectedPages = ["/dashboard", "/guest"];
 		const pending = !!getRedirectIntent();
 
 		// 🚫 do nothing while 'checking' or redirect handoff
-		if (
-			pathname === "/guest" &&
-			userState !== "guest" &&
-			userState !== "loggedIn" &&
-			userState !== "checking" &&
-			!pending
+		if (userState === "checking" || pending) return;
+
+		if (userState === "loggedIn") {
+			navigate("/dashboard", { replace: true });
+		} else if (userState === "guest") {
+			navigate("/guest", { replace: true });
+		} else if (
+			userState === "loggedOut" &&
+			protectedPages.includes(location.pathname)
 		) {
-			handleGuestSignIn();
+			navigate("/login", { replace: true });
 		}
-	}, [pathname, userState, handleGuestSignIn]);
+	}, [userState, location.pathname, navigate]);
 
 	return (
 		<>
@@ -45,10 +49,8 @@ function App({
 				<Route
 					path="/"
 					element={
-						userState === "loggedIn" ? (
+						userState !== "loggedOut" ? (
 							<Navigate to="/dashboard" />
-						) : userState === "guest" ? (
-							<Navigate to="/guest" />
 						) : (
 							<Navigate to="/login" />
 						)
@@ -57,19 +59,15 @@ function App({
 				<Route
 					path="/dashboard"
 					element={
-						userState === "loggedIn" ? (
-							<Dashboard
-								dbCards={dbCards}
-								addCardToDB={addCardToDB}
-								updateCardsInDB={updateCardsInDB}
-								deleteCardInDB={deleteCardInDB}
-								clearDoneCardsInDB={clearDoneCardsInDB}
-								deleteAllCardsInDB={deleteAllCardsInDB}
-								isAdding={isAdding}
-							/>
-						) : (
-							<Navigate to="/login" replace />
-						)
+						<Dashboard
+							dbCards={dbCards}
+							addCardToDB={addCardToDB}
+							updateCardsInDB={updateCardsInDB}
+							deleteCardInDB={deleteCardInDB}
+							clearDoneCardsInDB={clearDoneCardsInDB}
+							deleteAllCardsInDB={deleteAllCardsInDB}
+							isAdding={isAdding}
+						/>
 					}
 				/>
 				<Route

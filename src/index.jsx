@@ -12,11 +12,11 @@ const root = createRoot(document.getElementById("root"));
 root.render(
 	<UIProvider>
 		<ErrorProvider>
-			<AuthProvider>
-				<Router>
+			<Router>
+				<AuthProvider>
 					<Main />
-				</Router>
-			</AuthProvider>
+				</AuthProvider>
+			</Router>
 		</ErrorProvider>
 	</UIProvider>
 );
