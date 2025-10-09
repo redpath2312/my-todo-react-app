@@ -11,10 +11,34 @@ export default defineConfig({
 				manualChunks(id) {
 					if (!id.includes("node_modules")) return;
 
-					if (id.includes("/react/") || id.includes("react-dom"))
+					// Path segment after node_modules/
+					const seg = id.split("node_modules/")[1];
+
+					// Top-level package key: "@scope/pkg" or "pkg"
+					const top = seg.startsWith("@")
+						? seg.split("/", 2).join("/") // e.g. "@mui/material"
+						: seg.split("/", 1)[0]; // e.g. "react"
+
+					// Keep React bits together
+					if (
+						top === "react" ||
+						top === "react-dom" ||
+						top === "scheduler" ||
+						top === "object-assign"
+					) {
 						return "react";
-					if (id.includes("@mui/")) return "mui"; // core + base + system + material
-					if (id.includes("firebase")) return "firebase"; // firebase modular SDK
+					}
+
+					// Emotion (MUI depends on it) — keep separate from react
+					if (top.startsWith("@emotion/")) return "emotion";
+
+					// MUI family
+					if (top.startsWith("@mui/")) return "mui";
+
+					// Firebase — optionally split auth vs firestore (see alt below)
+					if (top === "firebase") return "firebase";
+
+					// Everything else
 					return "vendor";
 				},
 			},
