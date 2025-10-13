@@ -1,20 +1,9 @@
 rules_version = '2';
 service cloud.firestore {
-  match /databases/{db}/documents {
-    function isSignedIn() { return request.auth != null; }
-    function isOwner(uid) { return request.auth.uid == uid; }
-    function smallWrite() {
-      return request.resource.size < 256 * 1024 // 256KB
-        && (request.time - resource.data._lastWriteAt).toMillis() > 200;
-    }
-
+  match /databases/{database}/documents {
+    // Each user can only read/write their own /users/{uid} doc
     match /users/{uid} {
-      allow read, write: if isSignedIn() && isOwner(uid);
-    }
-
-    match /users/{uid}/cards/{cardId} {
-      allow read: if isSignedIn() && isOwner(uid);
-      allow create, update, delete: if isSignedIn() && isOwner(uid) && smallWrite();
+      allow read, write: if request.auth != null && request.auth.uid == uid;
     }
   }
 }

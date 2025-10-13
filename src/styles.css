@@ -9,10 +9,7 @@
 }
 
 html {
-	font-family: "Work Sans", sans-serif;
-	font-optical-sizing: auto;
-	font-weight: 400;
-	font-style: normal;
+	font-family: var(--app-font);
 }
 
 body {
@@ -28,6 +25,8 @@ body {
 	--hairline: color-mix(in srgb, var(--surface-border) 70%, transparent);
 	--gutter-x: clamp(12px, 4vw, 24px);
 	--edge-buffer: var(--gutter-x);
+	--app-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+		Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 @media (max-width: 480px) {
 	:root {
@@ -688,7 +687,7 @@ textarea {
 	color: var(--text-secondary);
 }
 
-.login-form .input i {
+/* .login-form .input i {
 	color: var(--text-secondary);
 	position: absolute;
 }
@@ -705,7 +704,7 @@ textarea {
 
 .login-form .input .input-field:valid ~ i.eye-icon {
 	display: block;
-}
+} */
 
 .input {
 	position: relative;
@@ -723,13 +722,9 @@ textarea {
 	box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.12);
 }
 
-.forgotpwd-form i {
+/* .forgotpwd-form i {
 	padding-left: 8px;
-}
-
-.icons-wait .material-symbols-rounded {
-	visibility: hidden;
-}
+} */
 
 /* confirm dialog focus ring (scoped so it doesn't affect other buttons) */
 .confirm-dialog .btn-cancel:focus,
@@ -933,16 +928,6 @@ hr.or-divider:after {
 	margin: 3px 0;
 }
 
-.material-symbols-rounded {
-	font-family: "Material Symbols Rounded";
-	font-style: normal;
-	font-weight: 300;
-	font-variation-settings: "FILL" 0, "GRAD" 0, "opsz" 20;
-	/* optional but nice: */
-	font-size: 20px;
-	line-height: 1;
-	display: inline-block;
-}
 /* Links */
 a,
 a:visited {

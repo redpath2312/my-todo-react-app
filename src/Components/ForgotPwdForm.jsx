@@ -1,5 +1,6 @@
 import { useState } from "react";
 import PrimaryButton from "./Buttons/PrimaryButton";
+import MailOutlineRounded from "@mui/icons-material/MailOutlineRounded";
 import { useAuth } from "../AuthContext";
 const ForgotPwdForm = () => {
 	const [email, setEmail] = useState("");
@@ -32,7 +33,11 @@ const ForgotPwdForm = () => {
 						onChange={(e) => setEmail(e.target.value)}
 						required
 					/>
-					<i className="material-symbols-rounded">mail</i>
+					<MailOutlineRounded
+						fontSize="small"
+						aria-hidden="true"
+						className="absolute left-3 top-1/2 -translate-y-3/4 pointer-events-none text-neutral-500"
+					/>
 				</div>
 
 				<PrimaryButton
@@ -44,11 +49,6 @@ const ForgotPwdForm = () => {
 				>
 					{`${isSending ? "Sending..." : "Send"}`}
 				</PrimaryButton>
-				{/* 
-				<button
-					className={`send-button${isSending ? " is-sending" : ""}`}
-
-				</button> */}
 			</div>
 		</form>
 	);

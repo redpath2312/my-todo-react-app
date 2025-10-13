@@ -15,7 +15,7 @@ function Header() {
 		e.preventDefault();
 		try {
 			await handleLogOut();
-			navigate("/Login");
+			navigate("/login");
 		} catch (error) {
 			console.error("Error logging out...", error.message);
 		}
