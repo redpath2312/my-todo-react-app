@@ -2,6 +2,7 @@ import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import HeaderButton from "./Buttons/HeaderButton";
 import ThemeModeToggle from "./Buttons/ThemeModeToggle";
+import { Link } from "react-router-dom";
 
 function Header() {
 	const { user, userState, handleLogOut } = useAuth();
@@ -26,6 +27,16 @@ function Header() {
 			<div className="container header-grid">
 				<div className="header-left">
 					<ThemeModeToggle />
+					<Link to="/" className="brand" aria-label="DashTasker home">
+						<img
+							src="/images/logo-32.png" // use /logo.svg when you have it
+							alt=""
+							width={28}
+							height={28}
+							decoding="async"
+						/>
+						<span className="sr-only">DashTasker</span>
+					</Link>
 				</div>
 
 				<div className="header-title">

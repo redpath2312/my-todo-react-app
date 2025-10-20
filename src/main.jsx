@@ -6,15 +6,6 @@ import { getDbClient, fs } from "./firebaseDbClient.js";
 import { useAlert } from "./ErrorContext.jsx";
 import { error as logError } from "./utils/logger";
 
-// import {
-// 	addCard,
-// 	clearDoneCards,
-// 	updateCard,
-// 	deleteCard,
-// 	deleteAllCards,
-// } from "./FirestoreService.js";
-
-// import { doc, onSnapshot } from "firebase/firestore";
 import { ThemeModeProvider } from "./theme/ThemeModeContext.jsx";
 
 // import { textFieldClasses } from "@mui/material";
@@ -201,6 +192,7 @@ function Main() {
 
 	return (
 		// <StrictMode>
+		
 		<ThemeModeProvider>
 			<App
 				addCardToDB={handleDBAddCard}

@@ -79,9 +79,9 @@ body {
 	background-image: none;
 	padding: 0 var(--gutter-x);
 }
-[data-theme="light"] .main-page-container {
+/* [data-theme="light"] .main-page-container {
 	background-image: url("https://www.transparenttextures.com/patterns/white-brushed.png");
-}
+} */
 .main {
 	min-height: 95vh;
 	display: flex;
@@ -160,6 +160,17 @@ header h1 {
 	font-size: clamp(16px, 4vw, 22px);
 	line-height: 1.2;
 	margin: 0;
+}
+
+.header-left img,
+.header-right img,
+.social-button .icon {
+	display: block;
+}
+
+.brand img {
+	display: block; /* avoids extra inline gap */
+	border-radius: 0.5rem; /* optional: soften edges */
 }
 
 /* ========== FOOTER ========== */
@@ -736,7 +747,7 @@ textarea {
 @layer components {
 	.social-login,
 	.social-register {
-		@apply flex flex-wrap justify-evenly items-center gap-4;
+		@apply flex flex-wrap justify-evenly items-center gap-4 p-3;
 	}
 
 	.social-login .social-button,
@@ -983,6 +994,19 @@ svg {
 	width: 330px; /* stable target width */
 	max-width: 100%;
 	box-sizing: border-box;
+}
+
+/* accessibility-screen reader */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }
 /* ===== MEDIA QUERIES ===== */
 /* Phones */

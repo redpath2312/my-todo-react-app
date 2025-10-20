@@ -11,6 +11,9 @@ import Summary from "./Components/Summary";
 import Tips from "./Components/Tips";
 import Actions from "./Components/Actions";
 import ConfirmDialog from "./Components/ConfirmDialog";
+import AppMeta from "./Components/AppMeta";
+import React from "react";
+import { info } from "./utils/logger";
 
 const Dashboard = ({
 	dbCards,
@@ -26,6 +29,32 @@ const Dashboard = ({
 	const { editingLocked, editingLockRef } = useUI();
 	const [isTipsHidden, setTipsHidden] = useState(false);
 	const [confirmOpen, setConfirmOpen] = useState(false);
+
+	React.useEffect(() => {
+		if (!import.meta.env.DEV || !("PerformanceObserver" in window)) return;
+
+		const po = new PerformanceObserver((list) => {
+			for (const entry of list.getEntries()) {
+				// `entry.element` is the LCP node (may be null)
+				const el = /** @type {HTMLElement|null} */ (entry.element || null);
+				info(
+					"[LCP]",
+					Math.round(entry.startTime),
+					"ms",
+					el ? `${el.tagName}${el.id ? "#" + el.id : ""}` : "(no element)"
+				);
+				if (el) el.style.outline = "2px dashed orange"; // visual marker
+			}
+		});
+
+		try {
+			po.observe({ type: "largest-contentful-paint", buffered: true });
+		} catch {
+			/* ignore */
+		}
+
+		return () => po.disconnect();
+	}, []);
 
 	/* 1) Memoize the source list once */
 	const cards = useMemo(() => {
@@ -74,6 +103,7 @@ const Dashboard = ({
 			(n, c) => n + (c.highPriority && !c.dashTask && !c.done ? 1 : 0),
 			0
 		);
+
 		return {
 			cardsTotal: list.length,
 
@@ -201,111 +231,125 @@ const Dashboard = ({
 	};
 
 	return (
-		<div className="main-page-container">
-			<div className="main">
-				<div>
-					<Header />
-				</div>
-				<div
-					className={`dashboard-content ${
-						editingLocked ? "dashboard-is-locked" : ""
-					}`}
-				>
-					<div className="dashboard-top">
-						<div className="band-inner">
-							{!isTipsHidden && <Tips />}
-
-							<section className="mini-dashboard-widgets widget">
-								<div className="mini-dashboard-inner-panels">
-									<Summary
-										cardsTotal={cardsTotal}
-										highPriorityCardsTotal={highPriorityCardsTotal}
-										dashTaskCardsTotal={dashTaskCardsTotal}
-										doneCardsTotal={doneCardsTotal}
-										allOtherCardsTotal={allOtherCardsTotal}
-										hpDashTotal={hpDashTotal}
-										hpOnlyTotal={hpOnlyTotal}
-									/>
-
-									<Actions
-										isTipsHidden={isTipsHidden}
-										handleTipsHidden={handleTipsHidden}
-										handleClearAllDoneTasks={handleClearAllDoneTasks}
-										handleDeleteAll={handleDeleteAll}
-										editingLockRefCurrent={editingLockRef.current}
-										doneCardsTotal={doneCardsTotal}
-										cardsTotal={cardsTotal}
-									/>
-
-									<DraftCard
-										onAdd={addCard}
-										isAdding={isAdding}
-										disabled={editingLockRef.current}
-									/>
-								</div>
-							</section>
-						</div>
+		<>
+			<AppMeta
+				baseTitle={
+					userState === "guest"
+						? "DashTasker - Guest"
+						: "DashTasker - Dashboard"
+				}
+				baseDescription={
+					userState === "guest"
+						? "Explore DashTasker in guest mode—no account needed."
+						: "Your prioritized task board for creating and dashing through tasks."
+				}
+			/>
+			<div className="main-page-container">
+				<div className="main">
+					<div>
+						<Header />
 					</div>
-
-					{cardsTotal > 0 && (
-						<div className="dashboard-swimlanes">
+					<div
+						className={`dashboard-content ${
+							editingLocked ? "dashboard-is-locked" : ""
+						}`}
+					>
+						<div className="dashboard-top">
 							<div className="band-inner">
-								<Swimlane
-									title="High Priority Tasks"
-									cards={highPriorityCards}
-									hidden={highPriorityHidden}
-									containerClass="cards-container"
-									headingID="high-priority-section"
-									{...commonSwimlaneProps}
-								/>
+								{!isTipsHidden && <Tips />}
 
-								<Swimlane
-									title="Dash Tasks"
-									cards={dashTaskCards}
-									hidden={dashTasksHidden}
-									containerClass="cards-container"
-									headingID="dash-tasks-section"
-									{...commonSwimlaneProps}
-								/>
+								<section className="mini-dashboard-widgets widget">
+									<div className="mini-dashboard-inner-panels">
+										<Summary
+											cardsTotal={cardsTotal}
+											highPriorityCardsTotal={highPriorityCardsTotal}
+											dashTaskCardsTotal={dashTaskCardsTotal}
+											doneCardsTotal={doneCardsTotal}
+											allOtherCardsTotal={allOtherCardsTotal}
+											hpDashTotal={hpDashTotal}
+											hpOnlyTotal={hpOnlyTotal}
+										/>
 
-								<Swimlane
-									title="All Other Tasks"
-									cards={allOtherCards}
-									hidden={allOtherCardsHidden}
-									containerClass="cards-container"
-									headingID="all-other-tasks-section"
-									{...commonSwimlaneProps}
-								/>
+										<Actions
+											isTipsHidden={isTipsHidden}
+											handleTipsHidden={handleTipsHidden}
+											handleClearAllDoneTasks={handleClearAllDoneTasks}
+											handleDeleteAll={handleDeleteAll}
+											editingLockRefCurrent={editingLockRef.current}
+											doneCardsTotal={doneCardsTotal}
+											cardsTotal={cardsTotal}
+										/>
 
-								<Swimlane
-									title="Done Tasks"
-									cards={doneCards}
-									hidden={doneCardsHidden}
-									containerClass="cards-container"
-									headingID="done-tasks-section"
-									{...commonSwimlaneProps}
-								/>
+										<DraftCard
+											onAdd={addCard}
+											isAdding={isAdding}
+											disabled={editingLockRef.current}
+										/>
+									</div>
+								</section>
 							</div>
 						</div>
-					)}
-				</div>
-			</div>
 
-			<div>
-				<Footer />
+						{cardsTotal > 0 && (
+							<div className="dashboard-swimlanes">
+								<div className="band-inner">
+									<Swimlane
+										title="High Priority Tasks"
+										cards={highPriorityCards}
+										hidden={highPriorityHidden}
+										containerClass="cards-container"
+										headingID="high-priority-section"
+										{...commonSwimlaneProps}
+									/>
+
+									<Swimlane
+										title="Dash Tasks"
+										cards={dashTaskCards}
+										hidden={dashTasksHidden}
+										containerClass="cards-container"
+										headingID="dash-tasks-section"
+										{...commonSwimlaneProps}
+									/>
+
+									<Swimlane
+										title="All Other Tasks"
+										cards={allOtherCards}
+										hidden={allOtherCardsHidden}
+										containerClass="cards-container"
+										headingID="all-other-tasks-section"
+										{...commonSwimlaneProps}
+									/>
+
+									<Swimlane
+										title="Done Tasks"
+										cards={doneCards}
+										hidden={doneCardsHidden}
+										containerClass="cards-container"
+										headingID="done-tasks-section"
+										{...commonSwimlaneProps}
+									/>
+								</div>
+							</div>
+						)}
+					</div>
+				</div>
+
+				<div>
+					<Footer />
+				</div>
+				<ErrorDisplay />
+				<ConfirmDialog
+					open={confirmOpen}
+					title="Delete all cards?"
+					description="This will permanently remove every card in your dashboard. This cannot be undone."
+					confirmText="Delete all"
+					cancelText="Cancel"
+					tone="danger"
+					onConfirm={confirmDeleteAll}
+					onCancel={() => setConfirmOpen(false)}
+				/>
 			</div>
-			<ErrorDisplay />
-			<ConfirmDialog
-				open={confirmOpen}
-				title="Delete all cards?"
-				description="This will permanently remove every card in your dashboard. This cannot be undone."
-				confirmText="Delete all"
-				cancelText="Cancel"
-				tone="danger"
-				onConfirm={confirmDeleteAll}
-				onCancel={() => setConfirmOpen(false)}
-			/>
-		</div>
+		</>
 	);
 };
 export default Dashboard;

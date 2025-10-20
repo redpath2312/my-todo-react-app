@@ -42,9 +42,6 @@ export default function ConfirmDialog({
 			aria-modal="true"
 			aria-labelledby="confirm-title"
 			aria-describedby="confirm-desc"
-			onClick={(e) => {
-				if (e.target === e.currentTarget) onCancel?.();
-			}}
 		>
 			{/* backdrop */}
 			<div className="absolute inset-0 bg-black/40"></div>

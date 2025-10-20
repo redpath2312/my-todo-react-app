@@ -1,10 +1,10 @@
-import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { useAuth } from "./AuthContext";
-import { getRedirectIntent } from "./utils/redirectIntent";
-// import DebugAuthPanel from "./utils/DebugAuthPanel";
+import HomeRedirect from "./Components/HomeRedirect";
+import DebugAuthPanel from "./utils/DebugAuthPanel";
+import GuestGate from "./Components/guestGate";
+import AuthPageGate from "./Components/AuthPageGate";
 
 // lazy pages
 const Dashboard = lazy(() => import("./Dashboard"));
@@ -23,45 +23,21 @@ function App({
 	deleteAllCardsInDB,
 	isAdding,
 }) {
-	const { userState, handleGuestSignIn } = useAuth();
+	const { userState, user } = useAuth();
+	const isAuthDebugPanelEnabled =
+		import.meta.env.DEV && import.meta.env.VITE_DEBUG_AUTH_PANEL === "true";
 
-	const { pathname } = useLocation();
-
-	useEffect(() => {
-		const pending = !!getRedirectIntent();
-
-		// 🚫 do nothing while 'checking' or redirect handoff
-		if (
-			pathname === "/guest" &&
-			userState !== "guest" &&
-			userState !== "loggedIn" &&
-			userState !== "checking" &&
-			!pending
-		) {
-			handleGuestSignIn();
-		}
-	}, [pathname, userState, handleGuestSignIn]);
+	// const { pathname } = useLocation();
 
 	return (
 		<>
 			<Suspense fallback={<div style={{ padding: 16 }}>Loading…</div>}>
 				<Routes>
-					<Route
-						path="/"
-						element={
-							userState === "loggedIn" ? (
-								<Navigate to="/dashboard" />
-							) : userState === "guest" ? (
-								<Navigate to="/guest" />
-							) : (
-								<Navigate to="/login" />
-							)
-						}
-					/>
+					<Route path="/" element={<HomeRedirect />} />
 					<Route
 						path="/dashboard"
 						element={
-							userState === "loggedIn" ? (
+							userState === "loggedIn" && user ? (
 								<Dashboard
 									dbCards={dbCards}
 									addCardToDB={addCardToDB}
@@ -79,40 +55,60 @@ function App({
 					<Route
 						path="/login"
 						element={
-							getRedirectIntent() ? (
-								<div style={{ padding: 16 }}>Signing you in…</div>
-							) : userState === "loggedIn" ? (
-								<Navigate to="/dashboard" />
-							) : (
+							<AuthPageGate>
 								<Login />
-							)
+							</AuthPageGate>
+							// getRedirectIntent() ? (
+							// 	<div style={{ padding: 16 }}>Signing you in…</div>
+							// ) : userState === "loggedIn" ? (
+							// 	<Navigate to="/dashboard" />
+							// ) : (
+							// 	<Login />
+							// )
 						}
 					/>
 					<Route
 						path="/guest"
 						element={
 							// userState === "guest" && (
-							<Dashboard
-								addCardToDB={addCardToDB}
-								updateCardsInDB={updateCardsInDB}
-								deleteCardInDB={deleteCardInDB}
-								clearDoneCardsInDB={clearDoneCardsInDB}
-								deleteAllCardsInDB={deleteAllCardsInDB}
-								isAdding={isAdding}
-							/>
+							<GuestGate>
+								<Dashboard
+									addCardToDB={addCardToDB}
+									updateCardsInDB={updateCardsInDB}
+									deleteCardInDB={deleteCardInDB}
+									clearDoneCardsInDB={clearDoneCardsInDB}
+									deleteAllCardsInDB={deleteAllCardsInDB}
+									isAdding={isAdding}
+								/>
+							</GuestGate>
 							// )
 						}
 					/>
-					<Route path="/register" element={<Register />} />
-					<Route path="/forgotpwd" element={<ForgotPwd />} />
+					<Route
+						path="/register"
+						element={
+							<AuthPageGate>
+								<Register />
+							</AuthPageGate>
+						}
+					/>
+					<Route
+						path="/forgotpwd"
+						element={
+							<AuthPageGate>
+								<ForgotPwd />
+							</AuthPageGate>
+						}
+					/>
 					<Route path="/auth/callback" element={<AuthCallback />} />
+					<Route path="*" element={<Navigate to="/" replace />} />
 				</Routes>
 
 				{/* Fixed overlay, always visible on every page */}
 				{/* Debug AuthPanel if needed*/}
-				{/* {import.meta.env.DEV && (
-				<DebugAuthPanel userState={userState} user={user} />
-			)} */}
+				{isAuthDebugPanelEnabled && (
+					<DebugAuthPanel userState={userState} user={user} />
+				)}
 			</Suspense>
 		</>
 	);

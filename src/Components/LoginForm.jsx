@@ -7,6 +7,7 @@ import MailOutlineRounded from "@mui/icons-material/MailOutlineRounded";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityRounded from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRounded from "@mui/icons-material/VisibilityOffRounded";
+
 const LoginForm = () => {
 	const { handleEmailLogin } = useAuth();
 	const [isPasswordVisible, setPasswordVisible] = useState(false);

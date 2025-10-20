@@ -9,7 +9,7 @@ import unused from "eslint-plugin-unused-imports";
 
 export default [
 	// Ignore build artifacts
-	{ ignores: ["dist/**", "node_modules/**", "src/Archive/**"] },
+	{ ignores: ["dist/**", "node_modules/**", "src/Archive/**", "scripts/**"] },
 
 	// Base JS recommendations
 	js.configs.recommended,
@@ -36,6 +36,21 @@ export default [
 			...react.configs.recommended.rules,
 			...react.configs["jsx-runtime"].rules,
 			...reactHooks.configs.recommended.rules,
+
+			// ⬇️ a11y essentials
+			...(a11y.configs.recommended?.rules ?? {}), // pull in plugin defaults
+			"jsx-a11y/alt-text": [
+				"error",
+				{ elements: ["img"], img: [] /* allow alt="" for decorative */ },
+			],
+			"jsx-a11y/img-redundant-alt": "warn", // flags alt="image of..." / "logo of..."
+			"jsx-a11y/anchor-is-valid": [
+				"warn",
+				{ aspects: ["noHref", "invalidHref", "preferButton"] },
+			],
+			"jsx-a11y/no-redundant-roles": "warn",
+			"jsx-a11y/click-events-have-key-events": "warn",
+			"jsx-a11y/interactive-supports-focus": "warn",
 
 			// Autofixable cleanup
 			"unused-imports/no-unused-imports": "error",

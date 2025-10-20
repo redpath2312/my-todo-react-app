@@ -2,6 +2,7 @@ import { devDebug, error as logError } from "./utils/logger";
 import { getFirebaseApp } from "./firebaseApp";
 
 let authPromise = null;
+let didInit = false;
 
 export async function getAuthClient() {
 	if (authPromise) return authPromise;
@@ -18,11 +19,13 @@ export async function getAuthClient() {
 		} = await import("firebase/auth");
 
 		const auth = getAuth(firebaseApp);
-
-		try {
-			await setPersistence(auth, browserSessionPersistence);
-		} catch (err) {
-			logError(err);
+		if (!didInit) {
+			try {
+				await setPersistence(auth, browserSessionPersistence);
+				didInit = true;
+			} catch (err) {
+				logError(err);
+			}
 		}
 
 		// dev-only emulator (keeps your old behavior)
