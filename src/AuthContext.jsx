@@ -39,16 +39,6 @@ export const AuthProvider = ({ children }) => {
 	const lastEnsuredUidRef = useRef(null);
 	// helpers (top of file or import)
 
-	async function runPostLoginOnce(u) {
-		if (!u?.uid) return;
-		if (lastEnsuredUidRef.current === u.uid) return; // already done for this session/uid
-		lastEnsuredUidRef.current = u.uid;
-		try {
-			await handlePostLoginSetup(u); // creates user doc idempotently
-		} catch (err) {
-			console.error("[auth] postLogin failed", err);
-		}
-	}
 	function promoteToLoggedIn(u, reason = "observer") {
 		setUser(u);
 		setUserState("loggedIn");
@@ -82,6 +72,16 @@ export const AuthProvider = ({ children }) => {
 	}
 
 	useEffect(() => {
+		async function runPostLoginOnce(u) {
+			if (!u?.uid) return;
+			if (lastEnsuredUidRef.current === u.uid) return; // already done for this session/uid
+			lastEnsuredUidRef.current = u.uid;
+			try {
+				await handlePostLoginSetup(u); // creates user doc idempotently
+			} catch (err) {
+				console.error("[auth] postLogin failed", err);
+			}
+		}
 		let unsub;
 
 		(async () => {
