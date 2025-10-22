@@ -28,3 +28,6 @@ src/assets/Old
 
 #Environment Files
 *.env
+*.development
+*.devpreview
+*.production
