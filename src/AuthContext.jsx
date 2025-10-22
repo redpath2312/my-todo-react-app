@@ -36,7 +36,19 @@ export const AuthProvider = ({ children }) => {
 		import.meta.env.VITE_DISABLE_REDIRECT_FALLBACK === "true";
 
 	const isLogoutTransitioning = logoutInFlightRef.current || logoutGateActive;
+	const lastEnsuredUidRef = useRef(null);
 	// helpers (top of file or import)
+
+	async function runPostLoginOnce(u) {
+		if (!u?.uid) return;
+		if (lastEnsuredUidRef.current === u.uid) return; // already done for this session/uid
+		lastEnsuredUidRef.current = u.uid;
+		try {
+			await handlePostLoginSetup(u); // creates user doc idempotently
+		} catch (err) {
+			console.error("[auth] postLogin failed", err);
+		}
+	}
 	function promoteToLoggedIn(u, reason = "observer") {
 		setUser(u);
 		setUserState("loggedIn");
@@ -129,11 +141,6 @@ export const AuthProvider = ({ children }) => {
 					// ✅ any real sign-in cancels guest mode
 					clearGuest();
 					if (pending) {
-						try {
-							await handlePostLoginSetup(u);
-						} catch (err) {
-							console.error(err);
-						}
 						clearRedirectIntent();
 						addAlertRef.current(
 							`Signed in as ${u.displayName || u.email}`,
@@ -143,7 +150,7 @@ export const AuthProvider = ({ children }) => {
 					}
 
 					promoteToLoggedIn(u);
-
+					runPostLoginOnce(u);
 					return;
 				}
 
@@ -151,6 +158,7 @@ export const AuthProvider = ({ children }) => {
 				// do not promote. Stay loggedOut/guest until the user clicks a login button.
 				if (u && u.uid && !hasUserIntent) {
 					devDebug("[auth] user emitted without fresh intent → ignoring");
+					runPostLoginOnce(u);
 					return;
 				}
 
