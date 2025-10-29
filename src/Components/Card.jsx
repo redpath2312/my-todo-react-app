@@ -168,7 +168,7 @@ function Card({
 				info("card:save:ok", { id });
 			} catch (err) {
 				logError("Error saving", err);
-				addAlert("Error saving", err)
+				addAlert("Error saving", err);
 			} finally {
 				isSavingRef.current = false;
 				setIsSaving(false);
@@ -179,7 +179,16 @@ function Card({
 				log("card:save:end", { id });
 			}
 		},
-		[id, onTextUpdate, done, highPriority, dashTask, setEditing, unlockEditing]
+		[
+			id,
+			onTextUpdate,
+			done,
+			highPriority,
+			dashTask,
+			setEditing,
+			unlockEditing,
+			addAlert,
+		]
 	);
 
 	const fireSaveOnce = useCallback(
