@@ -1,20 +1,22 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useAlert } from "./ErrorContext";
-import { devDebug, error as logError, warn } from "./utils/logger";
-import { useRef } from "react";
+import { devDebug, error as logError, warn, info } from "./utils/logger";
 import {
 	getRedirectIntent,
 	clearRedirectIntent,
 	setRedirectIntent,
 } from "./utils/redirectIntent";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getAuthClient } from "./firebaseAuthClient";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
 	const navigate = useNavigate();
+	const { pathname } = useLocation();
+	const pathRef = useRef(pathname);
+
 	const { addAlert } = useAlert();
 	const addAlertRef = useRef(addAlert);
 	const [user, setUser] = useState(null);
@@ -23,9 +25,8 @@ export const AuthProvider = ({ children }) => {
 	);
 	const logoutInFlightRef = useRef(false);
 	const logoutSuppressUntilRef = useRef(0);
+	const LOGOUT_SUPPRESS_MS = 900;
 	const [logoutGateActive, setLogoutGateActive] = useState(false);
-	const lastLogoutAtRef = useRef(0);
-	const lastLoginRequestAtRef = useRef(0); // set when user clicks login (email/google/register)
 	const authInFlightRef = useRef(false);
 	const [authBusy, setAuthBusy] = useState(false);
 	const POPUP_SOFT_TIMEOUT_MS = 12000;
@@ -37,6 +38,11 @@ export const AuthProvider = ({ children }) => {
 
 	const isLogoutTransitioning = logoutInFlightRef.current || logoutGateActive;
 	const lastEnsuredUidRef = useRef(null);
+
+	useEffect(() => {
+		pathRef.current = pathname;
+	}, [pathname]);
+
 	// helpers (top of file or import)
 
 	function promoteToLoggedIn(u, reason = "observer") {
@@ -79,15 +85,15 @@ export const AuthProvider = ({ children }) => {
 			try {
 				await handlePostLoginSetup(u); // creates user doc idempotently
 			} catch (err) {
-				console.error("[auth] postLogin failed", err);
+				logError("[auth] postLogin failed", err);
 			}
 		}
-		let unsub;
+
+		let unsub; // ADDED
 
 		(async () => {
 			const auth = await getAuthClient(); // lazy
-			const { onAuthStateChanged } = await import("firebase/auth");
-
+			const { onAuthStateChanged } = await import("firebase/auth"); // ADDED (expanded)
 			try {
 				if (getRedirectIntent()) {
 					const { getRedirectResult } = await import("firebase/auth");
@@ -123,68 +129,29 @@ export const AuthProvider = ({ children }) => {
 					return; // ignore truthy `u` during logout
 				}
 
-				const pending = getRedirectIntent();
-				const hasUserIntent =
-					lastLoginRequestAtRef.current > lastLogoutAtRef.current;
-				devDebug(
-					"[auth] u?",
-					!!u,
-					"uid:",
-					u?.uid,
-					"hasIntent:",
-					hasUserIntent,
-					"pending:",
-					!!pending
-				);
-				// ✅ Promote only if (a) we have a real UID AND (b) the user initiated login after last logout
-				if (u && u.uid && hasUserIntent) {
+				// ✅ Signed in: promote + route from /login → /dashboard
+				if (u && u.uid) {
 					// ✅ any real sign-in cancels guest mode
 					clearGuest();
-					if (pending) {
-						clearRedirectIntent();
-						addAlertRef.current(
-							`Signed in as ${u.displayName || u.email}`,
-							"success",
-							3000
-						);
-					}
-
 					promoteToLoggedIn(u);
 					runPostLoginOnce(u);
+					if (pathRef.current === "/login") {
+						navigate("/dashboard", { replace: true });
+					}
 					return;
 				}
 
-				// If a user object appears WITHOUT fresh intent (e.g., stale Google hydration),
-				// do not promote. Stay loggedOut/guest until the user clicks a login button.
-				if (u && u.uid && !hasUserIntent) {
-					devDebug("[auth] user emitted without fresh intent → ignoring");
-					runPostLoginOnce(u);
-					return;
-				}
-
-				// No user yet
-				if (pending) {
-					// hold while redirect is still handing off
-					setTimeout(() => {
-						if (!auth.currentUser && getRedirectIntent()) {
-							// still pending → keep 'checking'
-						} else if (!auth.currentUser && !getRedirectIntent()) {
-							setUser(null);
-							setUserState(getGuest() ? "guest" : "loggedOut");
-						}
-					}, 1500);
-					return;
-				}
-
-				// Normal no-user path
+				// ❌ No user: immediately leave "checking"
 				setUser(null);
 				setUserState(getGuest() ? "guest" : "loggedOut");
 			});
 		})();
 
-		return () => unsub && unsub();
+		return () => {
+			unsub && unsub();
+		};
 		// ⬇️ subscribe once on mount; no pathname dependency
-	}, []);
+	}, [navigate]);
 
 	//provider specific redirects
 	const handleGoogleLogin = async () => {
@@ -193,7 +160,6 @@ export const AuthProvider = ({ children }) => {
 		if (now - lastClickTsRef.current < CLICK_COOLDOWN_MS) return;
 		lastClickTsRef.current = now;
 		startAuthLock();
-		lastLoginRequestAtRef.current = Date.now();
 		clearRedirectIntent();
 		// Hoist: get auth once, and load the auth module once.
 		const auth = await getAuthClient();
@@ -259,7 +225,6 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const handleEmailLogin = async (creds) => {
-		lastLoginRequestAtRef.current = Date.now();
 		const auth = await getAuthClient();
 		const { signInWithEmailAndPassword } = await import("firebase/auth");
 		try {
@@ -277,7 +242,6 @@ export const AuthProvider = ({ children }) => {
 	const handleRegister = async (creds) => {
 		if (authInFlightRef.current) return; //ignore double clicks
 		startAuthLock();
-		lastLoginRequestAtRef.current = Date.now();
 		const auth = await getAuthClient();
 		const { createUserWithEmailAndPassword, updateProfile } = await import(
 			"firebase/auth"
@@ -322,17 +286,16 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const handleLogOut = async () => {
-		lastLogoutAtRef.current = Date.now();
 		const auth = await getAuthClient();
-		// Start atomic logout and suppress truthy `u` emissions for 2.5s
+		// Start atomic logout and suppress truthy `u` emissions for 0.9s
 		logoutInFlightRef.current = true;
-		logoutSuppressUntilRef.current = Date.now() + 2500;
+		logoutSuppressUntilRef.current = Date.now() + LOGOUT_SUPPRESS_MS;
 		setLogoutGateActive(true); // 🔔 triggers re-render to show “Signing out…”
 
 		// schedule the gate to drop after the window, even if the observer is slow
 		setTimeout(() => {
 			setLogoutGateActive(false);
-		}, 2500);
+		}, LOGOUT_SUPPRESS_MS);
 
 		try {
 			const { onAuthStateChanged, signOut } = await import("firebase/auth");
@@ -365,7 +328,6 @@ export const AuthProvider = ({ children }) => {
 		setUser(null);
 		setUserState("loggedOut");
 		navigate("/login", { replace: true });
-		lastLoginRequestAtRef.current = 0; // ✅ ensure old intent can’t promote
 	};
 	const handleGuestSignIn = async () => {
 		const auth = await getAuthClient();
@@ -420,7 +382,7 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const handlePostLoginSetup = async (user) => {
-		console.info("handlePostLogin Started");
+		info("handlePostLogin Started");
 		try {
 			const { createUserDoc } = await import("./FirestoreService");
 			await createUserDoc(user);
@@ -428,7 +390,6 @@ export const AuthProvider = ({ children }) => {
 			logError("Error ensuring user doc exists after login: ", err.message);
 		}
 	};
-
 	useEffect(() => {
 		addAlertRef.current = addAlert;
 	}, [addAlert]);

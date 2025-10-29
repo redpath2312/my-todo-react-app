@@ -3,12 +3,41 @@ import SocialLogin from "./Components/SocialLogin";
 import Footer from "./Components/Footer";
 import { useAuth } from "./AuthContext";
 import { Link } from "react-router-dom";
+import { useAlert } from "./ErrorContext";
 import ErrorDisplay from "./Components/ErrorDisplay";
 import ThemeModeToggle from "./Components/Buttons/ThemeModeToggle";
 import AppMeta from "./Components/AppMeta";
+import { useEffect, useRef } from "react";
+import { error as logError } from "./utils/logger";
+
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-	const { handleGuestSignIn } = useAuth();
+	const { addAlert } = useAlert();
+	const addAlertRef = useRef(addAlert);
+	const { handleGuestSignIn, userState } = useAuth();
+	const navigate = useNavigate();
+
+	const clearGuest = () => {
+		try {
+			localStorage.removeItem("guest");
+		} catch (err) {
+			const msg = `Failed to remove guest from local storage: ${err.message}`;
+			logError(msg);
+			addAlertRef.current(msg, "error", 6000);
+		}
+	};
+
+	useEffect(() => {
+		clearGuest;
+	}, []);
+
+	useEffect(() => {
+		if (userState === "loggedIn") {
+			navigate("/dashboard", { replace: true });
+		}
+		// loggedOut/guest: show the form
+	}, [userState, navigate]);
 
 	const handleGuestClick = () => {
 		handleGuestSignIn();

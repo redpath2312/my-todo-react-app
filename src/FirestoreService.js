@@ -1,6 +1,6 @@
 import { getDbClient, fs } from "./firebaseDbClient";
-//  now do i just create a const db for this so the db referred to in funcitons below ocntinue to work?
-import { error as logError } from "./utils/logger";
+//  now do i just create a const db for this so the db referred to in funcitons below continue to work?
+import { error as logError, info } from "./utils/logger";
 
 // helper (optional): normalized log payload
 const logFsError = (where, e) =>
@@ -12,7 +12,7 @@ function requireUid(user) {
 	return uid;
 }
 export async function createUserDoc(user) {
-	console.info("CreateUserDoc Started");
+	info("CreateUserDoc Check Started");
 	const uid = requireUid(user);
 	const db = await getDbClient();
 	const { doc, getDoc, setDoc, serverTimestamp } = await fs();
@@ -20,7 +20,7 @@ export async function createUserDoc(user) {
 	const userSnap = await getDoc(userRef);
 	if (!userSnap.exists()) {
 		try {
-			console.info("SetDoc attempting");
+			info("SetDoc attempting");
 			await setDoc(userRef, {
 				displayName: user.displayName || "Anonymous",
 				email: user.email,
