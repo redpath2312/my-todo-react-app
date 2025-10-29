@@ -58,10 +58,10 @@ export default function DebugAuthPanel({ userState }) {
 						name: user?.displayName ?? null,
 					});
 				});
-			} catch (e) {
+			} catch (err) {
 				// optional: surface in panel
 				if (alive) {
-					setAuthInfo((s) => ({ ...s, error: e?.message || String(e) }));
+					setAuthInfo((s) => ({ ...s, error: err?.message || String(err) }));
 				}
 			}
 		})();

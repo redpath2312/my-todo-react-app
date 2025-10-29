@@ -48,6 +48,7 @@ const Login = () => {
 			<AppMeta
 				baseTitle="DashTasker — Login"
 				baseDescription="Sign in to manage your Dash Tasks."
+				canonical="https://dash-tasker-prod.web.app/"
 			/>
 			<div className="login-page-full">
 				<div className="login-page">

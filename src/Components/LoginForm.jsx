@@ -7,12 +7,15 @@ import MailOutlineRounded from "@mui/icons-material/MailOutlineRounded";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityRounded from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRounded from "@mui/icons-material/VisibilityOffRounded";
+import { error as logError } from "../utils/logger";
+import { useAlert } from "../ErrorContext";
 
 const LoginForm = () => {
 	const { handleEmailLogin } = useAuth();
 	const [isPasswordVisible, setPasswordVisible] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const { addAlert } = useAlert();
 
 	const onEyeIconClick = () => {
 		setPasswordVisible(!isPasswordVisible);
@@ -23,8 +26,9 @@ const LoginForm = () => {
 
 		try {
 			await handleEmailLogin({ email, password });
-		} catch (error) {
-			console.error("login failed", error.message);
+		} catch (err) {
+			logError("login failed", err.message);
+			addAlert("login failed", err.message);
 		}
 	};
 

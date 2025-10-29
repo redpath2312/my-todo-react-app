@@ -3,9 +3,12 @@ import { useNavigate } from "react-router-dom";
 import HeaderButton from "./Buttons/HeaderButton";
 import ThemeModeToggle from "./Buttons/ThemeModeToggle";
 import { Link } from "react-router-dom";
+import { useAlert } from "../ErrorContext";
+import { error as logError } from "../utils/logger";
 
 function Header() {
 	const { user, userState, handleLogOut } = useAuth();
+	const { addAlert } = useAlert();
 	const navigate = useNavigate();
 
 	// Setting name if logged in and user exists to be the user's display name, but if no display name is provided then use "User". If conditions not met then user info will be blank "".
@@ -17,8 +20,9 @@ function Header() {
 		try {
 			await handleLogOut();
 			navigate("/login");
-		} catch (error) {
-			console.error("Error logging out...", error.message);
+		} catch (err) {
+			logError("Error logging out...", err.message);
+			addAlert("Error logging out...", err.message);
 		}
 	};
 

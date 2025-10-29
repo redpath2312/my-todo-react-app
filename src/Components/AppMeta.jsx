@@ -5,7 +5,7 @@ const ENV = import.meta.env.VITE_ENV_NAME ?? "development";
 const isProd = ENV === "production";
 
 // Global defaults if a page omits props
-const DEFAULT_BASE_TITLE = "DashTasker";
+const DEFAULT_BASE_TITLE = "DashTasker - Fast, simple task dashboard";
 const DEFAULT_BASE_DESC =
 	"Create, prioritize, and blitz through tasks with DashTasker. Guest mode to take a look or sign in with Email/Google to start managing your tasks now.";
 

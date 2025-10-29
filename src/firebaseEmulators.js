@@ -28,7 +28,6 @@ export async function ensureAuthEmulatorConnected(app) {
 	// IMPORTANT: call before anyone subscribes/uses auth in your code paths.
 	connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
 	flags.auth = true;
-	// console.info("[Firebase] Auth emulator connected :9099");
 }
 
 export async function connectDbEmulator(db) {
@@ -46,5 +45,4 @@ export async function connectDbEmulator(db) {
 	const port = Number(import.meta.env.VITE_DB_EMULATOR_PORT || 8080);
 	connectFirestoreEmulator(db, "127.0.0.1", port);
 	flags.db = true;
-	// console.info(`[Firebase] DB emulator connected :${port}`);
 }

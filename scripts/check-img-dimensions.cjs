@@ -1,3 +1,5 @@
+import { error as logError } from "../src/utils/logger";
+
 const { readFileSync, readdirSync } = require("fs");
 const { join, sep } = require("path");
 
@@ -30,9 +32,7 @@ function walk(dir) {
 				const hasH = /\bheight\s*=/.test(tag);
 				if (!(hasW && hasH)) {
 					const firstLine = tag.split("\n")[0].slice(0, 140);
-					console.error(
-						`❌ Missing width/height in ${p}\n   ${firstLine}...\n`
-					);
+					logError(`❌ Missing width/height in ${p}\n   ${firstLine}...\n`);
 					fail = true;
 				}
 			}
@@ -42,6 +42,4 @@ function walk(dir) {
 
 walk(SRC);
 if (fail) process.exit(1);
-console.log(
-	"✅ All <img> tags specify width & height (excluding ignored dirs)."
-);
+logError("✅ All <img> tags specify width & height (excluding ignored dirs).");

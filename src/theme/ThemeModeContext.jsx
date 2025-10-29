@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, useEffect, useState } from "react";
 // import { ThemeProvider } from "@mui/material/styles";
 import { ThemeProvider, CssBaseline, GlobalStyles } from "@mui/material";
 import { createAppTheme } from "./theme"; // <-- your existing theme.js
+import {error as logError} from "../utils/logger";
 
 // 1. Create a Context object so we can share theme mode state (light/dark)
 //    across the entire app without prop drilling.
@@ -11,8 +12,8 @@ function readInitialMode() {
 	try {
 		const saved = localStorage.getItem(KEY);
 		if (saved === "light" || saved === "dark") return saved; // authoritative
-	} catch (e) {
-		console.error(e);
+	} catch (err) {
+		logError(err);
 	}
 	// only if nothing saved, use system
 	const prefersDark =
@@ -33,8 +34,8 @@ export function ThemeModeProvider({ children }) {
 			if (saved === "light" || saved === "dark") {
 				if (saved !== mode) setMode(saved);
 			}
-		} catch (e) {
-			console.error(e);
+		} catch (err) {
+			logError(err);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);

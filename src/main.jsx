@@ -11,7 +11,6 @@ import { ThemeModeProvider } from "./theme/ThemeModeContext.jsx";
 // import { textFieldClasses } from "@mui/material";
 
 function Main() {
-	// console.log("Main.jsx rendered");
 	const [cards, setCards] = useState([]);
 	const [isAdding, setIsAdding] = useState(false);
 	const { addAlert, addThrottledAlert } = useAlert();
@@ -59,13 +58,12 @@ function Main() {
 			);
 			addAlert("Card successfully added", "info", 3000);
 		} catch (err) {
-			console.error("Transaction failed:", err);
 			addThrottledAlert(
 				`Error adding card to db: ${toErrorMessage(err)}`,
 				"error",
 				6000
 			);
-			console.error("updatedCard failed", err);
+			logError("Adding card failed", err);
 		} finally {
 			setIsAdding(false);
 		}
@@ -76,13 +74,13 @@ function Main() {
 		try {
 			await svcRef.current?.updateCard(user, cardID, updatedFields);
 			addAlert(`Card ${cardID} updated`, "info", 3000);
-		} catch (error) {
+		} catch (err) {
 			addAlert(
-				`Error updating firestore: ${toErrorMessage(error)}`,
+				`Error updating firestore: ${toErrorMessage(err)}`,
 				"error",
 				6000
 			);
-			throw error;
+			throw err;
 		}
 	};
 
@@ -91,8 +89,8 @@ function Main() {
 		try {
 			await svcRef.current?.clearDoneCards(user, filteredCards);
 			addAlert("Cleared all done cards from db", "info", 3000);
-		} catch (error) {
-			addAlert(`Error updating firestore: ${error}`, "error", 6000);
+		} catch (err) {
+			addAlert(`Error updating firestore: ${err}`, "error", 6000);
 		}
 	};
 
@@ -101,9 +99,9 @@ function Main() {
 		try {
 			await svcRef.current?.deleteCard(user, cardID);
 			addAlert(`Deleted Card ${cardID} from database`, "info", 3000);
-		} catch (error) {
+		} catch (err) {
 			addAlert(
-				`Error deleting card from database: ${toErrorMessage(error)}`,
+				`Error deleting card from database: ${toErrorMessage(err)}`,
 				"error",
 				6000
 			);
@@ -115,9 +113,9 @@ function Main() {
 		try {
 			await svcRef.current?.deleteAllCards(user);
 			addAlert("Deleted cards from database successfully", "info", 3000);
-		} catch (error) {
+		} catch (err) {
 			addAlert(
-				`Error deleting cards from database: ${toErrorMessage(error)}`,
+				`Error deleting cards from database: ${toErrorMessage(err)}`,
 				"error",
 				6000
 			);
@@ -156,17 +154,17 @@ function Main() {
 						setCards([]);
 					}
 				},
-				(error) => {
+				(err) => {
 					// ensure it's a single string; your addAlert likely expects (msg, severity?, ms?)
 					addAlertRef.current?.(
 						`Snapshot listener error: ${
-							toErrorMessage?.(error) ?? String(error)
+							toErrorMessage?.(err) ?? String(err)
 						}`,
 						"error",
 						6000
 					);
 					// allowed by your lint:errors rule
-					logError("Snapshot error", error);
+					logError("Snapshot error", err);
 				}
 			);
 			unsubRef.current = unsubscribe;
@@ -192,7 +190,7 @@ function Main() {
 
 	return (
 		// <StrictMode>
-		
+
 		<ThemeModeProvider>
 			<App
 				addCardToDB={handleDBAddCard}

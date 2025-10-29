@@ -3,6 +3,7 @@ import { useAuth } from "../AuthContext";
 import { useAlert } from "../ErrorContext";
 import ErrorDisplay from "./ErrorDisplay";
 import PrimaryButton from "./Buttons/PrimaryButton";
+import {error as logError} from "./utils"
 
 const RegisterForm = () => {
 	const { handleRegister } = useAuth();
@@ -19,8 +20,9 @@ const RegisterForm = () => {
 		if (password == confirmPassword) {
 			try {
 				await handleRegister({ email, password, displayName });
-			} catch (error) {
-				console.error("Error Registering", error.message);
+			} catch (err) {
+				logError("Error Registering", err.message);
+				addAlert("Error Registering", err.message)
 			}
 		} else {
 			addAlert("Passwords don't match", "warn", 4000);

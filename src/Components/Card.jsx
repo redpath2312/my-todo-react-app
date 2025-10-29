@@ -17,6 +17,7 @@ import {
 	devDebug,
 	devWarn,
 } from "../utils/logger";
+import { useAlert } from "../ErrorContext";
 
 function Card({
 	id,
@@ -56,6 +57,7 @@ function Card({
 		highPriority: false,
 		done: false,
 	});
+	const { addAlert } = useAlert();
 
 	const FLAG_WINDOW_MS = 700; // for slow 4G.
 
@@ -166,6 +168,7 @@ function Card({
 				info("card:save:ok", { id });
 			} catch (err) {
 				logError("Error saving", err);
+				addAlert("Error saving", err)
 			} finally {
 				isSavingRef.current = false;
 				setIsSaving(false);
@@ -443,7 +446,7 @@ function Card({
 				) : (
 					<form>
 						<textarea
-							maxLength={40}
+							maxLength={50}
 							value={cardText}
 							onInput={handleTextChange}
 							id="card-text"

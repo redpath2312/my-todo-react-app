@@ -61,7 +61,7 @@ function DraftCard(props) {
 					<div className="cards-top"></div>
 					<div>
 						<textarea
-							maxLength={40}
+							maxLength={50}
 							onChange={handleChange}
 							name="cardtext"
 							rows="2"

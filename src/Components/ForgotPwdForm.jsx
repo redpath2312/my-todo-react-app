@@ -2,18 +2,21 @@ import { useState } from "react";
 import PrimaryButton from "./Buttons/PrimaryButton";
 import MailOutlineRounded from "@mui/icons-material/MailOutlineRounded";
 import { useAuth } from "../AuthContext";
+import { useAlert } from "../ErrorContext";
+import { error as logError } from "../utils/logger";
 const ForgotPwdForm = () => {
 	const [email, setEmail] = useState("");
 	const { handleForgotPwd } = useAuth();
 	const [isSending, setIsSending] = useState(false);
-
+	const { addAlert } = useAlert();
 	const handleSubmitForgotPwdClick = async (e) => {
 		e.preventDefault();
 		setIsSending(true);
 		try {
 			await handleForgotPwd(email);
-		} catch (error) {
-			console.error("request failed", error.message);
+		} catch (err) {
+			logError("request failed", err.message);
+			addAlert("request failed", err.message);
 		} finally {
 			setIsSending(false);
 		}
