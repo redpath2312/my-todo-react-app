@@ -83,13 +83,13 @@ const Login = () => {
 
 					<div className="image-background">
 						<img
-							src="images/DashTaskPNGHeroLarge.webp"
+							src="/images/DashTaskPNGHeroLarge.webp"
 							width="1184"
 							height="864"
-							alt="Dash Tasker"
+							alt="Dash Tasker Cycle Hero"
 							className="image-hero"
 							loading="eager"
-							fetchpriority="high"
+							fetchPriority="high"
 							decoding="async"
 							style={{ maxWidth: "100%", height: "auto" }}
 						/>

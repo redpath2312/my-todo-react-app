@@ -21,6 +21,7 @@ export default function SocialRegister() {
 						className="social-icon"
 						height="32"
 						width="32"
+						decoding="async"
 					/>{" "}
 					{authBusy ? "Opening Google…" : "Google"}
 					{authBusy && (
