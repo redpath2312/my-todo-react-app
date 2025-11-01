@@ -16,9 +16,30 @@ export const UIProvider = ({ children }) => {
 		setEditingLocked(false);
 	};
 
+	// NEW: transition/holding-page state
+	// e.g. 'checking-auth' | 'loading-app' | 'signing-in' | 'signing-out' | 'switching-to-guest' | null
+	const [transitionState, setTransitionState] = useState(null);
+
+	const withTransition = async (state, fn) => {
+		setTransitionState(state);
+		try {
+			return await fn();
+		} finally {
+			setTransitionState(null);
+		}
+	};
+
 	return (
 		<UIContext.Provider
-			value={{ editingLockRef, editingLocked, lockEditing, unlockEditing }}
+			value={{
+				editingLockRef,
+				editingLocked,
+				lockEditing,
+				unlockEditing,
+				transitionState,
+				setTransitionState,
+				withTransition,
+			}}
 		>
 			{children}
 		</UIContext.Provider>

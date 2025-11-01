@@ -5,6 +5,8 @@ import HomeRedirect from "./Components/HomeRedirect";
 import DebugAuthPanel from "./utils/DebugAuthPanel";
 import GuestGate from "./Components/guestGate";
 import AuthPageGate from "./Components/AuthPageGate";
+import AuthPagesGuard from "./Components/AuthPagesguard";
+import NotFound from "./pages/NotFounds";
 
 // lazy pages
 const Dashboard = lazy(() => import("./Dashboard"));
@@ -31,9 +33,12 @@ function App({
 
 	return (
 		<>
-			<Suspense fallback={<div style={{ padding: 16 }}>Loading…</div>}>
+			<Suspense fallback={<AuthPageGate state="loading-app" />}>
 				<Routes>
+					{/* Root only */}
 					<Route path="/" element={<HomeRedirect />} />
+
+					{/* App pages */}
 					<Route
 						path="/dashboard"
 						element={
@@ -52,19 +57,29 @@ function App({
 							)
 						}
 					/>
+					{/* Auth pages */}
+					<Route
+						path="/register"
+						element={
+							<AuthPagesGuard>
+								<Register />
+							</AuthPagesGuard>
+						}
+					/>
+					<Route
+						path="/forgotpwd"
+						element={
+							<AuthPagesGuard>
+								<ForgotPwd />
+							</AuthPagesGuard>
+						}
+					/>
 					<Route
 						path="/login"
 						element={
-							<AuthPageGate>
+							<AuthPagesGuard>
 								<Login />
-							</AuthPageGate>
-							// getRedirectIntent() ? (
-							// 	<div style={{ padding: 16 }}>Signing you in…</div>
-							// ) : userState === "loggedIn" ? (
-							// 	<Navigate to="/dashboard" />
-							// ) : (
-							// 	<Login />
-							// )
+							</AuthPagesGuard>
 						}
 					/>
 					<Route
@@ -84,24 +99,9 @@ function App({
 							// )
 						}
 					/>
-					<Route
-						path="/register"
-						element={
-							<AuthPageGate>
-								<Register />
-							</AuthPageGate>
-						}
-					/>
-					<Route
-						path="/forgotpwd"
-						element={
-							<AuthPageGate>
-								<ForgotPwd />
-							</AuthPageGate>
-						}
-					/>
+					{/* OAuth callback */}
 					<Route path="/auth/callback" element={<AuthCallback />} />
-					<Route path="*" element={<Navigate to="/" replace />} />
+					<Route path="*" element={<NotFound />} />
 				</Routes>
 
 				{/* Fixed overlay, always visible on every page */}

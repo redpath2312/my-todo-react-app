@@ -83,14 +83,15 @@ const Login = () => {
 
 					<div className="image-background">
 						<img
-							src="images/recraftlogo2.webp"
-							width="1024"
-							height="1024"
+							src="images/DashTaskPNGHeroLarge.webp"
+							width="1184"
+							height="864"
 							alt="Dash Tasker"
 							className="image-hero"
 							loading="eager"
 							fetchpriority="high"
 							decoding="async"
+							style={{ maxWidth: "100%", height: "auto" }}
 						/>
 					</div>
 				</div>

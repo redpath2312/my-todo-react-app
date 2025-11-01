@@ -1,27 +1,27 @@
 // routes/GuestGate.jsx
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuth } from "../AuthContext";
+import AuthPageGate from "./AuthPageGate";
+import { useUI } from "../UIContext";
 
 export default function GuestGate({ children }) {
 	const { userState, handleGuestSignIn } = useAuth();
+	const { withTransition } = useUI();
+	const kickedOff = useRef(false);
 
-	// If a signed-in user types /guest, convert to guest (signOut + flag)
 	useEffect(() => {
+		if (kickedOff.current) return;
+		// From loggedIn or loggedOut → hop to guest with a unified gate label
 		if (userState === "loggedIn" || userState === "loggedOut") {
-			void handleGuestSignIn(); // signs out if needed, sets localStorage 'guest', sets userState='guest'
+			kickedOff.current = true;
+			void withTransition("switching-to-guest", handleGuestSignIn);
 		}
-	}, [userState, handleGuestSignIn]);
+	}, [userState, withTransition, handleGuestSignIn]);
 
-	// IMPORTANT: never return null during the transition
-	// While we’re converting (or resolving), show a small placeholder (never return null)
-	if (
-		userState === "checking" ||
-		userState === "loggedIn" ||
-		userState === "loggedOut"
-	) {
-		return <div style={{ padding: 16 }}>Switching to Guest…</div>;
+	// One consistent message for all non-guest states (includes initial "checking")
+	if (userState !== "guest") {
+		return <AuthPageGate state="switching-to-guest" />;
 	}
 
-	// Now in guest mode → render the page (Header will see userState === 'guest')
 	return children;
 }

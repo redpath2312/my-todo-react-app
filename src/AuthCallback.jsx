@@ -6,6 +6,7 @@ import { getAuthClient } from "./firebaseAuthClient";
 import { useAlert } from "./ErrorContext";
 // import { clearRedirectIntent } from "./utils/redirectIntent";
 import { useNavigate } from "react-router-dom";
+import AuthPageGate from "./Components/AuthPageGate";
 
 export default function AuthCallback() {
 	const { addAlert } = useAlert();
@@ -71,5 +72,5 @@ export default function AuthCallback() {
 		};
 	}, [addAlert, navigate]);
 
-	return <div style={{ padding: 16 }}>Signing you in…</div>;
+	return <AuthPageGate state="signing-in" />;
 }

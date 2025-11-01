@@ -1,40 +1,31 @@
-// Components/AuthPageGate.jsx
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../AuthContext";
-import { getRedirectIntent } from "../utils/redirectIntent";
+import { useUI } from "../UIContext";
 
-const AUTH_PAGES = new Set(["/login", "/register", "/forgotpwd"]);
+const MESSAGES = {
+	"checking-auth": "Checking sign-in…",
+	"loading-app": "Loading…",
+	"signing-in": "Signing you in…",
+	"signing-out": "Signing out…",
+	"switching-to-guest": "Switching to guest mode…",
+	default: "Loading…",
+};
 
-function isGuestFlag() {
-	try {
-		return localStorage.getItem("guest") === "true";
-	} catch {
-		return false;
-	}
-}
+/**
+ * Full-page holding UI.
+ * - Prefer passing an explicit `state` prop.
+ * - If omitted, it will fall back to UIContext.transitionState (optional).
+ */
 
-export default function AuthPageGate({ children }) {
-	const { user, userState, isLogoutTransitioning } = useAuth();
-	const { pathname } = useLocation();
+export default function AuthPageGate({ state }) {
+	const { transitionState } = useUI() ?? {};
+	const current = state || transitionState || "default";
 
-	if (!AUTH_PAGES.has(pathname)) return children;
-
-	// If user explicitly chose Guest, let them see the auth page.
-	// We'll clear this flag on successful login.
-	if (isGuestFlag()) return children;
-
-	if (getRedirectIntent()) {
-		return <div style={{ padding: 16 }}>Signing you in…</div>;
-	}
-	if (userState === "checking") {
-		return <div style={{ padding: 16 }}>Loading…</div>;
-	}
-	if (userState === "loggedIn" && user?.uid) {
-		return <Navigate to="/dashboard" replace />;
-	}
-	if (isLogoutTransitioning) {
-		return <div style={{ padding: 16 }}>Signing out…</div>;
-	}
-
-	return children;
+	return (
+		<main
+			role="status"
+			aria-busy="true"
+			className="min-h-[40vh] p-6 grid place-items-center"
+		>
+			<p>{MESSAGES[current] ?? MESSAGES.default}</p>
+		</main>
+	);
 }

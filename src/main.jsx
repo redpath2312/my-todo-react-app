@@ -5,6 +5,7 @@ import { useAuth } from "./AuthContext";
 import { getDbClient, fs } from "./firebaseDbClient.js";
 import { useAlert } from "./ErrorContext.jsx";
 import { error as logError } from "./utils/logger";
+import { useUI } from "./UIContext.jsx";
 
 import { ThemeModeProvider } from "./theme/ThemeModeContext.jsx";
 
@@ -17,7 +18,24 @@ function Main() {
 	const addAlertRef = useRef(addAlert);
 	const { userState, user } = useAuth();
 	const svcRef = useRef(null); // FirestoreService once logged in
+
+	const { transitionState } = useUI() ?? {}; // hook at top level
+	const uid = user?.uid ?? null;
+	// Refs to avoid stale values inside snapshot callbacks
+	const userStateRef = useRef(userState);
+	const uidRef = useRef(uid);
+	const transitionRef = useRef(transitionState);
+	const getIdTokenRef = useRef(user?.getIdToken?.bind(user) || null);
 	const unsubRef = useRef(null); // snapshot unsubscribe
+
+	const subVersionRef = useRef(0);
+
+	// Keep refs in sync with latest props/state every render
+	userStateRef.current = userState;
+	uidRef.current = user?.uid ?? null;
+	transitionRef.current = transitionState;
+	getIdTokenRef.current = user?.getIdToken?.bind(user) || null;
+
 	// keep alert ref fresh
 	useEffect(() => {
 		addAlertRef.current = addAlert;
@@ -121,54 +139,79 @@ function Main() {
 			);
 		}
 	};
-	// Live user doc listener (only when logged in)
+
 	useEffect(() => {
+		// bump version so prior callbacks become no-ops
+		const myVersion = ++subVersionRef.current;
 		// cleanup prior listener
 		if (unsubRef.current) {
 			unsubRef.current();
 			unsubRef.current = null;
 		}
-		if (userState !== "loggedIn" || !user?.uid) {
-			// not authed - Main won't manage cards, dashboard handles guest.
+
+		if (userState !== "loggedIn" || !uid) {
 			setCards([]);
 			return;
 		}
 
 		let active = true;
-		(async () => {
-			const db = await getDbClient();
-			const { doc, onSnapshot } = await fs();
 
-			const userRef = doc(db, "users", user.uid);
-			const unsubscribe = onSnapshot(
-				userRef,
-				{ includeMetadataChanges: true },
-				(userSnap) => {
-					if (!active) return;
-					// ⬇️ ignore local echoes from our own pending writes
-					if (userSnap.metadata.hasPendingWrites) return;
-					if (userSnap.exists()) {
-						const userData = userSnap.data();
-						setCards(userData.cards || []);
-					} else {
-						setCards([]);
-					}
-				},
-				(err) => {
-					// ensure it's a single string; your addAlert likely expects (msg, severity?, ms?)
-					addAlertRef.current?.(
-						`Snapshot listener error: ${
-							toErrorMessage?.(err) ?? String(err)
-						}`,
-						"error",
-						6000
-					);
-					// allowed by your lint:errors rule
-					logError("Snapshot error", err);
+		(async () => {
+			try {
+				const db = await getDbClient();
+				const { doc, onSnapshot } = await fs();
+
+				// ensure rules see request.auth
+				try {
+					const getIdToken = getIdTokenRef.current;
+					if (!getIdToken) return; // transiently missing; retry on next tick
+					await getIdToken();
+				} catch {
+					return; // token not ready; retry on next tick
 				}
-			);
-			unsubRef.current = unsubscribe;
+
+				const userRef = doc(db, "users", uid);
+
+				const unsubscribe = onSnapshot(
+					userRef,
+					{ includeMetadataChanges: true },
+					(snap) => {
+						// bail if unmounted/re-subscribed
+						if (!active || myVersion !== subVersionRef.current) return;
+						if (snap.metadata.hasPendingWrites) return;
+
+						setCards(snap.exists() ? snap.data().cards || [] : []);
+					},
+					(err) => {
+						const code = err?.code || "";
+						const transient =
+							code === "permission-denied" || code === "unauthenticated";
+						const inTransition =
+							transitionRef.current === "switching-to-guest" ||
+							transitionRef.current === "signing-out";
+						const notLoggedInNow = userStateRef.current !== "loggedIn";
+
+						if (transient && (inTransition || notLoggedInNow)) return;
+						// optional: ignore if uid changed mid-flight
+						if (uidRef.current !== uid) return;
+
+						addAlertRef.current?.(
+							`Snapshot listener error: ${
+								toErrorMessage?.(err) ?? String(err)
+							}`,
+							"error",
+							6000
+						);
+						logError("Snapshot error", err);
+					}
+				);
+
+				unsubRef.current = unsubscribe;
+			} catch (e) {
+				logError("Listener setup error", e);
+			}
 		})();
+
 		return () => {
 			active = false;
 			if (unsubRef.current) {
@@ -176,7 +219,8 @@ function Main() {
 				unsubRef.current = null;
 			}
 		};
-	}, [userState, user?.uid]);
+		//  no missing-deps warning now
+	}, [userState, uid]);
 
 	// console.info(
 	// 	`[DashTasker] MODE=${import.meta.env.MODE} | PROD=${

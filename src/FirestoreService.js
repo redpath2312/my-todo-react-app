@@ -13,11 +13,41 @@ function requireUid(user) {
 }
 export async function createUserDoc(user) {
 	info("CreateUserDoc Check Started");
-	const uid = requireUid(user);
+
+	// Bail if we're in a transition or guest
+	if (!user?.uid) return;
+	try {
+		if (localStorage.getItem("guest") === "true") return;
+	} catch {
+		logError("Couldn't get guest item from local storage");
+	}
+
+	// Ensure we're still the current signed-in user
+	const authUser = user.auth?.currentUser ?? null;
+	if (!authUser || authUser.uid !== user.uid) return;
+
+	// Ensure Firestore will see request.auth
+	try {
+		await user.getIdToken(false);
+	} catch {
+		return; // token not ready → skip, next tick will retry if needed
+	}
+
+	const uid = user.uid;
+
 	const db = await getDbClient();
 	const { doc, getDoc, setDoc, serverTimestamp } = await fs();
 	const userRef = doc(db, "users", uid);
-	const userSnap = await getDoc(userRef);
+
+	let userSnap;
+	try {
+		userSnap = await getDoc(userRef);
+	} catch (err) {
+		const code = err?.code || "";
+		if (code === "permission-denied" || code === "unauthenticated") return; // transition window
+		logError("fs:CreateUserDoc:getDoc", err);
+		throw err;
+	}
 	if (!userSnap.exists()) {
 		try {
 			info("SetDoc attempting");
@@ -29,7 +59,9 @@ export async function createUserDoc(user) {
 				cards: [],
 			});
 		} catch (err) {
-			logError("fs:CreateUserDoc", err);
+			const code = err?.code || "";
+			if (code === "permission-denied" || code === "unauthenticated") return;
+			logError("fs:CreateUserDoc:setDoc", err);
 			throw err;
 		}
 	}

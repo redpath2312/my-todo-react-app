@@ -1,19 +1,28 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
+import AuthPageGate from "./AuthPageGate";
 
 export default function HomeRedirect() {
 	const { userState, user, isLogoutTransitioning } = useAuth();
 
 	if (isLogoutTransitioning) {
-		return <div style={{ padding: 16 }}>Signing out…</div>;
+		return <AuthPageGate state="signing-out" />;
 	}
 
 	if (userState === "checking") {
-		return <div style={{ padding: 16 }}>Loading…</div>;
+		return <AuthPageGate state="checking-auth" />;
 	}
+
 	if (userState === "loggedIn" && user?.uid)
 		return <Navigate to="/dashboard" replace />;
+
 	if (userState === "guest") return <Navigate to="/guest" replace />;
 	// if (user) return <Navigate to="/dashboard" replace />;
-	return <Navigate to="/login" replace />;
+
+	if (userState === "loggedOut") {
+		return <Navigate to="/login" replace />;
+	}
+
+	// Failsafe for any unexpected state
+	return <AuthPageGate state="loading-app" />;
 }
