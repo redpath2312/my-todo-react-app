@@ -89,7 +89,7 @@ const Login = () => {
 							alt="Dash Tasker Cycle Hero"
 							className="image-hero"
 							loading="eager"
-							fetchPriority="high"
+							fetchpriority="high"
 							decoding="async"
 							style={{ maxWidth: "100%", height: "auto" }}
 						/>

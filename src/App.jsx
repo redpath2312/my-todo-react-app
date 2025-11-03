@@ -24,6 +24,7 @@ function App({
 	clearDoneCardsInDB,
 	deleteAllCardsInDB,
 	isAdding,
+	cardsReady,
 }) {
 	const { userState, user } = useAuth();
 	const isAuthDebugPanelEnabled =
@@ -51,6 +52,7 @@ function App({
 									clearDoneCardsInDB={clearDoneCardsInDB}
 									deleteAllCardsInDB={deleteAllCardsInDB}
 									isAdding={isAdding}
+									cardsReady={cardsReady}
 								/>
 							) : (
 								<Navigate to="/login" replace />
@@ -94,6 +96,7 @@ function App({
 									clearDoneCardsInDB={clearDoneCardsInDB}
 									deleteAllCardsInDB={deleteAllCardsInDB}
 									isAdding={isAdding}
+									cardsReady={cardsReady}
 								/>
 							</GuestGate>
 							// )

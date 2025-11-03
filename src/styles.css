@@ -471,7 +471,7 @@ textarea {
 /* ===== DASHBOARD COMPONENTS ===== */
 
 .dashboard-top,
-.dashboard-swimlanes {
+.dashboard-bottom {
 	padding-block: var(--sp-4);
 	overflow: clip; /* stops inner shadows peeking */
 	min-width: 0; /* guard against overflow */
@@ -490,7 +490,8 @@ textarea {
 
 /* Constrain *direct children* to a page max and center them */
 .dashboard-top > *,
-.dashboard-swimlanes > * {
+.dashboard-swimlanes > *,
+.dashboard-bottom > * {
 	min-width: 0;
 	grid-column: content;
 }
@@ -568,8 +569,17 @@ textarea {
 	min-width: 360px; /* Wider minimum for the draft card container */
 }
 
-.panel--draft .h2-heading {
+.panel--draft .h2-heading,
+.dashboard-bottom .h2-heading {
 	margin-bottom: 20px;
+}
+
+.dashboard-bottom {
+	text-align: center;
+	padding: 20px 0 30px 0;
+}
+.your-tasks {
+	background: var(--bg-container);
 }
 /* ========== SUMMARY ========== */
 
@@ -698,25 +708,6 @@ textarea {
 	color: var(--text-secondary);
 }
 
-/* .login-form .input i {
-	color: var(--text-secondary);
-	position: absolute;
-}
-
-.login-form .input i:not(.eye-icon) {
-	left: 10px;
-}
-
-.login-form .input i.eye-icon {
-	cursor: pointer;
-	right: 10px;
-	display: none;
-}
-
-.login-form .input .input-field:valid ~ i.eye-icon {
-	display: block;
-} */
-
 .input {
 	position: relative;
 	margin-bottom: 12px;
@@ -733,16 +724,13 @@ textarea {
 	box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.12);
 }
 
-/* .forgotpwd-form i {
-	padding-left: 8px;
-} */
-
 /* confirm dialog focus ring (scoped so it doesn't affect other buttons) */
 .confirm-dialog .btn-cancel:focus,
 .confirm-dialog .btn-cancel:focus-visible {
 	outline: 2px solid var(--primary-main);
 	outline-offset: 3px;
 }
+
 /* ========== SOCIAL LOGIN + REG ========== */
 @layer components {
 	.social-login,
@@ -1096,6 +1084,12 @@ svg {
 	}
 }
 
+/* SKELETON Base: show only the first skeleton card */
+.skel-item--2,
+.skel-item--3 {
+	display: none;
+}
+
 /* Tablet */
 
 @media (max-width: 900px) {
@@ -1107,6 +1101,13 @@ svg {
 }
 
 /* Medium screens */
+
+/* SKELETON ≥880px: show the 2nd card too */
+@media (min-width: 880px) {
+	.skel-item--2 {
+		display: block;
+	}
+}
 
 @media (min-width: 1024px) {
 	.band-inner,
@@ -1128,11 +1129,20 @@ svg {
 }
 
 /* Large screens */
+
+/* SKELETON ≥1238px: show the 3rd card as well */
+@media (min-width: 1238px) {
+	.skel-item--3 {
+		display: block;
+	}
+}
+
 @media (min-width: 1067px) {
 	.cards-container {
 		justify-content: start;
 	}
 }
+
 /* nudge paddings/gaps down a touch ≥1440px so 5 cards fit cleanly - colour band around card container, and padding either side of card rows */
 @media (min-width: 1440px) {
 	#high-priority-section,
@@ -1146,6 +1156,25 @@ svg {
 		padding-inline: 8px; /* was 12 */
 	}
 }
+
+/* show only the 1st block by default */
+.skel-2,
+.skel-3 {
+	display: none;
+} /* ~1 card */
+/* ≥880px: show 2nd */
+@media (min-width: 880px) {
+	.skel-2 {
+		display: block;
+	}
+}
+/* ≥1238px: show 3rd */
+@media (min-width: 1238px) {
+	.skel-3 {
+		display: block;
+	}
+}
+
 /* ===== ACCESSIBILITY & MOTION ===== */
 
 /* accessibility: respect reduced motion */
@@ -1166,6 +1195,42 @@ svg {
 	transition-property: color, background-color, opacity, transform, box-shadow,
 		border-color;
 }
+
+/* shimmer */
+.skel-block {
+	position: relative;
+	overflow: hidden;
+	border-radius: 0.75rem;
+	background-color: var(--bg-paper);
+}
+
+/* Subtle shimmer overlay based on your light/dark themes */
+.shimmer {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		90deg,
+		var(--bg-container) 0%,
+		var(--bg-hovered) 50%,
+		var(--bg-container) 100%
+	);
+	background-size: 200% 100%;
+	transform: translateX(-100%);
+	animation: shimmer 2s ease-in-out infinite;
+	opacity: 0.45; /* softer overall */
+	pointer-events: none;
+}
+@keyframes shimmer {
+	100% {
+		transform: translateX(100%);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.shimmer {
+		animation: none;
+	}
+}
+
 /* Temporarily add borders if debug needed for widths  */
 /* .dashboard-swimlanes {
 	border: 2px solid red !important;

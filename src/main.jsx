@@ -4,7 +4,7 @@ import { useAuth } from "./AuthContext";
 // import { db } from "./firebaseconfig.js";
 import { getDbClient, fs } from "./firebaseDbClient.js";
 import { useAlert } from "./ErrorContext.jsx";
-import { error as logError } from "./utils/logger";
+import { devDebug, error as logError } from "./utils/logger";
 import { useUI } from "./UIContext.jsx";
 
 import { ThemeModeProvider } from "./theme/ThemeModeContext.jsx";
@@ -13,6 +13,7 @@ import { ThemeModeProvider } from "./theme/ThemeModeContext.jsx";
 
 function Main() {
 	const [cards, setCards] = useState([]);
+	const [cardsReady, setCardsReady] = useState(false); // ← NEW
 	const [isAdding, setIsAdding] = useState(false);
 	const { addAlert, addThrottledAlert } = useAlert();
 	const addAlertRef = useRef(addAlert);
@@ -27,8 +28,8 @@ function Main() {
 	const transitionRef = useRef(transitionState);
 	const getIdTokenRef = useRef(user?.getIdToken?.bind(user) || null);
 	const unsubRef = useRef(null); // snapshot unsubscribe
-
 	const subVersionRef = useRef(0);
+	const firstSnapSeenForVersionRef = useRef(0); // ← NEW
 
 	// Keep refs in sync with latest props/state every render
 	userStateRef.current = userState;
@@ -40,6 +41,11 @@ function Main() {
 	useEffect(() => {
 		addAlertRef.current = addAlert;
 	}, [addAlert]);
+
+	// Reset "ready" when auth identity changes
+	useEffect(() => {
+		setCardsReady(false);
+	}, [userState, uid]);
 
 	useEffect(() => {
 		(async () => {
@@ -143,6 +149,8 @@ function Main() {
 	useEffect(() => {
 		// bump version so prior callbacks become no-ops
 		const myVersion = ++subVersionRef.current;
+		firstSnapSeenForVersionRef.current = 0; // ← NEW: mark no snap yet
+
 		// cleanup prior listener
 		if (unsubRef.current) {
 			unsubRef.current();
@@ -181,6 +189,11 @@ function Main() {
 						if (snap.metadata.hasPendingWrites) return;
 
 						setCards(snap.exists() ? snap.data().cards || [] : []);
+						// ← NEW: flip ready exactly once per subscription
+						if (firstSnapSeenForVersionRef.current !== myVersion) {
+							firstSnapSeenForVersionRef.current = myVersion;
+							setCardsReady(true);
+						}
 					},
 					(err) => {
 						const code = err?.code || "";
@@ -231,6 +244,7 @@ function Main() {
 	// 		import.meta.env.VITE_USE_DB_EMULATOR
 	// 	}`
 	// );
+	devDebug("Cards ready: ", cardsReady);
 
 	return (
 		// <StrictMode>
@@ -244,6 +258,7 @@ function Main() {
 				clearDoneCardsInDB={handleDBClearDone}
 				deleteAllCardsInDB={handleDBDeleteAll}
 				isAdding={isAdding}
+				cardsReady={cardsReady}
 			/>
 		</ThemeModeProvider>
 	);

@@ -13,8 +13,8 @@ import Actions from "./Components/Actions";
 import ConfirmDialog from "./Components/ConfirmDialog";
 import AppMeta from "./Components/AppMeta";
 import React from "react";
-import { info } from "./utils/logger";
-
+import { devDebug, info } from "./utils/logger";
+import TasksSkeleton from "./Components/TasksSkeleton";
 const Dashboard = ({
 	dbCards,
 	addCardToDB,
@@ -23,13 +23,16 @@ const Dashboard = ({
 	clearDoneCardsInDB,
 	deleteAllCardsInDB,
 	isAdding,
+	cardsReady,
 }) => {
 	const [localCards, setLocalCards] = useState([]);
 	const { userState } = useAuth();
 	const { editingLocked, editingLockRef } = useUI();
 	const [isTipsHidden, setTipsHidden] = useState(false);
 	const [confirmOpen, setConfirmOpen] = useState(false);
-
+	const showSkeleton = userState === "loggedIn" && cardsReady === false;
+	// for easy testing
+	// const showSkeleton = true;
 	React.useEffect(() => {
 		if (!import.meta.env.DEV || !("PerformanceObserver" in window)) return;
 
@@ -230,6 +233,8 @@ const Dashboard = ({
 		onFlagToggle: handleFlagToggleChange,
 	};
 
+	devDebug("Show Skeleton: ", showSkeleton);
+	devDebug("Cards Ready (Dashboard): ", cardsReady);
 	return (
 		<>
 			<AppMeta
@@ -290,47 +295,62 @@ const Dashboard = ({
 							</div>
 						</div>
 
-						{cardsTotal > 0 && (
-							<div className="dashboard-swimlanes">
-								<div className="band-inner">
-									<Swimlane
-										title="High Priority Tasks"
-										cards={highPriorityCards}
-										hidden={highPriorityHidden}
-										containerClass="cards-container"
-										headingID="high-priority-section"
-										{...commonSwimlaneProps}
-									/>
+						{/* === YOUR TASKS SECTION (new wrapper always present) === */}
+						<section className="dashboard-bottom">
+							<div className="band-inner">
+								<h2 className="h2-heading">Your Tasks</h2>
+								{showSkeleton ? (
+									<TasksSkeleton heightClass="h-28 md:h-32" />
+								) : (cardsReady === true || userState === "guest") &&
+								  cardsTotal > 0 ? (
+									<div className="dashboard-swimlanes">
+										<Swimlane
+											title="High Priority Tasks"
+											cards={highPriorityCards}
+											hidden={highPriorityHidden}
+											containerClass="cards-container"
+											headingID="high-priority-section"
+											{...commonSwimlaneProps}
+										/>
 
-									<Swimlane
-										title="Dash Tasks"
-										cards={dashTaskCards}
-										hidden={dashTasksHidden}
-										containerClass="cards-container"
-										headingID="dash-tasks-section"
-										{...commonSwimlaneProps}
-									/>
+										<Swimlane
+											title="Dash Tasks"
+											cards={dashTaskCards}
+											hidden={dashTasksHidden}
+											containerClass="cards-container"
+											headingID="dash-tasks-section"
+											{...commonSwimlaneProps}
+										/>
 
-									<Swimlane
-										title="All Other Tasks"
-										cards={allOtherCards}
-										hidden={allOtherCardsHidden}
-										containerClass="cards-container"
-										headingID="all-other-tasks-section"
-										{...commonSwimlaneProps}
-									/>
+										<Swimlane
+											title="All Other Tasks"
+											cards={allOtherCards}
+											hidden={allOtherCardsHidden}
+											containerClass="cards-container"
+											headingID="all-other-tasks-section"
+											{...commonSwimlaneProps}
+										/>
 
-									<Swimlane
-										title="Done Tasks"
-										cards={doneCards}
-										hidden={doneCardsHidden}
-										containerClass="cards-container"
-										headingID="done-tasks-section"
-										{...commonSwimlaneProps}
-									/>
-								</div>
+										<Swimlane
+											title="Done Tasks"
+											cards={doneCards}
+											hidden={doneCardsHidden}
+											containerClass="cards-container"
+											headingID="done-tasks-section"
+											{...commonSwimlaneProps}
+										/>
+									</div>
+								) : (cardsReady === true || userState === "guest") &&
+								  cardsTotal === 0 ? (
+									<div className="widget flex items-center justify-center min-h-[140px]">
+										<p>
+											No tasks yet - Create in panel above to start managing
+											them here
+										</p>
+									</div>
+								) : null}
 							</div>
-						)}
+						</section>
 					</div>
 				</div>
 

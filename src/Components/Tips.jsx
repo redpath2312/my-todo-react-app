@@ -38,6 +38,9 @@ const Tips = () => {
 						<li>
 							Click <DeleteForeverIcon /> to delete task
 						</li>
+						<li>
+							Tip - Aim for less huge tasks and split into more Dash tasks
+						</li>
 					</ul>
 				</div>
 				<div className="panel-inner">
