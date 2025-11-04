@@ -1,20 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>My To Do List</title>
+		<title>DashTasker</title>
+		<!-- fallback only; Helmet will overwrite -->
+		<meta
+			name="description"
+			content="Create, prioritize, and blitz through tasks with DashTasker. Guest mode to take a look or sign-in with Email/Google to start managing your tasks now"
+		/>
+		<!-- Canonical (safe to include even if you noindex) -->
+		<link rel="canonical" href="https://dash-tasker-prod.web.app/" />
 		<meta charset="UTF-8" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
-			rel="stylesheet"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-		/>
-		<link rel="stylesheet" href="/src/styles.css" />
+		<meta name="robots" content="noindex,nofollow" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="preconnect" href="https://www.googleapis.com" />
+		<link rel="dns-prefetch" href="https://www.googleapis.com" />
+		<link rel="stylesheet" href="/src/styles.css" />
+
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/images/dashtasker-logo-initial-small.png"
+		/>
+		<link rel="icon" href="/images/favicon.ico" sizes="any" />
+		<link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+		<link rel="manifest" href="/site.webmanifest" />
+		<!-- Optional: add when you have a true vector export -->
+		<!-- <link rel="icon" href="/favicon.svg" type="image/svg+xml" /> -->
+		<link
+			rel="preload"
+			as="image"
+			href="/images/DashTaskPNGHeroLarge.webp"
+			fetchpriority="high"
+		/>
 	</head>
 	<body>
 		<div id="root"></div>

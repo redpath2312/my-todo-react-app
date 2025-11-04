@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -12,12 +12,11 @@ function DraftCard(props) {
 	const [createCardText, setCreateCardText] = useState("");
 	const [highPriorityDraft, setHighPriorityDraft] = useState(false);
 	const [dashTaskDraft, setdashTaskDraft] = useState(false);
-	const { isInteractionLocked, setIsInteractionLocked } = useUI();
+
+	const { editingLocked } = useUI();
+	const lockedByOthers = editingLocked; // Draft never owns the lock
 
 	const [isHovered, setHovered] = useState(false);
-	useEffect(() => {
-		console.log("DraftCard re-rendered with lock:", isInteractionLocked);
-	}, [isInteractionLocked]);
 
 	function handleChange(event) {
 		setCreateCardText(event.target.value);
@@ -47,17 +46,9 @@ function DraftCard(props) {
 		setdashTaskDraft(false);
 	}
 
-	// let theme = createTheme({
-	// 	palette: {
-	// 		create: {
-	// 			main: "#c7a67b",
-	// 		},
-	// 	},
-	// });
-
 	return (
 		<div
-			className="panel-inner"
+			className="panel-inner panel--draft"
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 		>
@@ -70,23 +61,21 @@ function DraftCard(props) {
 					<div className="cards-top"></div>
 					<div>
 						<textarea
-							maxLength={40}
+							maxLength={50}
 							onChange={handleChange}
 							name="cardtext"
 							rows="2"
 							cols="30"
-							placeholder="Write new task here"
+							placeholder="Add new task here"
 							value={createCardText}
+							readOnly={lockedByOthers} // locked only when others are editing
+							aria-readonly={lockedByOthers}
 						></textarea>
 					</div>
 					<div className="draft-card-bottom">
-						{/* <ThemeProvider theme={theme}> */}
 						<div>
 							<Tooltip title="Toggle High Priority" placement="bottom">
-								<IconButton
-									// disabled={editingLockRef.current}
-									onClick={() => handleFlagClick("high-priority")}
-								>
+								<IconButton onClick={() => handleFlagClick("high-priority")}>
 									<PriorityHighIcon
 										value={highPriorityDraft}
 										fontSize="medium"
@@ -97,10 +86,7 @@ function DraftCard(props) {
 						</div>
 						<div>
 							<Tooltip title="Toggle Dash Task" placement="bottom">
-								<IconButton
-									// disabled={editingLockRef.current}
-									onClick={() => handleFlagClick("dash-task")}
-								>
+								<IconButton onClick={() => handleFlagClick("dash-task")}>
 									<ElectricBoltIcon
 										value={dashTaskDraft}
 										fontSize="medium"
@@ -113,10 +99,10 @@ function DraftCard(props) {
 							<Tooltip title="Add task" placement="bottom">
 								{/* disabled={props.isAdding} , but pack in icon button directly below when not testing the spam add */}
 								<IconButton
-									disabled={props.isAdding || isInteractionLocked}
+									disabled={props.isAdding || editingLocked}
 									type="submit"
 								>
-									{props.isAdding || isInteractionLocked ? (
+									{props.isAdding ? (
 										<CircularProgress size={24} />
 									) : (
 										<NoteAddIcon color="secondary" />
@@ -124,7 +110,6 @@ function DraftCard(props) {
 								</IconButton>
 							</Tooltip>
 						</div>
-						{/* </ThemeProvider> */}
 					</div>
 				</div>
 			</form>

@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "to-do-list-bd2c5"
-  }
+    "default": "to-do-list-bd2c5",
+    "dash-dev": "to-do-list-bd2c5",
+    "dash-prod": "dash-tasker-prod"
+  },
+  "targets": {},
+  "etags": {}
 }

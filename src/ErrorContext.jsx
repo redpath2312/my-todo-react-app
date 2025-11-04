@@ -5,18 +5,6 @@ const ErrorContext = createContext();
 export const ErrorProvider = ({ children }) => {
 	const [alerts, setAlerts] = useState([]);
 
-	// const addAlert = (msg, type = "error", timeout = null) => {
-	// 	setAlerts((prev) => {
-	// 		const updated = [...prev, { id: Date.now(), msg, type }];
-	// 		return updated.slice(-5); //Keep last 5
-	// 	});
-	// 	if (timeout) {
-	// 		setTimeout(() => {
-	// 			clearAlert(id);
-	// 		}, timeout);
-	// 	}
-	// };
-
 	const addAlert = (msg, type = "error", timeout = 3000) => {
 		const id = crypto.randomUUID();
 		setAlerts((prev) => {
@@ -62,4 +50,5 @@ export const ErrorProvider = ({ children }) => {
 	);
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAlert = () => useContext(ErrorContext);

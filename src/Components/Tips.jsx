@@ -14,7 +14,7 @@ const Tips = () => {
 				<div className="panel-inner">
 					<h3 className="h3-heading">1. Create</h3>
 					<ul>
-						<li>Type task in "Create" box</li>
+						<li>Type task in &quot;Create&quot; box</li>
 						<li>
 							Mark <PriorityHighIcon color="urgent" /> if High Priority
 						</li>
@@ -38,6 +38,9 @@ const Tips = () => {
 						<li>
 							Click <DeleteForeverIcon /> to delete task
 						</li>
+						<li>
+							Tip - Aim for less huge tasks and split into more Dash tasks
+						</li>
 					</ul>
 				</div>
 				<div className="panel-inner">
@@ -51,18 +54,19 @@ const Tips = () => {
 						<li>
 							{" "}
 							To clear all done tasks click{" "}
-							<PublishedWithChangesIcon color="success" /> in "Actions" Panel
+							<PublishedWithChangesIcon color="success" /> in
+							&quot;Actions&quot; Panel
 						</li>
 						<li>
 							To start fresh board, click <DeleteSweepIcon color="delete" /> in
-							"Actions" Panel
+							&quot;Actions&quot; Panel
 						</li>
 					</ul>
 				</div>
 			</div>
 			<h3 className="h3-heading">
-				Note - Guest Mode doesn't save your tasks, login first if want to save
-				tasks.{" "}
+				Note - Guest Mode doesn&apos;t save your tasks, login first if want to
+				save tasks.{" "}
 			</h3>
 		</div>
 	);

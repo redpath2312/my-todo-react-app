@@ -2,11 +2,17 @@ import Footer from "./Components/Footer";
 
 import { Link } from "react-router-dom";
 import ForgotPwdForm from "./Components/ForgotPwdForm";
+import ErrorDisplay from "./Components/ErrorDisplay";
+import AppMeta from "./Components/AppMeta";
 
 const ForgotPwd = () => {
 	return (
-		<div className="forgotpwd-page-full">
-			<div className="forgotpwd-page">
+		<>
+			<AppMeta
+				baseTitle="DashTasker - Forgot Password"
+				baseDescription="Reset your DashTasker password to get back to managing your tasks"
+			/>
+			<div className="forgotpwd-page-full">
 				<div className="forgotpwd-section">
 					<div className="forgotpwd-container">
 						<h2 className="form-title">Forgot Password</h2>
@@ -19,11 +25,12 @@ const ForgotPwd = () => {
 						</div>
 					</div>
 				</div>
+				<ErrorDisplay />
+				<div>
+					<Footer />
+				</div>
 			</div>
-			<div>
-				<Footer />
-			</div>
-		</div>
+		</>
 	);
 };
 export default ForgotPwd;

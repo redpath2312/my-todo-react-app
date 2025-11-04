@@ -26,5 +26,16 @@ dist-ssr
 # Unused
 src/assets/Old
 
-#Environment Files
+# dotenv files (ignore everywhere)
+.env
+.env.*
 *.env
+*.env.*
+**/.env
+**/.env.*
+**/*.env
+**/*.env.*
+
+# keep templates
+!.env.example
+!.env.sample

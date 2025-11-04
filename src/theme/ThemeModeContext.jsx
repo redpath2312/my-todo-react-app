@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, useEffect, useState } from "react";
 // import { ThemeProvider } from "@mui/material/styles";
 import { ThemeProvider, CssBaseline, GlobalStyles } from "@mui/material";
 import { createAppTheme } from "./theme"; // <-- your existing theme.js
+import {error as logError} from "../utils/logger";
 
 // 1. Create a Context object so we can share theme mode state (light/dark)
 //    across the entire app without prop drilling.
@@ -11,7 +12,9 @@ function readInitialMode() {
 	try {
 		const saved = localStorage.getItem(KEY);
 		if (saved === "light" || saved === "dark") return saved; // authoritative
-	} catch {}
+	} catch (err) {
+		logError(err);
+	}
 	// only if nothing saved, use system
 	const prefersDark =
 		typeof window !== "undefined" &&
@@ -31,7 +34,9 @@ export function ThemeModeProvider({ children }) {
 			if (saved === "light" || saved === "dark") {
 				if (saved !== mode) setMode(saved);
 			}
-		} catch {}
+		} catch (err) {
+			logError(err);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -135,6 +140,12 @@ export function ThemeModeProvider({ children }) {
 									? "rgba(255,255,255,0.90)" // near-white on dark
 									: "rgba(0,0,0,0.45)", // strong gray on light
 							//Spacings -guters, paddings
+							"--page-max": "2520px", // page max width -1920 is nice for 5 cards
+							"--narrow-max": "860px", // text/mini-dashboard column
+							"--gutter-xs": "10px",
+							"--gutter-sm": "12px",
+							"--gutter-md": "16px",
+							"--gutter-lg": "24px",
 							"--sp-1": "4px",
 							"--sp-2": "8px",
 							"--sp-3": "12px",
@@ -143,8 +154,9 @@ export function ThemeModeProvider({ children }) {
 							"--sp-6": "24px",
 							"--sp-8": "32px",
 							"--sp-10": "40px",
-							"--gutter-x": "var(--sp-5)",
-							"--gutter-y": "var(--sp-5)",
+							// removed so can have good default in styles and responsiveness
+							// "--gutter-x": "var(--gutter-sm)",
+							"--gutter-y": "var(--gutter-sm)",
 							"--panel-pad": "var(--sp-5)",
 							"--panel-gap": "var(--sp-4)",
 						},
@@ -159,6 +171,8 @@ export function ThemeModeProvider({ children }) {
 // 3. Custom hook so any component can easily use theme mode state.
 //    Example usage:
 //      const { mode, toggle } = useThemeMode();
+
+// eslint-disable-next-line react-refresh/only-export-components
 export function useThemeMode() {
 	return useContext(ThemeModeContext);
 }

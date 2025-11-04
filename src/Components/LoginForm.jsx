@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../AuthContext";
 import { Link } from "react-router-dom";
 import PrimaryButton from "./Buttons/PrimaryButton";
+import { IconButton } from "@mui/material";
+import MailOutlineRounded from "@mui/icons-material/MailOutlineRounded";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import VisibilityRounded from "@mui/icons-material/VisibilityRounded";
+import VisibilityOffRounded from "@mui/icons-material/VisibilityOffRounded";
+import { error as logError } from "../utils/logger";
+import { useAlert } from "../ErrorContext";
+
 const LoginForm = () => {
 	const { handleEmailLogin } = useAuth();
 	const [isPasswordVisible, setPasswordVisible] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const { addAlert } = useAlert();
 
 	const onEyeIconClick = () => {
 		setPasswordVisible(!isPasswordVisible);
@@ -14,54 +23,73 @@ const LoginForm = () => {
 
 	const handleEmailLoginSubmit = async (e) => {
 		e.preventDefault();
-		console.log("Trying to log in with", email, password);
 
 		try {
 			await handleEmailLogin({ email, password });
-		} catch (error) {
-			console.error("login failed", error.message);
+		} catch (err) {
+			logError("login failed", err.message);
+			addAlert("login failed", err.message);
 		}
 	};
 
 	return (
 		<form action="#" className="login-form" onSubmit={handleEmailLoginSubmit}>
-			<div className="input">
+			{/* EMAIL */}
+			<div className="input relative">
 				<input
 					type="email"
 					name="email"
+					autoComplete="email"
 					placeholder="Email address"
-					className="input-field"
+					className="input-field pl-10"
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
 					required
 				/>
-				<i className="material-symbols-rounded">mail</i>
+
+				<MailOutlineRounded
+					fontSize="small"
+					aria-hidden="true"
+					className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-500"
+				/>
 			</div>
-			<div className="input">
+
+			{/* PASSWORD */}
+			<div className="input relative">
 				<input
 					type={isPasswordVisible ? "text" : "password"}
 					name="password"
+					autoComplete="current-password"
 					placeholder="Password"
-					className="input-field"
+					className="input-field pl-10 pr-10"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
 					required
 				/>
-				<i className="material-symbols-rounded">lock</i>
-				<i
-					className="material-symbols-rounded eye-icon"
+
+				<LockOutlinedIcon
+					fontSize="small"
+					aria-hidden="true"
+					className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none  text-neutral-500"
+				/>
+				<IconButton
 					onClick={onEyeIconClick}
+					aria-label={isPasswordVisible ? "Hide password" : "Show password"}
+					size="small"
+					disableRipple
+					className="!absolute !right-2 !top-1/2 !-translate-y-1/2 !p-1 !text-neutral-400 hover:!bg-transparent focus:!outline-none"
 				>
-					{isPasswordVisible ? "visibility" : "visibility_off"}
-				</i>
+					{isPasswordVisible ? (
+						<VisibilityRounded fontSize="small" className="!text-inherit" />
+					) : (
+						<VisibilityOffRounded fontSize="small" className="!text-inherit" />
+					)}
+				</IconButton>
 			</div>
 			<div className="small-text">
 				<Link to="/forgotpwd">Forgot Password?</Link>
 			</div>
 
-			{/* <a className="small-text" href="#">
-				Forgot Password?
-			</a> */}
 			<PrimaryButton type="submit">Log In</PrimaryButton>
 		</form>
 	);

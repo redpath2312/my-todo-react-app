@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../AuthContext";
 import { useAlert } from "../ErrorContext";
 import ErrorDisplay from "./ErrorDisplay";
 import PrimaryButton from "./Buttons/PrimaryButton";
+import { error as logError } from "../utils/logger";
 
 const RegisterForm = () => {
 	const { handleRegister } = useAuth();
@@ -14,15 +15,14 @@ const RegisterForm = () => {
 
 	const handleRegisterClick = async (e) => {
 		e.preventDefault();
-		console.log("Trying to register with", email, password);
-
 		//Check for confirm password
 
 		if (password == confirmPassword) {
 			try {
 				await handleRegister({ email, password, displayName });
-			} catch (error) {
-				console.log("Error Registering", error.message);
+			} catch (err) {
+				logError("Error Registering", err.message);
+				addAlert("Error Registering", err.message);
 			}
 		} else {
 			addAlert("Passwords don't match", "warn", 4000);
@@ -36,6 +36,7 @@ const RegisterForm = () => {
 					type="text"
 					name="displayName"
 					placeholder="Display Name"
+					autoComplete="name"
 					className="input-field"
 					value={displayName}
 					onChange={(e) => setDisplayName(e.target.value)}
@@ -47,6 +48,7 @@ const RegisterForm = () => {
 					type="email"
 					name="email"
 					placeholder="Email address"
+					autoComplete="email"
 					className="input-field"
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
@@ -58,6 +60,7 @@ const RegisterForm = () => {
 					type="password"
 					name="password"
 					placeholder="Password"
+					autoComplete="new-password"
 					className="input-field"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
