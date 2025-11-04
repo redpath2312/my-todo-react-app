@@ -8,7 +8,6 @@ import { ErrorProvider } from "./ErrorContext";
 import { UIProvider } from "./UIContext";
 
 const root = createRoot(document.getElementById("root"));
-//Change between Login and Main
 root.render(
 	<HelmetProvider>
 		<UIProvider>
