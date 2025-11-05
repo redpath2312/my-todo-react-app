@@ -235,15 +235,15 @@ function Main() {
 		//  no missing-deps warning now
 	}, [userState, uid]);
 
-	// console.info(
-	// 	`[DashTasker] MODE=${import.meta.env.MODE} | PROD=${
-	// 		import.meta.env.PROD
-	// 	} | ENV=${import.meta.env.VITE_ENV_NAME} | PROJECT=${
-	// 		import.meta.env.VITE_FIREBASE_PROJECT_ID
-	// 	} | EMU_AUTH=${import.meta.env.VITE_USE_AUTH_EMULATOR} | EMU_DB=${
-	// 		import.meta.env.VITE_USE_DB_EMULATOR
-	// 	}`
-	// );
+	devDebug(
+		`[DashTasker] MODE=${import.meta.env.MODE} | PROD=${
+			import.meta.env.PROD
+		} | ENV=${import.meta.env.VITE_ENV_NAME} | PROJECT=${
+			import.meta.env.VITE_FIREBASE_PROJECT_ID
+		} | EMU_AUTH=${import.meta.env.VITE_USE_AUTH_EMULATOR} | EMU_DB=${
+			import.meta.env.VITE_USE_DB_EMULATOR
+		}`
+	);
 	devDebug("Cards ready: ", cardsReady);
 
 	return (

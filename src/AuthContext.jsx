@@ -9,10 +9,13 @@ import {
 
 import { useNavigate, useLocation } from "react-router-dom";
 import { getAuthClient } from "./firebaseAuthClient";
+import { ensureDisplayName } from "./services/firestoreUser";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+	// const profileUpsertedForRef = useRef(null);
+	const pendingNameRef = useRef(null);
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
 	const pathRef = useRef(pathname);
@@ -138,6 +141,12 @@ export const AuthProvider = ({ children }) => {
 					if (pathRef.current === "/login") {
 						navigate("/dashboard", { replace: true });
 					}
+
+					const { getDbClient } = await import("./firebaseDbClient.js"); //lazy import
+					const db = await getDbClient();
+					ensureDisplayName(db, u, pendingNameRef.current).catch(console.error);
+					pendingNameRef.current = null; // consume it once
+
 					return;
 				}
 
@@ -243,9 +252,8 @@ export const AuthProvider = ({ children }) => {
 		if (authInFlightRef.current) return; //ignore double clicks
 		startAuthLock();
 		const auth = await getAuthClient();
-		const { createUserWithEmailAndPassword, updateProfile } = await import(
-			"firebase/auth"
-		);
+		const { createUserWithEmailAndPassword, updateProfile, reload } =
+			await import("firebase/auth");
 		try {
 			const registerEmail = creds.email;
 			const registerPassword = creds.password;
@@ -256,9 +264,18 @@ export const AuthProvider = ({ children }) => {
 				registerEmail,
 				registerPassword
 			);
-			await updateProfile(userCredential.user, {
-				displayName: registerDisplayName,
-			});
+
+			// never allow literal "null"
+			let cleanName = (registerDisplayName || "").trim();
+			if (cleanName.toLowerCase() === "null") cleanName = "";
+
+			if (cleanName) {
+				await updateProfile(userCredential.user, { displayName: cleanName });
+				await reload(userCredential.user); // make the name visible immediately
+			}
+
+			pendingNameRef.current = cleanName || null; // pass through to Firestore on first write
+
 			// Observer will promote; post-setup can be run there (or fire-and-forget here if you prefer)
 		} catch (err) {
 			const code = err?.code || "";

@@ -6,6 +6,7 @@
 //   - both emulators
 // Never throws if flags are mixed — just logs.
 
+
 let flags = (typeof window !== "undefined" && window.__EMU_FLAGS__) || {
 	auth: false,
 	db: false,

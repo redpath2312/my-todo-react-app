@@ -31,7 +31,8 @@
 		"channels:list:dev": "firebase hosting:channel:list --project dash-dev",
 		"channels:list:prod": "firebase hosting:channel:list --project dash-prod",
 		"open:dev:preview": "firebase hosting:channel:open preview-dev --project dash-dev",
-		"open:prod:preview": "firebase hosting:channel:open prod-preview --project dash-prod"
+		"open:prod:preview": "firebase hosting:channel:open prod-preview --project dash-prod",
+		"emu:dev": "firebase emulators:start --only \"auth,firestore,hosting\" --project dash-dev"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.13.3",

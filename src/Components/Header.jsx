@@ -14,7 +14,9 @@ function Header() {
 	// Setting name if logged in and user exists to be the user's display name, but if no display name is provided then use "User". If conditions not met then user info will be blank "".
 
 	const name =
-		userState === "loggedIn" && user ? user.displayName || "User" : "";
+		userState === "loggedIn" && user
+			? user.displayName || (user.email ? user.email.split("@")[0] : "")
+			: "";
 	const handleLogOutSubmit = async (e) => {
 		e.preventDefault();
 		try {

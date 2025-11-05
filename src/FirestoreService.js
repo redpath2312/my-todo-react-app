@@ -51,13 +51,17 @@ export async function createUserDoc(user) {
 	if (!userSnap.exists()) {
 		try {
 			info("SetDoc attempting");
-			await setDoc(userRef, {
-				displayName: user.displayName || "Anonymous",
-				email: user.email,
-				maxID: 0,
-				createdAt: serverTimestamp(),
-				cards: [],
-			});
+			await setDoc(
+				userRef,
+				{
+					displayName: user.displayName || "null",
+					email: user.email,
+					maxID: 0,
+					createdAt: serverTimestamp(),
+					cards: [],
+				},
+				{ merge: true }
+			); // safe if something wrote a partial doc earlier
 		} catch (err) {
 			const code = err?.code || "";
 			if (code === "permission-denied" || code === "unauthenticated") return;
