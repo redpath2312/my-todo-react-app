@@ -21,6 +21,7 @@ export default function AppMeta({
 	baseDescription,
 	indexable = false,
 	canonical,
+	preloadImages = [],
 }) {
 	const rawTitle = baseTitle ?? DEFAULT_BASE_TITLE;
 	const rawDesc = baseDescription ?? DEFAULT_BASE_DESC;
@@ -38,6 +39,10 @@ export default function AppMeta({
 			{isProd && indexable && canonical && (
 				<link rel="canonical" href={canonical} />
 			)}
+			{/* Route-scoped preloads */}
+			{preloadImages.map((href) => (
+				<link key={href} rel="preload" as="image" href={href} />
+			))}
 		</Helmet>
 	);
 }

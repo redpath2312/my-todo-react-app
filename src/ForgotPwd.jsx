@@ -24,6 +24,19 @@ const ForgotPwd = () => {
 							<Link to="/login">Back to Login</Link>
 						</div>
 					</div>
+					<div className="forgotpwd-image">
+						<img
+							src="/images/DashTaskPNGHeroLarge.webp"
+							width="1184"
+							height="864"
+							alt="Dash Tasker Cycle Hero"
+							className="image-hero"
+							loading="eager"
+							fetchpriority="high"
+							decoding="async"
+							style={{ maxWidth: "100%", height: "auto" }}
+						/>
+					</div>
 				</div>
 				<ErrorDisplay />
 				<div>

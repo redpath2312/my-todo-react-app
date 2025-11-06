@@ -18,6 +18,7 @@ const Register = () => {
 			<AppMeta
 				baseTitle="DashTasker - Register"
 				baseDescription="Register for a DashTasker account to start creating and managing tasks."
+				preloadImages={["/images/DashTaskPNGHeroLarge.webp"]}
 			/>
 			<div className="register-page-full">
 				<div className="register-page">
