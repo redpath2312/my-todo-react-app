@@ -18,7 +18,7 @@ const Register = () => {
 			<AppMeta
 				baseTitle="DashTasker - Register"
 				baseDescription="Register for a DashTasker account to start creating and managing tasks."
-				preloadImages={["/images/DashTaskPNGHeroLarge.webp"]}
+				preloadImages={["/images/DashTaskHero1280-99.webp"]}
 			/>
 			<div className="register-page-full">
 				<div className="register-page">
@@ -53,7 +53,11 @@ const Register = () => {
 
 					<div className="image-background">
 						<img
-							src="/images/DashTaskPNGHeroLarge.webp"
+							src="/images/DashTaskHero1280-99.webp"
+							srcSet="/images/DashTaskHero480-98.webp 480w,
+							  /images/DashTaskHero768-98.webp 768w,          
+          						/images/DashTaskHero1280-99.webp 1280w"
+							sizes="(max-width:480px) 440px, (max-width:768px) 720px, 1184px"
 							width="1184"
 							height="864"
 							alt="Dash Tasker Cycle Hero"

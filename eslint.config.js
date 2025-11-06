@@ -74,7 +74,10 @@ export default [
 				{ allowConstantExport: true },
 			],
 
-			"react/no-unknown-property": ["error", { ignore: ["fetchpriority"] }], //was being flagged in the browser console
+			"react/no-unknown-property": [
+				"error",
+				{ ignore: ["fetchpriority", "imagesrcset", "imagesizes", "srcset"] },
+			], //was being flagged in the browser console
 		},
 	},
 

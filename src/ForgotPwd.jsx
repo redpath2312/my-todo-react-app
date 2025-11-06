@@ -26,7 +26,11 @@ const ForgotPwd = () => {
 					</div>
 					<div className="forgotpwd-image">
 						<img
-							src="/images/DashTaskPNGHeroLarge.webp"
+							src="/images/DashTaskHero1280-99.webp"
+							srcSet="/images/DashTaskHero480-98.webp 480w,
+							  /images/DashTaskHero768-98.webp 768w,          
+          						/images/DashTaskHero1280-99.webp 1280w"
+							sizes="(max-width:480px) 440px, (max-width:768px) 720px, 1184px"
 							width="1184"
 							height="864"
 							alt="Dash Tasker Cycle Hero"

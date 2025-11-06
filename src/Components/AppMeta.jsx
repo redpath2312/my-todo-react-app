@@ -22,6 +22,7 @@ export default function AppMeta({
 	indexable = false,
 	canonical,
 	preloadImages = [],
+	preloadResponsive = null,
 }) {
 	const rawTitle = baseTitle ?? DEFAULT_BASE_TITLE;
 	const rawDesc = baseDescription ?? DEFAULT_BASE_DESC;
@@ -39,10 +40,20 @@ export default function AppMeta({
 			{isProd && indexable && canonical && (
 				<link rel="canonical" href={canonical} />
 			)}
-			{/* Route-scoped preloads */}
+			{/* Route-scoped simple preloads */}
 			{preloadImages.map((href) => (
 				<link key={href} rel="preload" as="image" href={href} />
 			))}
+
+			{/* Responsive preloads */}
+			{preloadResponsive?.srcset && preloadResponsive?.sizes && (
+				<link
+					rel="preload"
+					as="image"
+					imagesrcset={preloadResponsive.srcset}
+					imagesizes={preloadResponsive.sizes}
+				/>
+			)}
 		</Helmet>
 	);
 }

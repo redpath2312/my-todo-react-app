@@ -455,7 +455,7 @@ function Card({
 				) : (
 					<form>
 						<textarea
-							maxLength={50}
+							maxLength={60}
 							value={cardText}
 							onInput={handleTextChange}
 							id="card-text"
