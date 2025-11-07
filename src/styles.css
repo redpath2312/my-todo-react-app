@@ -835,14 +835,15 @@ textarea {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-width: 50%;
+	/* min-width: 50%; */
+	width: 100%;
 	background-color: var(--bg-container);
 	position: relative;
 }
 .image-hero {
 	border-radius: 1rem;
 	box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
-	width: 80%;
+	width: 90%;
 	margin: 5px;
 	height: auto;
 }

@@ -49,13 +49,14 @@ const Login = () => {
 				baseTitle="DashTasker — Login"
 				baseDescription="Sign in to manage your Dash Tasks."
 				canonical="https://dash-tasker-prod.web.app/"
-				preloadResponsive={{
-					srcset:
-						"/images/DashTaskHero480-98.webp 480w, " +
-						"/images/DashTaskHero768-98.webp 768w, " +
-						"/images/DashTaskHero1280-99.webp 1280w",
-					sizes: "(max-width:480px) 100vw, (max-width:768px) 100vw, 1184px",
-				}}
+				// Exmample of preloading responsive images
+				// preloadResponsive={{
+				// 	srcset:
+				// 		"/images/DashTaskHero480-98.webp 480w, " +
+				// 		"/images/DashTaskHero768-98.webp 768w, " +
+				// 		"/images/DashTaskHero1280-99.webp 1280w",
+				// 	sizes: "(max-width:480px) 100vw, (max-width:768px) 100vw, 1184px",
+				// }}
 			/>
 			<div className="login-page-full">
 				<div className="login-page">
@@ -90,11 +91,12 @@ const Login = () => {
 
 					<div className="image-background">
 						<img
-							src="/images/DashTaskHero1280-99.webp"
+							src="/images/DashTaskHero1184-99.webp"
 							srcSet="/images/DashTaskHero480-98.webp 480w,
-							  /images/DashTaskHero768-98.webp 768w,          
-          						/images/DashTaskHero1280-99.webp 1280w"
-							sizes="(max-width:480px) 100vw, (max-width:768px) 100vw, 1184px"
+							  /images/DashTaskHero768-98.webp 768w,
+							  /images/DashTaskHero960-99.webp 960w,          
+          					/images/DashTaskHero1184-99.webp 1184w"
+							sizes="(min-width: 901px) 45vw, 90vw"
 							width="1184"
 							height="864"
 							alt="Dash Tasker Cycle Hero"

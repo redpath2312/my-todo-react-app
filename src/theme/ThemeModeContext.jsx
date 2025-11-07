@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, useEffect, useState } from "react";
 // import { ThemeProvider } from "@mui/material/styles";
 import { ThemeProvider, CssBaseline, GlobalStyles } from "@mui/material";
 import { createAppTheme } from "./theme"; // <-- your existing theme.js
-import {error as logError} from "../utils/logger";
+import { error as logError } from "../utils/logger";
 
 // 1. Create a Context object so we can share theme mode state (light/dark)
 //    across the entire app without prop drilling.
