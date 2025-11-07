@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, React } from "react";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import IconButton from "@mui/material/IconButton";
@@ -8,7 +8,7 @@ import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import CircularProgress from "@mui/material/CircularProgress";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import { useUI } from "../UIContext";
-import { formatAgeSince, toJSDate } from "../utils/timeElapsed";
+import { formatAgeSince } from "../utils/timeElapsed";
 import {
 	log,
 	info,
@@ -28,7 +28,7 @@ function Card({
 	onDelete,
 	onTextUpdate,
 	onFlagToggle,
-	createdAt,
+	createdAtMs,
 }) {
 	const { editingLockRef, lockEditing, unlockEditing } = useUI();
 	const [cardText, setCardText] = useState(text);
@@ -61,7 +61,7 @@ function Card({
 
 	const FLAG_WINDOW_MS = 700; // for slow 4G.
 
-	const createdDate = toJSDate(createdAt); // Optional if you want the tooltip date
+	const createdDate = createdAtMs ? new Date(createdAtMs) : null; // Optional if you want the tooltip date
 	const ageLabel = createdDate ? formatAgeSince(createdDate) : ""; // This will re-render on an interval
 
 	// --- helpers ---

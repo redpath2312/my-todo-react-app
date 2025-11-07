@@ -48,3 +48,14 @@ export function formatAgeSince(eventAt, now = new Date()) {
 	const yrs = Math.floor(days / 365);
 	return `>${yrs}yr`;
 }
+export function toMillisSafe(v) {
+	if (v == null) return 0;
+	if (typeof v === "number") return v;
+	if (v instanceof Date) return v.getTime();
+	if (typeof v?.toMillis === "function") return v.toMillis();
+	// Firestore Timestamp-like shape
+	if (typeof v.seconds === "number") {
+		return v.seconds * 1000 + Math.floor((v.nanoseconds || 0) / 1e6);
+	}
+	return Number(v) || 0;
+}

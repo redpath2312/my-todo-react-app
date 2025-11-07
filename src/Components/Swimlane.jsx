@@ -1,6 +1,10 @@
+import { toMillisSafe } from "../utils/timeElapsed";
 import Card from "./Card";
+import React from "react";
 
-const Swimlane = ({
+const MemoCard = React.memo(Card);
+
+const Swimlane = React.memo(function Swimlane({
 	title,
 	cards = [],
 	hidden = true,
@@ -10,7 +14,7 @@ const Swimlane = ({
 	onTextUpdate,
 	onSelect,
 	onFlagToggle,
-}) => {
+}) {
 	if (hidden) return null;
 
 	return (
@@ -19,7 +23,7 @@ const Swimlane = ({
 				<h3>{title}</h3>
 				<div className={containerClass}>
 					{cards.map((card) => (
-						<Card
+						<MemoCard
 							key={card.renderKey}
 							id={card.id}
 							text={card.text}
@@ -30,13 +34,13 @@ const Swimlane = ({
 							onTextUpdate={onTextUpdate}
 							onSelect={onSelect}
 							onFlagToggle={onFlagToggle}
-							createdAt={card.createdAt}
+							createdAtMs={toMillisSafe(card.createdAt)}
 						/>
 					))}
 				</div>
 			</div>
 		</>
 	);
-};
+});
 
 export default Swimlane;
