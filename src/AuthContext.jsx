@@ -144,7 +144,12 @@ export const AuthProvider = ({ children }) => {
 
 					const { getDbClient } = await import("./firebaseDbClient.js"); //lazy import
 					const db = await getDbClient();
-					ensureDisplayName(db, u, pendingNameRef.current).catch(console.error);
+					ensureDisplayName(db, u, pendingNameRef.current).catch((e) => {
+						const code = e?.code || "";
+						if (code === "permission-denied" || code === "unauthenticated")
+							return;
+						console.error(e);
+					});
 					pendingNameRef.current = null; // consume it once
 
 					return;

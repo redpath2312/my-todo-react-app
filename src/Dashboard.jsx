@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo,useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import DraftCard from "./Components/DraftCard";
@@ -81,31 +81,6 @@ const Dashboard = ({
 		},
 		[updateCardById]
 	);
-
-	// const deleteRef = useRef(deleteCard);
-	// const textUpdateRef = useRef(handleTextChange);
-	// const flagUpdateRef = useRef(handleFlagToggleChange);
-
-	// useEffect(() => {
-	// 	deleteRef.current = deleteCard;
-	// }, [deleteCard]);
-	// useEffect(() => {
-	// 	textUpdateRef.current = handleTextChange;
-	// }, [handleTextChange]);
-	// useEffect(() => {
-	// 	flagUpdateRef.current = handleFlagToggleChange;
-	// }, [handleFlagToggleChange]);
-
-	// const onDelete = useCallback((id) => deleteRef.current(id), []);
-	// const onTextUpdate = useCallback(
-	// 	(id, updatedtext) => textUpdateRef.current(id, updatedtext),
-	// 	[]
-	// );
-	// const onFlagToggle = useCallback(
-	// 	(id, flagName, currentFlagValue) =>
-	// 		flagUpdateRef.current(id, flagName, currentFlagValue),
-	// 	[]
-	// );
 
 	React.useEffect(() => {
 		if (!import.meta.env.DEV || !("PerformanceObserver" in window)) return;
@@ -252,70 +227,9 @@ const Dashboard = ({
 		}
 	}
 
-	// function updateCardById(id, patch) {
-	// 	if (userState === "guest") {
-	// 		// 👇 pass a function to setLocalCards; React calls it with the freshest array
-	// 		setLocalCards((prevCards) => {
-	// 			// prevCards is guaranteed current, even if multiple updates were queued
-	// 			const nextCards = prevCards.map((card) => {
-	// 				// For the matching card, merge in the patch (updated fields)
-	// 				if (card.id === id) {
-	// 					// Spread old card first, then patch so patch wins
-	// 					return { ...card, ...patch };
-	// 				}
-	// 				// Leave other cards untouched (keeps their referential identity)
-	// 				return card;
-	// 			});
-
-	// 			// Return the new array; React will render with this value
-	// 			return nextCards;
-	// 		});
-	// 	} else if (userState === "loggedIn") {
-	// 		// Logged-in path (Firestore): do your DB update
-	// 		// You can keep it non-optimistic:
-	// 		return updateCardsInDB(id, patch); //must return
-
-	// 		// Or do an optimistic local update too, then revert on error if you like:
-	// 		// setLocalCards(prev => prev.map(c => c.id === id ? ({...c, ...patch}) : c));
-	// 		// updateCardsInDB(id, patch).catch(() => setLocalCards(prev => /* revert */));
-	// 	}
-	// }
 	function handleTipsHidden() {
 		setTipsHidden(!isTipsHidden);
 	}
-
-	// function deleteCard(id) {
-	// 	if (userState === "loggedIn") {
-	// 		deleteCardInDB(id);
-	// 	} else {
-	// 		const newLocalCardsList = localCards.filter((card) => card.id != id);
-	// 		setLocalCards(newLocalCardsList);
-	// 	}
-	// }
-	// function handleTextChange(id, updatedText) {
-	// 	return updateCardById(id, { text: updatedText });
-	// }
-
-	// function handleFlagToggleChange(id, flagName, currentFlagValue) {
-	// 	return updateCardById(id, { [flagName]: !currentFlagValue });
-	// }
-
-	// const commonSwimlaneProps = {
-	// 	onDelete: deleteCard,
-	// 	onTextUpdate: handleTextChange,
-	// 	onFlagToggle: handleFlagToggleChange,
-	// };
-
-	// const onDelete = useCallback((id) => deleteCard(id), [deleteCard]);
-	// const onTextUpdate = useCallback(
-	// 	(id, updatedText) => handleTextChange(id, updatedText),
-	// 	[handleTextChange]
-	// );
-	// const onFlagToggle = useCallback(
-	// 	(id, flagName, currentFlagValue) =>
-	// 		handleFlagToggleChange(id, flagName, currentFlagValue),
-	// 	[handleFlagToggleChange]
-	// );
 
 	devDebug("Show Skeleton: ", showSkeleton);
 	devDebug("Cards Ready (Dashboard): ", cardsReady);

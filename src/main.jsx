@@ -159,6 +159,7 @@ function Main() {
 
 		if (userState !== "loggedIn" || !uid) {
 			setCards([]);
+			setCardsReady(false);
 			return;
 		}
 
@@ -182,7 +183,6 @@ function Main() {
 
 				const unsubscribe = onSnapshot(
 					userRef,
-					{ includeMetadataChanges: true },
 					(snap) => {
 						// bail if unmounted/re-subscribed
 						if (!active || myVersion !== subVersionRef.current) return;

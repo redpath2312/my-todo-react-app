@@ -8,7 +8,7 @@ const logFsError = (where, e) =>
 
 function requireUid(user) {
 	const uid = user?.uid;
-	if (!uid) throw new Error("Guest sessions cannt use firestore.");
+	if (!uid) throw new Error("Guest sessions cannot use firestore.");
 	return uid;
 }
 export async function createUserDoc(user) {
