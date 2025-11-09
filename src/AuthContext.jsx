@@ -255,7 +255,7 @@ export const AuthProvider = ({ children }) => {
 	// Register new user
 	const handleRegister = async (creds) => {
 		if (authInFlightRef.current) return; //ignore double clicks
-		startAuthLock();
+		authInFlightRef.current = true; // local guard only; no global UI lock
 		const auth = await getAuthClient();
 		const { createUserWithEmailAndPassword, updateProfile, reload } =
 			await import("firebase/auth");
@@ -283,27 +283,12 @@ export const AuthProvider = ({ children }) => {
 
 			// Observer will promote; post-setup can be run there (or fire-and-forget here if you prefer)
 		} catch (err) {
-			const code = err?.code || "";
-			if (code === "auth/popup-closed-by-user") {
-				stopAuthLock();
-				addAlertRef.current(
-					"Google sign-in was cancelled. Click again to retry.",
-					"info",
-					4000
-				);
-			} else if (code === "auth/cancelled-popup-request") {
-				// A second click arrived; ignore — our single-flight already prevents this
-			} else if (code === "auth/popup-blocked") {
-				stopAuthLock();
-				addAlertRef.current(
-					"Your browser blocked the Google sign-in window. Allow popups for this site and try again.",
-					"warning",
-					7000
-				);
-			} else logError("Registration failed:", err.message);
-			addAlertRef.current(err.message);
+			const msg = err?.message ?? "Registration failed. ";
+			logError("Registration failed:", err.message);
+			addAlertRef.current(msg, "error", 7000);
+			throw err;
 		} finally {
-			stopAuthLock();
+			authInFlightRef.current = false;
 		}
 	};
 
