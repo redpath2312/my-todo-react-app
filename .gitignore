@@ -29,6 +29,7 @@ src/assets/Old
 #build only
 .firebase/
 stats.html
+src/version.ts
 
 # dotenv files (ignore everywhere)
 .env
