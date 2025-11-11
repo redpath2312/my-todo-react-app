@@ -1,1 +1,0 @@
-export const APP_VERSION="0.10.0-feat.fdbck.1+dev.58b925a.2025-11-11T18:06:39.843Z";export const BASE_SEMVER="0.10.0-feat.fdbck.1";export const CHANNEL="dev";export const GIT_SHA="58b925a";export const BUILD_TIME="2025-11-11T18:06:39.843Z";
