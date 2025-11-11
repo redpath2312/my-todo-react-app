@@ -1,0 +1,1 @@
+export const APP_VERSION="0.9.0+dev.d15da26.2025-11-11T09:20:27.702Z";export const BASE_SEMVER="0.9.0";export const CHANNEL="dev";export const GIT_SHA="d15da26";export const BUILD_TIME="2025-11-11T09:20:27.702Z";

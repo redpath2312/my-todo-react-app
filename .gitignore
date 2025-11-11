@@ -39,6 +39,7 @@ stats.html
 **/.env.*
 **/*.env
 **/*.env.*
+.env.version
 
 # keep templates
 !.env.example
