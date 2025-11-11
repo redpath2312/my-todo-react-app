@@ -17,7 +17,7 @@ export default function SocialLogin() {
 				>
 					<img
 						src="images/google.svg"
-						alt="Google"
+						alt=""
 						className="social-icon"
 						height="32"
 						width="32"
