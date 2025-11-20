@@ -1,6 +1,7 @@
 import { getDbClient, fs } from "./firebaseDbClient";
 //  now do i just create a const db for this so the db referred to in funcitons below continue to work?
-import { error as logError, info } from "./utils/logger";
+import { error as logError, info, devDebug } from "./utils/logger";
+import { encryptCardText, decryptCardText } from "./utils/encryption.js";
 
 // helper (optional): normalized log payload
 const logFsError = (where, e) =>
@@ -89,10 +90,11 @@ export async function addCard(
 
 			const userData = userSnap.data();
 			const nextID = (userData.maxID ?? 0) + 1; //2) Compute the next incremental id
+			const plainText = String(cardText ?? "").trim();
 
 			newCard = {
 				id: nextID,
-				text: cardText,
+				text: encryptCardText(plainText),
 				renderKey: crypto.randomUUID(),
 				highPriority: !!highPriorityDraft,
 				dashTask: !!dashTaskDraft,
@@ -111,6 +113,22 @@ export async function addCard(
 	}
 }
 
+function cipherCompare(card, updatedFields) {
+	const updatedCard = {
+		...card,
+		...updatedFields,
+	};
+
+	if (updatedFields.text != null) {
+		const previousPlainText = decryptCardText(card.text); //Retrieve stored card text and decrypt
+		const same =
+			updatedCard.text === previousPlainText &&
+			updatedCard.highPriority === card.highPriority &&
+			updatedCard.done === card.done &&
+			updatedCard.dashTask === card.dashTask;
+		return same;
+	}
+}
 export async function updateCard(user, cardID, updatedFields) {
 	const uid = requireUid(user);
 	const db = await getDbClient();
@@ -127,25 +145,22 @@ export async function updateCard(user, cardID, updatedFields) {
 			const updatedCards = currentCards.map((card) => {
 				if (card.id !== cardID) return card;
 
+				const same = cipherCompare(card, updatedFields); //Check if card is the same as what exists
+				if (same) return card;
+
 				const updatedCard = {
-					...card,
-					...updatedFields,
-					...(updatedFields.text != null
-						? { text: String(updatedFields.text).trim() }
-						: {}),
+					...card, //note card.text will be encyrpted here if not changed but that's ok
+					...updatedFields, //containing flag updates and/or plainText card update
 				};
-
-				const same =
-					updatedCard.text === card.text &&
-					updatedCard.highPriority === card.highPriority &&
-					updatedCard.done === card.done &&
-					updatedCard.dashTask === card.dashTask;
-
-				if (same) return card; //no change to the card
+				devDebug("Updated Card :", updatedCard);
+				if (updatedFields.text != null) {
+					const trimmedUpdatedText = String(updatedFields.text).trim(); //Remove white space in text to update
+					devDebug("Trimmed Text to update: ", trimmedUpdatedText);
+					updatedCard.text = encryptCardText(trimmedUpdatedText); //Encrypt the trimmed text to be updated
+				}
 				changed = true;
 				return updatedCard;
 			});
-
 			if (!changed) return;
 
 			tx.update(userRef, { cards: updatedCards });
@@ -155,6 +170,7 @@ export async function updateCard(user, cardID, updatedFields) {
 		throw err;
 	}
 }
+
 export async function clearDoneCards(user, filteredCards) {
 	const uid = requireUid(user);
 	const db = await getDbClient();
@@ -162,7 +178,14 @@ export async function clearDoneCards(user, filteredCards) {
 	const userRef = doc(db, "users", uid);
 	const userSnap = await getDoc(userRef);
 	if (userSnap.exists()) {
-		await updateDoc(userRef, { cards: filteredCards });
+		const encryptedFilteredCards = (filteredCards ?? []).map((card) => {
+			const plainText = String(card.text ?? "").trim();
+			return {
+				...card,
+				text: encryptCardText(plainText),
+			};
+		});
+		await updateDoc(userRef, { cards: encryptedFilteredCards });
 	} else throw new Error("User not found");
 }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback} from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import IconButton from "@mui/material/IconButton";
@@ -154,15 +154,7 @@ function Card({
 			try {
 				isSavingRef.current = true;
 				setIsSaving(true);
-				await onTextUpdate(
-					id,
-					newText
-					// 	 {
-					// 	done: next.done,
-					// 	highPriority: next.highPriority,
-					// 	dashTask: next.dashTask,
-					// }
-				);
+				await onTextUpdate(id, newText);
 				// update AFTER success
 				lastSavedRef.current = next;
 				info("card:save:ok", { id });
