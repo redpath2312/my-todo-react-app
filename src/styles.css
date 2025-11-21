@@ -209,9 +209,10 @@ header h1 {
 	color: var(--text-muted, #999);
 }
 
-.footer a:focus, .footer button:focus {
-  outline: 2px solid var(--focus, #646cff);
-  outline-offset: 2px;
+.footer a:focus,
+.footer button:focus {
+	outline: 2px solid var(--focus, #646cff);
+	outline-offset: 2px;
 }
 
 /* ========== BUTTONS ========== */
@@ -756,7 +757,9 @@ textarea {
 
 /* confirm dialog focus ring (scoped so it doesn't affect other buttons) */
 .confirm-dialog .btn-cancel:focus,
-.confirm-dialog .btn-cancel:focus-visible {
+.confirm-dialog .btn-confirm:focus,
+.confirm-dialog .btn-cancel:focus-visible,
+.confirm-dialog .btn-confirm:focus-visible {
 	outline: 2px solid var(--primary-main);
 	outline-offset: 3px;
 }

@@ -8,7 +8,7 @@ import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 
 const Tips = () => {
 	return (
-		<div className="tips widget">
+		<div className="tips widget" id="getting-started-tips">
 			<h2 className="h2-heading">Getting Started Tips</h2>
 			<div className="tips-panels">
 				<div className="panel-inner">
@@ -39,7 +39,7 @@ const Tips = () => {
 							Click <DeleteForeverIcon /> to delete task
 						</li>
 						<li>
-							Tip - Aim for less huge tasks and split into more Dash tasks
+							Tip - Aim for less huge tasks and split into more Dash Tasks
 						</li>
 					</ul>
 				</div>
@@ -58,15 +58,15 @@ const Tips = () => {
 							&quot;Actions&quot; Panel
 						</li>
 						<li>
-							To start fresh board, click <DeleteSweepIcon color="delete" /> in
+							To start over, click <DeleteSweepIcon color="delete" /> in
 							&quot;Actions&quot; Panel
 						</li>
 					</ul>
 				</div>
 			</div>
 			<h3 className="h3-heading">
-				Note - Guest Mode doesn&apos;t save your tasks, login first if want to
-				save tasks.{" "}
+				Note - Guest Mode doesn&apos;t store your tasks, login first if you will
+				want to save them after your session or in case of disconnection.{" "}
 			</h3>
 		</div>
 	);
