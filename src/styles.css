@@ -1043,10 +1043,7 @@ svg {
 @media (max-width: 520px) {
 	.tips-panels {
 		grid-template-columns: 1fr;
-		padding-inline: 8px;
-	}
-	.tips {
-		padding-inline: 12px;
+		padding: 20px 0px;
 	}
 	.tips .panel-inner ul {
 		padding: 10px;
@@ -1071,7 +1068,7 @@ svg {
 
 	.mini-dashboard-inner-panels .panel-inner {
 		min-width: 0; /* Allow full shrinking */
-		padding: 12px; /* Reduce internal padding too */
+		padding: 12px 8px; /* Reduce internal padding too */
 	}
 	.widget,
 	#high-priority-section,
@@ -1081,12 +1078,18 @@ svg {
 		padding-left: var(--sp-3);
 		padding-right: var(--sp-3);
 	}
+	.panel--draft {
+		padding-left: var(--sp-1);
+	}
+	.mini-dashboard-widgets {
+		padding: var(--sp-2);
+	}
 }
 
 /* Lane containers: tighten their own inner padding on phones */
 @media (max-width: 640px) {
 	.cards-container {
-		padding: var(--edge-buffer); /* down from ~var(--sp-2)  */
+		padding: 10px var(--edge-buffer); /* down from ~var(--sp-2)  */
 		gap: 10px !important;
 	}
 	.main-page-container {
