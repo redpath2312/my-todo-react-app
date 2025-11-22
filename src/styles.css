@@ -279,7 +279,8 @@ header h1 {
 
 /* ========== CARDS ========== */
 .card {
-	width: 330px;
+	/* width: 330px; */
+	width: min(330px, 100%);
 	height: 170px;
 	border: var(--card-border-width) solid var(--secondary-main);
 	/* margin: 1vh; */
@@ -325,12 +326,8 @@ header h1 {
 }
 /* Draft Card */
 #draft-card {
-	width: min(
-		340px,
-		calc(100% - var(--edge-buffer))
-	); /* Never wider than container */
 	height: 165px;
-	border: 2px solid var(--primary-main);
+	border: var(--card-border-width) solid var(--primary-main);
 	justify-self: center;
 	box-sizing: border-box;
 	margin-inline: auto;
@@ -339,9 +336,9 @@ header h1 {
 #draft-card,
 #draft-card > *,
 #draft-card textarea {
-	width: 100% !important;
-	max-width: 100% !important;
-	box-sizing: border-box;
+	/* width: 100% !important; */
+	/* max-width: 100% !important; */
+	/* box-sizing: border-box; */
 }
 
 .draft-card-bottom {
@@ -1020,8 +1017,8 @@ svg {
 }
 
 .dashboard-swimlanes .card {
-	width: 330px; /* stable target width */
-	max-width: 100%;
+	/* stable target width */
+	width: min(330px, 100%);
 	box-sizing: border-box;
 }
 
@@ -1040,6 +1037,7 @@ svg {
 /* ===== MEDIA QUERIES ===== */
 /* Phones */
 /* One-column hard stop on very small screens */
+
 @media (max-width: 520px) {
 	.tips-panels {
 		grid-template-columns: 1fr;
@@ -1050,7 +1048,7 @@ svg {
 	} /* trims list padding slightly */
 	.dashboard-swimlanes .card {
 		/* container-relative shrink: fill lane minus a little breathing room */
-		width: min(330px, calc(100% - var(--edge-buffer)));
+		width: min(330px, 100%);
 		margin-inline: auto;
 	}
 	.cards-container {
@@ -1083,6 +1081,13 @@ svg {
 	}
 	.mini-dashboard-widgets {
 		padding: var(--sp-2);
+	}
+}
+
+/* Edge Case To keep cards in containers at ultra narrow - need after above rule */
+@media (max-width: 360px) {
+	.cards-container {
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 	}
 }
 
