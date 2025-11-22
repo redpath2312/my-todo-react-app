@@ -1,7 +1,7 @@
 {
 	"name": "my-todo-react-app",
 	"private": true,
-	"version": "0.11.0-feat.minor.0",
+	"version": "0.11.0-rc.0",
 	"type": "module",
 	"scripts": {
 		"check:branch:main": "node -e \"process.exit(require('child_process').execSync('git rev-parse --abbrev-ref HEAD').toString().trim()==='main'?0:1)\"",
