@@ -3,6 +3,7 @@ import Tooltip from "@mui/material/Tooltip";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
+import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
 import { DisabledTooltip } from "./DisabledTooltip";
 const Actions = ({
 	isTipsHidden,
@@ -12,6 +13,7 @@ const Actions = ({
 	editingLockRefCurrent,
 	doneCardsTotal,
 	cardsTotal,
+	handlePrivacy,
 }) => {
 	// Centralised “disabled” logic
 	const isLocked = !!editingLockRefCurrent;
@@ -41,7 +43,12 @@ const Actions = ({
 				<Tooltip title="Toggle Getting Started Tips" placement="bottom">
 					<IconButton
 						aria-pressed={isTipsHidden} // announces toggle state
-						aria-label={isTipsHidden ? "Show tips" : "Hide tips"}
+						aria-label={
+							isTipsHidden
+								? "Show Getting Started Tips"
+								: "Hide Getting Started Tips"
+						}
+						aria-controls="getting-started-tips"
 						sx={{ opacity: isTipsHidden ? 0.5 : 1, transition: "opacity .2s" }}
 						onClick={handleTipsHidden}
 					>
@@ -52,9 +59,8 @@ const Actions = ({
 				<DisabledTooltip title={clearDoneTitle} placement="bottom">
 					<IconButton
 						disabled={clearDoneDisabled}
+						aria-label="Clear done tasks"
 						onClick={!clearDoneDisabled ? handleClearAllDoneTasks : undefined}
-						// optional: ensure cursor doesn’t show as clickable when disabled
-						style={clearDoneDisabled ? { pointerEvents: "none" } : undefined}
 					>
 						<PublishedWithChangesIcon fontSize="large" color="success" />
 					</IconButton>
@@ -63,11 +69,19 @@ const Actions = ({
 				<DisabledTooltip title={deleteAllTitle} placement="bottom">
 					<IconButton
 						disabled={deleteAllDisabled}
+						aria-label="Delete all tasks"
 						onClick={!deleteAllDisabled ? handleDeleteAll : undefined}
-						// optional: ensure cursor doesn’t show as clickable when disabled
-						style={deleteAllDisabled ? { pointerEvents: "none" } : undefined}
 					>
 						<DeleteSweepIcon fontSize="large" color="delete" />
+					</IconButton>
+				</DisabledTooltip>
+
+				<DisabledTooltip title="Data & Privacy" placement="bottom">
+					<IconButton
+						onClick={handlePrivacy}
+						aria-label="Open Data & Privacy Info"
+					>
+						<PrivacyTipIcon fontSize="large" color="secondary" />
 					</IconButton>
 				</DisabledTooltip>
 			</div>

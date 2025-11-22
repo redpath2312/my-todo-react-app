@@ -5,10 +5,12 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
+import { useAuth } from "../AuthContext";
 
 const Tips = () => {
+	const { userState } = useAuth();
 	return (
-		<div className="tips widget">
+		<div className="tips widget" id="getting-started-tips">
 			<h2 className="h2-heading">Getting Started Tips</h2>
 			<div className="tips-panels">
 				<div className="panel-inner">
@@ -39,7 +41,7 @@ const Tips = () => {
 							Click <DeleteForeverIcon /> to delete task
 						</li>
 						<li>
-							Tip - Aim for less huge tasks and split into more Dash tasks
+							Tip - Aim for less huge tasks and split into more Dash Tasks
 						</li>
 					</ul>
 				</div>
@@ -58,16 +60,18 @@ const Tips = () => {
 							&quot;Actions&quot; Panel
 						</li>
 						<li>
-							To start fresh board, click <DeleteSweepIcon color="delete" /> in
+							To start over, click <DeleteSweepIcon color="delete" /> in
 							&quot;Actions&quot; Panel
 						</li>
 					</ul>
 				</div>
 			</div>
-			<h3 className="h3-heading">
-				Note - Guest Mode doesn&apos;t save your tasks, login first if want to
-				save tasks.{" "}
-			</h3>
+			{userState === "guest" && (
+				<h3 className="h3-heading">
+					Note -You&apos;re in guest mode - tasks are not saved to the cloud.
+					Sign if if you want to keep them for later.
+				</h3>
+			)}
 		</div>
 	);
 };

@@ -209,9 +209,10 @@ header h1 {
 	color: var(--text-muted, #999);
 }
 
-.footer a:focus, .footer button:focus {
-  outline: 2px solid var(--focus, #646cff);
-  outline-offset: 2px;
+.footer a:focus,
+.footer button:focus {
+	outline: 2px solid var(--focus, #646cff);
+	outline-offset: 2px;
 }
 
 /* ========== BUTTONS ========== */
@@ -278,7 +279,8 @@ header h1 {
 
 /* ========== CARDS ========== */
 .card {
-	width: 330px;
+	/* width: 330px; */
+	width: min(330px, 100%);
 	height: 170px;
 	border: var(--card-border-width) solid var(--secondary-main);
 	/* margin: 1vh; */
@@ -324,12 +326,8 @@ header h1 {
 }
 /* Draft Card */
 #draft-card {
-	width: min(
-		340px,
-		calc(100% - var(--edge-buffer))
-	); /* Never wider than container */
 	height: 165px;
-	border: 2px solid var(--primary-main);
+	border: var(--card-border-width) solid var(--primary-main);
 	justify-self: center;
 	box-sizing: border-box;
 	margin-inline: auto;
@@ -338,9 +336,9 @@ header h1 {
 #draft-card,
 #draft-card > *,
 #draft-card textarea {
-	width: 100% !important;
-	max-width: 100% !important;
-	box-sizing: border-box;
+	/* width: 100% !important; */
+	/* max-width: 100% !important; */
+	/* box-sizing: border-box; */
 }
 
 .draft-card-bottom {
@@ -756,7 +754,9 @@ textarea {
 
 /* confirm dialog focus ring (scoped so it doesn't affect other buttons) */
 .confirm-dialog .btn-cancel:focus,
-.confirm-dialog .btn-cancel:focus-visible {
+.confirm-dialog .btn-confirm:focus,
+.confirm-dialog .btn-cancel:focus-visible,
+.confirm-dialog .btn-confirm:focus-visible {
 	outline: 2px solid var(--primary-main);
 	outline-offset: 3px;
 }
@@ -841,6 +841,7 @@ textarea {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	width: clamp(210px, 460px, 100%);
 	min-width: 50%;
 	position: relative;
 }
@@ -851,8 +852,8 @@ textarea {
 	display: flex;
 	flex-direction: column;
 	border-radius: 0.5rem;
-	padding: 5rem 3rem;
-	max-width: 98%;
+	padding: 5rem 1.5rem;
+	width: clamp(200px, 98%, 450px);
 	box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
 	align-items: center;
 	justify-content: center;
@@ -865,7 +866,6 @@ textarea {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	/* min-width: 50%; */
 	width: 100%;
 	background-color: var(--bg-container);
 	position: relative;
@@ -1017,8 +1017,8 @@ svg {
 }
 
 .dashboard-swimlanes .card {
-	width: 330px; /* stable target width */
-	max-width: 100%;
+	/* stable target width */
+	width: min(330px, 100%);
 	box-sizing: border-box;
 }
 
@@ -1037,20 +1037,18 @@ svg {
 /* ===== MEDIA QUERIES ===== */
 /* Phones */
 /* One-column hard stop on very small screens */
+
 @media (max-width: 520px) {
 	.tips-panels {
 		grid-template-columns: 1fr;
-		padding-inline: 8px;
-	}
-	.tips {
-		padding-inline: 12px;
+		padding: 20px 0px;
 	}
 	.tips .panel-inner ul {
 		padding: 10px;
 	} /* trims list padding slightly */
 	.dashboard-swimlanes .card {
 		/* container-relative shrink: fill lane minus a little breathing room */
-		width: min(330px, calc(100% - var(--edge-buffer)));
+		width: min(330px, 100%);
 		margin-inline: auto;
 	}
 	.cards-container {
@@ -1068,14 +1066,35 @@ svg {
 
 	.mini-dashboard-inner-panels .panel-inner {
 		min-width: 0; /* Allow full shrinking */
-		padding: 12px; /* Reduce internal padding too */
+		padding: 12px 8px; /* Reduce internal padding too */
+	}
+	.widget,
+	#high-priority-section,
+	#dash-tasks-section,
+	#all-other-tasks-section,
+	#done-tasks-section {
+		padding-left: var(--sp-3);
+		padding-right: var(--sp-3);
+	}
+	.panel--draft {
+		padding-left: var(--sp-1);
+	}
+	.mini-dashboard-widgets {
+		padding: var(--sp-2);
+	}
+}
+
+/* Edge Case To keep cards in containers at ultra narrow - need after above rule */
+@media (max-width: 360px) {
+	.cards-container {
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 	}
 }
 
 /* Lane containers: tighten their own inner padding on phones */
 @media (max-width: 640px) {
 	.cards-container {
-		padding: var(--edge-buffer); /* down from ~var(--sp-2)  */
+		padding: 10px var(--edge-buffer); /* down from ~var(--sp-2)  */
 		gap: 10px !important;
 	}
 	.main-page-container {

@@ -1,15 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import App from "./App.jsx";
 import { useAuth } from "./AuthContext";
-// import { db } from "./firebaseconfig.js";
 import { getDbClient, fs } from "./firebaseDbClient.js";
 import { useAlert } from "./ErrorContext.jsx";
 import { devDebug, error as logError } from "./utils/logger";
 import { useUI } from "./UIContext.jsx";
 
 import { ThemeModeProvider } from "./theme/ThemeModeContext.jsx";
-
-// import { textFieldClasses } from "@mui/material";
+import { decryptCardText } from "./utils/encryption.js";
 
 function Main() {
 	const [cards, setCards] = useState([]);
@@ -113,6 +111,7 @@ function Main() {
 		try {
 			await svcRef.current?.clearDoneCards(user, filteredCards);
 			addAlert("Cleared all done cards from db", "info", 3000);
+			setCards(filteredCards);
 		} catch (err) {
 			addAlert(`Error updating firestore: ${err}`, "error", 6000);
 		}
@@ -136,6 +135,7 @@ function Main() {
 		if (userState !== "loggedIn" || !user?.uid) return;
 		try {
 			await svcRef.current?.deleteAllCards(user);
+			setCards([]);
 			addAlert("Deleted cards from database successfully", "info", 3000);
 		} catch (err) {
 			addAlert(
@@ -188,7 +188,14 @@ function Main() {
 						if (!active || myVersion !== subVersionRef.current) return;
 						if (snap.metadata.hasPendingWrites) return;
 
-						setCards(snap.exists() ? snap.data().cards || [] : []);
+						const rawCards = snap.exists() ? snap.data().cards || [] : [];
+						const safeCards = Array.isArray(rawCards) ? rawCards : [];
+
+						const decryptedCards = safeCards.map((card) => ({
+							...card,
+							text: decryptCardText(card.text ?? ""),
+						}));
+						setCards(decryptedCards);
 						// ← NEW: flip ready exactly once per subscription
 						if (firstSnapSeenForVersionRef.current !== myVersion) {
 							firstSnapSeenForVersionRef.current = myVersion;
