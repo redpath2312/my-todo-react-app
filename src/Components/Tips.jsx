@@ -5,8 +5,10 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
+import { useAuth } from "../AuthContext";
 
 const Tips = () => {
+	const { userState } = useAuth();
 	return (
 		<div className="tips widget" id="getting-started-tips">
 			<h2 className="h2-heading">Getting Started Tips</h2>
@@ -64,10 +66,12 @@ const Tips = () => {
 					</ul>
 				</div>
 			</div>
-			<h3 className="h3-heading">
-				Note - Guest Mode doesn&apos;t store your tasks, login first if you will
-				want to save them after your session or in case of disconnection.{" "}
-			</h3>
+			{userState === "guest" && (
+				<h3 className="h3-heading">
+					Note -You&apos;re in guest mode - tasks are not saved to the cloud.
+					Sign if if you want to keep them for later.
+				</h3>
+			)}
 		</div>
 	);
 };

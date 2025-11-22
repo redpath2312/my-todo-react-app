@@ -844,6 +844,7 @@ textarea {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	width: clamp(210px, 460px, 100%);
 	min-width: 50%;
 	position: relative;
 }
@@ -854,8 +855,8 @@ textarea {
 	display: flex;
 	flex-direction: column;
 	border-radius: 0.5rem;
-	padding: 5rem 3rem;
-	max-width: 98%;
+	padding: 5rem 1.5rem;
+	width: clamp(200px, 98%, 450px);
 	box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
 	align-items: center;
 	justify-content: center;
@@ -868,7 +869,6 @@ textarea {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	/* min-width: 50%; */
 	width: 100%;
 	background-color: var(--bg-container);
 	position: relative;
@@ -1072,6 +1072,14 @@ svg {
 	.mini-dashboard-inner-panels .panel-inner {
 		min-width: 0; /* Allow full shrinking */
 		padding: 12px; /* Reduce internal padding too */
+	}
+	.widget,
+	#high-priority-section,
+	#dash-tasks-section,
+	#all-other-tasks-section,
+	#done-tasks-section {
+		padding-left: var(--sp-3);
+		padding-right: var(--sp-3);
 	}
 }
 
