@@ -15,6 +15,7 @@ import AppMeta from "./Components/AppMeta";
 import React from "react";
 import { devDebug, info } from "./utils/logger";
 import TasksSkeleton from "./Components/TasksSkeleton";
+import DataPrivacy from "./Components/DataPrivacy";
 const Dashboard = ({
 	dbCards,
 	addCardToDB,
@@ -29,7 +30,9 @@ const Dashboard = ({
 	const { userState } = useAuth();
 	const { editingLocked, editingLockRef } = useUI();
 	const [isTipsHidden, setTipsHidden] = useState(false);
-	const [confirmOpen, setConfirmOpen] = useState(false);
+	const [confirmDeleteAllOpen, setConfirmDeleteAllOpen] = useState(false);
+	const [confirmClearDoneOpen, setConfirmClearDoneOpen] = useState(false);
+	const [privacyOpen, setPrivacyOpen] = useState(false);
 	const showSkeleton = userState === "loggedIn" && cardsReady === false;
 
 	// for easy testing
@@ -184,11 +187,11 @@ const Dashboard = ({
 
 	async function handleDeleteAll() {
 		if (editingLockRef === true) return;
-		setConfirmOpen(true);
+		setConfirmDeleteAllOpen(true);
 	}
 
 	async function confirmDeleteAll() {
-		setConfirmOpen(false);
+		setConfirmDeleteAllOpen(false);
 		if (userState === "loggedIn") {
 			await deleteAllCardsInDB();
 		} else {
@@ -197,12 +200,20 @@ const Dashboard = ({
 	}
 	async function handleClearAllDoneTasks() {
 		if (editingLockRef === true) return;
+		setConfirmClearDoneOpen(true);
+	}
+	async function confirmClearAllDone() {
+		setConfirmClearDoneOpen(false);
 		const clearedDoneCards = cards.filter((card) => !card.done);
 		if (userState === "loggedIn") {
 			await clearDoneCardsInDB(clearedDoneCards);
 		} else {
 			setLocalCards(clearedDoneCards);
 		}
+	}
+
+	function handlePrivacy() {
+		setPrivacyOpen(!privacyOpen);
 	}
 
 	function addCard(inputText, highPriorityDraft, dashTaskDraft) {
@@ -281,6 +292,7 @@ const Dashboard = ({
 											editingLockRefCurrent={editingLockRef.current}
 											doneCardsTotal={doneCardsTotal}
 											cardsTotal={cardsTotal}
+											handlePrivacy={handlePrivacy}
 										/>
 
 										<DraftCard
@@ -364,14 +376,34 @@ const Dashboard = ({
 				</div>
 				<ErrorDisplay />
 				<ConfirmDialog
-					open={confirmOpen}
+					open={confirmDeleteAllOpen}
 					title="Delete all cards?"
 					description="This will permanently remove every card in your dashboard. This cannot be undone."
 					confirmText="Delete all"
 					cancelText="Cancel"
 					tone="danger"
 					onConfirm={confirmDeleteAll}
-					onCancel={() => setConfirmOpen(false)}
+					onCancel={() => setConfirmDeleteAllOpen(false)}
+				/>
+				<ConfirmDialog
+					open={confirmClearDoneOpen}
+					title="Clear all done cards?"
+					description="This will permanently remove all tasks that are marked done in your dashboard. This cannot be undone."
+					confirmText="Clear done"
+					cancelText="Cancel"
+					tone="success"
+					onConfirm={confirmClearAllDone}
+					onCancel={() => setConfirmClearDoneOpen(false)}
+				/>
+				<ConfirmDialog
+					open={privacyOpen}
+					title={"Data & Privacy"}
+					description={<DataPrivacy />}
+					confirmText="Close"
+					cancelText={null}
+					tone="info"
+					onConfirm={handlePrivacy}
+					onCancel={handlePrivacy}
 				/>
 			</div>
 		</>
