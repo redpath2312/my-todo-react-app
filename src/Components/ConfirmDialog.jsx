@@ -78,7 +78,7 @@ export default function ConfirmDialog({
 
 			{/* panel */}
 			<div
-				className={`relative w-[min(520px,92vw)] max-h-[80vh] rounded-xl border ${panelToneClass} bg-[var(--bg-container)] p-4 sm:p-5 shadow-xl flex flex-col`}
+				className={`confirm-panel relative w-[min(520px,92vw)] max-h-[80vh] rounded-xl border ${panelToneClass} bg-[var(--bg-container)] p-4 sm:p-5 shadow-xl flex flex-col`}
 			>
 				<h3 id="confirm-title" className="text-lg font-semibold">
 					{title}

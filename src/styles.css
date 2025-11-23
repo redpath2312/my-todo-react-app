@@ -277,6 +277,10 @@ header h1 {
 	display: none;
 }
 
+.confirm-dialog .confirm-panel {
+	border-width: var(--card-border-width);
+}
+
 /* ========== CARDS ========== */
 .card {
 	/* width: 330px; */
